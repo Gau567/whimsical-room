@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+  --font-hand: "Caveat", cursive;
+  --font-serif: "Spectral", Georgia, serif;
+}
+
+html,
+body {
+  background: radial-gradient(ellipse at top, #2b2019 0%, #1a130e 70%);
+  min-height: 100vh;
+}
+
+::selection {
+  background: #e8a33d;
+  color: #1a130e;
+}
