@@ -1,104 +1,95 @@
 "use client";
 
+import { useState } from "react";
 import { DndContext } from "@dnd-kit/core";
-import CassettePlayer from "@/components/CassettePlayer";
-import CDPlayer from "@/components/CDPlayer";
-import TrackShelf from "@/components/TrackShelf";
-import { cassettes, cds } from "@/data/tracks";
+import MediaShelf from "@/components/room/MediaShelf";
+import MediaStation from "@/components/stations/MediaStation";
+import { cassettes, cds, vinyls } from "@/data/tracks";
+import { MediaFormat } from "@/lib/types";
+
+type RoomView = "shelf" | MediaFormat | "books";
 
 export default function Home() {
+  const [view, setView] = useState<RoomView>("shelf");
+  const [lampOn, setLampOn] = useState(true);
+
+  const tracks = view === "cassette" ? cassettes : view === "cd" ? cds : vinyls;
+
   return (
     <DndContext>
-      <main className="room">
-        <div className="room-overlay" />
+      <main className={`nostalgia-room ${lampOn ? "room-lit" : "room-dim"}`}>
+        <div className="ambient-grain" />
 
-        <header className="room-title">
-          <p className="font-hand text-2xl text-amber-300">
-            welcome to
-          </p>
+        <header className="room-heading">
+          <div>
+            <p>welcome to</p>
+            <h1>The Nostalgia Room</h1>
+            <span>
+              {view === "shelf"
+                ? "choose something from the shelf"
+                : view === "books"
+                  ? "a few things worth keeping"
+                  : "pick something up, drag it over, press play"}
+            </span>
+          </div>
 
-          <h1 className="font-mono text-3xl font-semibold uppercase tracking-[0.2em] text-cream">
-            The Nostalgia Room
-          </h1>
-
-          <p className="mt-2 font-serif text-sm text-paper/60">
-            Pick a tape or disc and drag it into a player.
-          </p>
+          <button
+            type="button"
+            className={`room-lamp ${lampOn ? "lamp-is-on" : ""}`}
+            onClick={() => setLampOn((value) => !value)}
+            aria-label="Toggle room lamp"
+            aria-pressed={lampOn}
+          >
+            <span>●</span>
+          </button>
         </header>
 
-        <section className="window-area">
-          <div className="window">
-            <div className="window-sky">
-              <span className="moon">☾</span>
-              <span className="star star-one">✦</span>
-              <span className="star star-two">✧</span>
-              <span className="star star-three">✦</span>
-            </div>
-
-            <div className="window-frame-horizontal" />
-            <div className="window-frame-vertical" />
+        <div className="room-window" aria-hidden="true">
+          <div className="window-night">
+            <span className="window-moon">☾</span>
+            <span className="window-star star-a">✦</span>
+            <span className="window-star star-b">·</span>
+            <span className="window-star star-c">✧</span>
           </div>
+          <span className="window-cross window-cross-v" />
+          <span className="window-cross window-cross-h" />
+        </div>
 
-          <div className="window-sill">
-            <span className="plant">🪴</span>
-          </div>
-        </section>
+        <div className="room-content">
+          {view === "shelf" && <MediaShelf onSelect={setView} />}
 
-        <section className="wall-decor">
-          <div className="polaroid rotate-left">
-            <div className="photo photo-one" />
-            <p>summer</p>
-          </div>
+          {(view === "cassette" || view === "cd" || view === "vinyl") && (
+            <MediaStation format={view} tracks={tracks} onBack={() => setView("shelf")} />
+          )}
 
-          <div className="polaroid rotate-right">
-            <div className="photo photo-two" />
-            <p>you & me</p>
-          </div>
-        </section>
+          {view === "books" && (
+            <section className="book-view">
+              <button type="button" className="station-back" onClick={() => setView("shelf")}>
+                ← back to shelf
+              </button>
 
-        <section className="left-shelf room-panel">
-          <TrackShelf
-            title="cassette collection"
-            tracks={cassettes}
-          />
-        </section>
+              <div className="open-journal">
+                <div className="journal-page journal-left-page">
+                  <p className="journal-date">SEPTEMBER</p>
+                  <h2>things worth remembering</h2>
+                  <p>
+                    There are songs that become places, and ordinary afternoons that somehow become
+                    permanent. This shelf is for those.
+                  </p>
+                  <span className="journal-doodle">✦ &nbsp; ☾ &nbsp; ♫</span>
+                </div>
 
-        <section className="right-shelf room-panel">
-          <TrackShelf
-            title="CD collection"
-            tracks={cds}
-          />
-        </section>
-
-        <section className="desk-area">
-          <div className="desk-top">
-            <div className="desk-decoration desk-books">
-              <span>📚</span>
-            </div>
-
-            <div className="players">
-              <CassettePlayer />
-              <CDPlayer />
-            </div>
-
-            <div className="desk-decoration">
-              <span className="lamp">💡</span>
-              <span className="mug">☕</span>
-            </div>
-          </div>
-
-          <div className="desk-drawer">
-            <div className="drawer-handle" />
-          </div>
-
-          <div className="desk-leg desk-leg-left" />
-          <div className="desk-leg desk-leg-right" />
-        </section>
-
-        <section className="floor-items">
-          <div className="floor-cushion">🧸</div>
-          <div className="floor-records">♫</div>
-        </section>
+                <div className="journal-page journal-right-page">
+                  <div className="journal-photo" />
+                  <p className="journal-handwriting">
+                    “play this when the room feels a little too quiet.”
+                  </p>
+                  <div className="journal-tape">for later</div>
+                </div>
+              </div>
+            </section>
+          )}
+        </div>
       </main>
     </DndContext>
   );

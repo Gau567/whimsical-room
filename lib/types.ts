@@ -1,4 +1,4 @@
-export type MediaFormat = "cassette" | "cd";
+export type MediaFormat = "cassette" | "cd" | "vinyl";
 
 export interface Track {
   id: string;
@@ -6,6 +6,6 @@ export interface Track {
   artist: string;
   youtubeId: string;
   format: MediaFormat;
-  /** accent color for the physical item (tape shell / disc label) */
+  /** accent color for the physical item */
   color: string;
 }

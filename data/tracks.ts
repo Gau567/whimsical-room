@@ -1,8 +1,5 @@
 import { Track } from "@/lib/types";
 
-// NOTE: these are well-known, stable public YouTube IDs used only as
-// placeholders so the player is testable out of the box. Swap in your
-// own playlist — see README.md.
 export const cassettes: Track[] = [
   {
     id: "c1",
@@ -54,5 +51,32 @@ export const cds: Track[] = [
     youtubeId: "hT_nvWreIhg",
     format: "cd",
     color: "#B97A70",
+  },
+];
+
+export const vinyls: Track[] = [
+  {
+    id: "v1",
+    title: "September",
+    artist: "Earth, Wind & Fire",
+    youtubeId: "Gs069dndIYk",
+    format: "vinyl",
+    color: "#B77752",
+  },
+  {
+    id: "v2",
+    title: "Dreams",
+    artist: "Fleetwood Mac",
+    youtubeId: "mrZRURcb1cM",
+    format: "vinyl",
+    color: "#6E7B77",
+  },
+  {
+    id: "v3",
+    title: "Put Your Records On",
+    artist: "Corinne Bailey Rae",
+    youtubeId: "rjOhZZyn30k",
+    format: "vinyl",
+    color: "#A68166",
   },
 ];
