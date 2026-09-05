@@ -112,21 +112,32 @@ export default function MiniTypewriter({ onOpenBoard }: { onOpenBoard: () => voi
             <span className="tw-return-lever" />
           </div>
 
-          <div className="tw-ribbon-cover">
+          <div className="tw-ribbon-deck">
             <span className="tw-spool tw-spool-left"><i /></span>
             <span className="tw-ribbon" />
             <span className="tw-spool tw-spool-right"><i /></span>
-            <span className="tw-type-guide">⌄</span>
+            <span className="tw-type-basket" />
+            <span className="tw-paper-guide tw-paper-guide-left" />
+            <span className="tw-paper-guide tw-paper-guide-right" />
           </div>
 
           <div className="tw-body">
+            <div className="tw-brand">NOSTALGIA</div>
             <div className="tw-keybed">
-              {"QWERTYUIOPASDFGHJKLZXCVBNM".split("").map((letter, index) => (
-                <span key={`${letter}-${index}`} className="tw-key">{letter}</span>
-              ))}
-              <span className="tw-key tw-key-wide">SHIFT</span>
-              <span className="tw-spacebar" />
-              <span className="tw-key tw-key-wide">RETURN</span>
+              <div className="tw-key-row tw-row-one">
+                {"QWERTYUIOP".split("").map((letter) => <span key={letter} className="tw-key">{letter}</span>)}
+              </div>
+              <div className="tw-key-row tw-row-two">
+                {"ASDFGHJKL".split("").map((letter) => <span key={letter} className="tw-key">{letter}</span>)}
+              </div>
+              <div className="tw-key-row tw-row-three">
+                {"ZXCVBNM".split("").map((letter) => <span key={letter} className="tw-key">{letter}</span>)}
+              </div>
+              <div className="tw-bottom-row">
+                <span className="tw-key tw-key-wide">SHIFT</span>
+                <span className="tw-spacebar" />
+                <span className="tw-key tw-key-wide">RETURN</span>
+              </div>
             </div>
           </div>
         </div>
