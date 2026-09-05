@@ -5,11 +5,15 @@ import { DndContext } from "@dnd-kit/core";
 import RetroRoomScene from "@/components/room/RetroRoomScene";
 import RetroComputer from "@/components/room/RetroComputer";
 import DeskDrawer from "@/components/room/DeskDrawer";
+import TypableJournal from "@/components/room/TypableJournal";
+import ReadableBooks from "@/components/room/ReadableBooks";
+import MiniTypewriter from "@/components/room/MiniTypewriter";
+import PinBoard from "@/components/room/PinBoard";
 import MediaStation from "@/components/stations/MediaStation";
 import { cassettes, cds, vinyls } from "@/data/tracks";
 import { MediaFormat } from "@/lib/types";
 
-type RoomView = "room" | MediaFormat | "books" | "computer";
+type RoomView = "room" | MediaFormat | "journal" | "books" | "computer" | "typewriter" | "pinboard";
 
 export default function Home() {
   const [view, setView] = useState<RoomView>("room");
@@ -47,33 +51,21 @@ export default function Home() {
           </div>
         )}
 
+        {view === "journal" && (
+          <section className="retro-modal-shell">
+            <button type="button" className="station-back" onClick={() => setView("room")}>
+              ← back to room
+            </button>
+            <TypableJournal onOpenBooks={() => setView("books")} />
+          </section>
+        )}
+
         {view === "books" && (
           <section className="retro-modal-shell">
             <button type="button" className="station-back" onClick={() => setView("room")}>
               ← back to room
             </button>
-
-            <div className="open-journal retro-journal">
-              <div className="journal-page journal-left-page">
-                <p className="journal-date">SEPTEMBER</p>
-                <h2>things worth remembering</h2>
-                <p>
-                  Some songs become places. Some photos become entire afternoons. This is where the
-                  little things live when you do not want them to disappear.
-                </p>
-                <span className="journal-doodle">✦ &nbsp; ☾ &nbsp; ♫ &nbsp; ♡</span>
-                <div className="journal-ticket">ADMIT ONE · GOOD MEMORIES</div>
-              </div>
-
-              <div className="journal-page journal-right-page">
-                <div className="journal-photo retro-journal-photo" />
-                <p className="journal-handwriting">
-                  “play this when the room feels a little too quiet.”
-                </p>
-                <div className="journal-tape">for later</div>
-                <div className="journal-sticker">☺</div>
-              </div>
-            </div>
+            <ReadableBooks onBackToJournal={() => setView("journal")} />
           </section>
         )}
 
@@ -93,6 +85,24 @@ export default function Home() {
             </button>
 
             <RetroComputer onBack={() => setView("room")} />
+          </section>
+        )}
+
+        {view === "typewriter" && (
+          <section className="retro-modal-shell typewriter-modal-shell">
+            <button type="button" className="station-back" onClick={() => setView("room")}>
+              ← back to room
+            </button>
+            <MiniTypewriter onOpenBoard={() => setView("pinboard")} />
+          </section>
+        )}
+
+        {view === "pinboard" && (
+          <section className="retro-modal-shell pinboard-modal-shell">
+            <button type="button" className="station-back" onClick={() => setView("room")}>
+              ← back to room
+            </button>
+            <PinBoard onOpenTypewriter={() => setView("typewriter")} />
           </section>
         )}
       </main>

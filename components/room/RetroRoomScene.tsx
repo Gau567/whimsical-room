@@ -2,7 +2,7 @@
 
 import { MediaFormat } from "@/lib/types";
 
-type RoomChoice = MediaFormat | "books" | "computer";
+type RoomChoice = MediaFormat | "journal" | "books" | "computer" | "typewriter" | "pinboard";
 
 export default function RetroRoomScene({
   onSelect,
@@ -57,6 +57,20 @@ export default function RetroRoomScene({
           <strong>More Out There</strong>
           <i>✦ ◯</i>
         </div>
+
+        <button
+          type="button"
+          className="room-pinboard hotspot"
+          onClick={() => onSelect("pinboard")}
+          aria-label="Open room pin board"
+        >
+          <span className="mini-pin mini-pin-a" />
+          <span className="mini-pin mini-pin-b" />
+          <span className="mini-board-note mini-note-a">don&apos;t forget ♡</span>
+          <span className="mini-board-photo"><i /></span>
+          <span className="mini-board-ticket">GOOD DAYS</span>
+          <span className="object-tip">pin board</span>
+        </button>
       </div>
 
       <div className="retro-desk">
@@ -77,6 +91,22 @@ export default function RetroRoomScene({
               <span className="crt-power" />
             </span>
             <span className="object-tip">open computer</span>
+          </button>
+
+          <button
+            type="button"
+            className="desk-typewriter-mini hotspot"
+            onClick={() => onSelect("typewriter")}
+            aria-label="Use the typewriter"
+          >
+            <span className="mini-tw-paper" />
+            <span className="mini-tw-carriage" />
+            <span className="mini-tw-body">
+              <i className="mini-tw-spool mini-tw-left" />
+              <i className="mini-tw-spool mini-tw-right" />
+              <b className="mini-tw-keys" />
+            </span>
+            <span className="object-tip">use typewriter</span>
           </button>
 
           <div className="keyboard" aria-hidden="true">
@@ -192,7 +222,7 @@ export default function RetroRoomScene({
           <button
             type="button"
             className="photo-stack hotspot"
-            onClick={() => onSelect("books")}
+            onClick={() => onSelect("journal")}
             aria-label="Open memories and journal"
           >
             <span className="photo-card card-a"><i /></span>
@@ -206,7 +236,7 @@ export default function RetroRoomScene({
           <button
             type="button"
             className="shelf-journal hotspot"
-            onClick={() => onSelect("books")}
+            onClick={() => onSelect("journal")}
             aria-label="Open journal"
           >
             <span>late nights</span>
@@ -222,10 +252,15 @@ export default function RetroRoomScene({
             onClick={() => onSelect("books")}
             aria-label="Open books and letters"
           >
-            {Array.from({ length: 13 }).map((_, i) => (
-              <span key={i} style={{ height: `${44 + ((i * 7) % 22)}px` }} />
+            {[
+              ["MOON", 54], ["SIDE A", 66], ["SMALL", 61], ["AFTER", 72],
+              ["PHOTO", 58], ["NOTES", 69], ["DREAM", 63], ["PLACES", 70],
+            ].map(([label, height], i) => (
+              <span key={String(label)} className={`shelf-book-spine shelf-book-${i + 1}`} style={{ height: `${height}px` }}>
+                <b>{label}</b>
+              </span>
             ))}
-            <span className="object-tip">books & letters</span>
+            <span className="object-tip">read the books</span>
           </button>
           <div className="radio-box" aria-hidden="true">♫</div>
         </div>
