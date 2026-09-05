@@ -2882,3 +2882,271 @@ button {
 .pin-photo-image{width:100%;object-fit:cover;background:#ddd}
 .photo-upload-button{display:grid;place-items:center;border:1px solid rgba(238,228,210,.22);background:#665048;color:#f4e8d4;padding:9px 12px;font-family:var(--font-mono)!important;font-size:9px!important;cursor:pointer;grid-column:1/-1}
 .photo-upload-button input{display:none}
+
+/* =========================================================
+   V6 — REFINED RETRO ROOM
+   Cleaner composition: fewer objects, stronger zones, no overlap
+   ========================================================= */
+
+.retro-room-page {
+  width: min(1440px, 100%);
+  padding: 20px 18px 54px;
+  background:
+    radial-gradient(circle at 74% 20%, rgba(214, 77, 177, .12), transparent 28%),
+    radial-gradient(circle at 18% 28%, rgba(68, 107, 176, .10), transparent 30%),
+    linear-gradient(180deg, #211621 0%, #171117 68%, #100c11 100%);
+}
+
+.retro-room-title { margin-bottom: 12px; }
+.retro-room-title p { color: #c98cab; }
+.retro-room-title h1 { color: #eadfd5; text-shadow: none; }
+
+.retro-scene-v6 {
+  width: min(1260px, 96vw);
+  aspect-ratio: 16 / 9.7;
+  min-height: 690px;
+  border-radius: 12px;
+  border: 1px solid rgba(230, 204, 188, .09);
+  background: #261a25;
+  box-shadow: 0 28px 70px rgba(0,0,0,.42), inset 0 1px rgba(255,255,255,.025);
+}
+
+.retro-scene-v6::before {
+  background:
+    radial-gradient(circle at 80% 18%, rgba(200, 86, 157, .07), transparent 28%),
+    linear-gradient(180deg, transparent 66%, rgba(8,6,9,.18));
+  mix-blend-mode: normal;
+}
+
+.retro-wall-v6 {
+  inset: 0 0 28% 0;
+  background:
+    linear-gradient(rgba(255,255,255,.012), rgba(255,255,255,0)),
+    #3a2a40;
+}
+
+.retro-window-v6 {
+  left: 3.2%;
+  top: 5.5%;
+  width: 25%;
+  height: 42%;
+  border: 9px solid #4c3541;
+  box-shadow: 0 12px 24px rgba(0,0,0,.28);
+}
+
+.poster-cluster-v6 {
+  position: absolute;
+  left: 30.5%;
+  top: 7%;
+  width: 25%;
+  height: 43%;
+}
+.poster-cluster-v6 .poster { position: absolute; }
+.poster-one-v6 { left: 0; top: 0; width: 55%; height: 58%; }
+.poster-two-v6 { right: 0; top: 4%; width: 40%; height: 54%; }
+.poster-three-v6 { left: 31%; bottom: 0; width: 42%; height: 34%; }
+
+.neon-sign-v6 {
+  right: 4.5%;
+  top: 3.5%;
+  width: 30%;
+  height: 12%;
+  border-color: #211722;
+  background: #171119;
+  color: #d47ac5;
+  box-shadow: 0 0 20px rgba(210, 84, 185, .12);
+}
+.neon-sign-v6 strong { text-shadow: 0 0 7px rgba(229,100,205,.6); }
+
+.room-pinboard-v6 {
+  left: 31.5%;
+  top: 53%;
+  width: 21%;
+  height: 15%;
+  transform: rotate(-1deg);
+  z-index: 5;
+}
+.room-pinboard-v6:hover { transform: translateY(-3px) rotate(0deg); }
+
+.retro-desk-v6 {
+  left: 3.2%;
+  bottom: 6%;
+  width: 52%;
+  height: 42%;
+  z-index: 7;
+}
+
+.desk-surface-v6 {
+  bottom: 24%;
+  height: 9%;
+  background: linear-gradient(#724837,#4b3028);
+}
+.desk-surface-v6::before {
+  left: 25%;
+  width: 70%;
+  height: 140px;
+  background: linear-gradient(90deg,#4a302b,#603e34 55%,#472e29);
+}
+
+.desk-computer-v6 {
+  left: 20%;
+  bottom: 46%;
+  width: 34%;
+}
+.desk-typewriter-mini-v6 {
+  left: 57%;
+  bottom: 38%;
+  width: 18%;
+  transform: scale(.92);
+}
+.desk-typewriter-mini-v6:hover { transform: translateY(-4px) scale(.96); }
+.desk-polaroid-v6 { right: 11%; bottom: 33%; transform: rotate(5deg) scale(.9); }
+.desk-cup-v6 { right: 2%; bottom: 34%; }
+
+.desk-drawers-v6 {
+  left: 1.5%;
+  bottom: 0;
+  width: 22%;
+  height: 30%;
+  gap: 8px;
+  padding: 10px;
+  background: #57372e;
+  box-shadow: 0 8px 18px rgba(0,0,0,.24);
+}
+.desk-drawers-v6 .desk-drawer-button { background: #75493a; border-color: rgba(28,18,17,.45); }
+
+.retro-shelf-v6 {
+  right: 3.2%;
+  top: 17%;
+  width: 40%;
+  height: 76%;
+  padding: 3.8% 4.2% 2.7%;
+  background: #4d302d;
+  border-color: #2f1f20;
+  box-shadow: 0 22px 48px rgba(0,0,0,.34), inset 0 1px rgba(255,255,255,.025);
+}
+.retro-shelf-v6::before,
+.retro-shelf-v6::after { background: #613b30; }
+
+.shelf-crown-v6 {
+  top: -6.5%;
+  left: 1%;
+  right: 1%;
+  height: 8%;
+  padding: 0 6%;
+}
+.shelf-globe-v6 { transform: scale(.84); }
+.shelf-books-top-v6 { gap: 4px; }
+.shelf-dino-v6 { font-size: 22px; }
+
+.retro-shelf-v6 .shelf-level {
+  height: 24%;
+  border-bottom: 8px solid #613b30;
+  background: rgba(36, 19, 25, .18);
+}
+.retro-shelf-v6 .shelf-level:last-child { border-bottom: 0; }
+
+.shelf-turntable-level-v6 { padding: 5% 4% 3%; align-items: center; }
+.shelf-turntable-level-v6 .room-turntable { width: 56%; height: 90%; }
+.vinyl-stack-v6 { width: 25%; height: 72%; gap: 3px; }
+.shelf-moon-lamp-v6 {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px;
+  flex: 0 0 34px;
+  border: 0 !important;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 35%, #ffe1a5 0 15%, #e4a45b 44%, #b56354 100%) !important;
+  box-shadow: 0 0 12px rgba(235, 170, 92, .26);
+}
+.shelf-moon-lamp-v6.lamp-on-v6 { box-shadow: 0 0 20px rgba(255, 186, 94, .55); }
+
+.shelf-player-level-v6 { padding: 5% 3%; gap: 4%; }
+.shelf-player-level-v6 .room-cassette-deck { width: 38%; height: 76%; }
+.shelf-player-level-v6 .room-cd-deck { width: 39%; height: 76%; }
+.cassette-piles-v6 { width: 17%; height: 75%; }
+
+.shelf-memory-level-v6 { padding: 5% 4%; gap: 7%; align-items: center; }
+.shelf-memory-level-v6 .photo-stack { width: 58%; height: 84%; }
+.shelf-journal-v6 { width: 26%; max-height: 92%; }
+
+.shelf-books-level-v6 { padding: 5% 3% 2%; align-items: end; gap: 4%; }
+.book-row-v6 { width: 80%; height: 88%; gap: 3px; }
+.book-row-v6 > .shelf-book-spine {
+  height: 78% !important;
+  min-width: 14px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(24,16,18,.4);
+  border-radius: 2px 2px 0 0;
+  background: #6b506c;
+  box-shadow: inset -2px 0 rgba(0,0,0,.13);
+}
+.book-row-v6 > .shelf-book-spine:nth-child(2n) { height: 90% !important; background: #9d5d6d; }
+.book-row-v6 > .shelf-book-spine:nth-child(3n) { height: 84% !important; background: #b87957; }
+.book-row-v6 > .shelf-book-spine:nth-child(5n) { background: #506f70; }
+.book-row-v6 > .shelf-book-spine b {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  color: #eee0d4;
+  font-family: var(--font-mono);
+  font-size: 6px;
+  font-weight: 500;
+  letter-spacing: .08em;
+}
+.radio-box-v6 { width: 17%; font-size: 18px; }
+
+.retro-floor-v6 {
+  height: 28%;
+  background: #241923;
+}
+.checker-rug-v6 {
+  left: 31%;
+  bottom: -8%;
+  width: 35%;
+  height: 58%;
+  opacity: .46;
+}
+.floor-tapes-v6 { left: 58%; bottom: 3%; width: 10%; height: 15%; opacity: .72; }
+
+.room-instruction-v6 {
+  bottom: 1.6%;
+  background: rgba(17,12,18,.62);
+  color: rgba(235,216,225,.5);
+}
+
+/* Make hover hints subtle instead of neon/glowy */
+.retro-scene-v6 .hotspot:hover { filter: brightness(1.05); }
+.retro-scene-v6 .hotspot:focus-visible { outline-color: #c58aa9; }
+.retro-scene-v6 .object-tip {
+  background: rgba(26,18,26,.92);
+  color: #e8d6df;
+  border-color: rgba(232,214,223,.12);
+}
+
+@media (max-width: 900px) {
+  .retro-scene-v6 { min-height: 720px; aspect-ratio: 4/3; }
+  .retro-window-v6 { width: 30%; height: 34%; }
+  .poster-cluster-v6 { left: 35%; width: 28%; height: 35%; }
+  .room-pinboard-v6 { left: 35%; top: 43%; width: 25%; height: 13%; }
+  .neon-sign-v6 { width: 31%; }
+  .retro-desk-v6 { width: 58%; height: 40%; }
+  .retro-shelf-v6 { width: 40%; right: 1.5%; top: 18%; height: 74%; }
+}
+
+@media (max-width: 650px) {
+  .retro-scene-v6 { min-height: 980px; aspect-ratio: auto; }
+  .retro-window-v6 { left: 4%; top: 3%; width: 43%; height: 22%; }
+  .poster-cluster-v6 { left: 51%; top: 3%; width: 45%; height: 22%; }
+  .room-pinboard-v6 { left: 52%; top: 27%; width: 42%; height: 11%; }
+  .neon-sign-v6 { display: none; }
+  .retro-shelf-v6 { left: 5%; right: auto; top: 41%; width: 90%; height: 38%; padding-top: 4%; }
+  .retro-desk-v6 { left: 4%; bottom: 4%; width: 92%; height: 25%; }
+  .desk-computer-v6 { left: 18%; width: 35%; }
+  .desk-typewriter-mini-v6 { left: 57%; width: 20%; }
+  .desk-polaroid-v6, .desk-cup-v6 { display: none; }
+  .desk-drawers-v6 { width: 23%; }
+  .retro-shelf-v6 .shelf-level { height: 25%; }
+  .shelf-crown-v6 { display: none; }
+}

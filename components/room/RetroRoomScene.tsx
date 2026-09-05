@@ -15,16 +15,15 @@ export default function RetroRoomScene({
   onToggleLamp: () => void;
   onOpenDrawer: (drawer: number) => void;
 }) {
+  const shelfBooks = ["MOON", "SIDE A", "SMALL", "AFTER", "PHOTO", "NOTES", "DREAM", "PLACES"];
+
   return (
-    <section className="retro-scene" aria-label="Interactive retro nostalgia room">
-      <div className="retro-wall" aria-hidden="true">
-        <div className="retro-window">
+    <section className="retro-scene retro-scene-v6" aria-label="Interactive retro nostalgia room">
+      <div className="retro-wall retro-wall-v6" aria-hidden="true">
+        <div className="retro-window retro-window-v6">
           <div className="retro-sky">
             <span className="sky-cloud sky-cloud-a" />
             <span className="sky-cloud sky-cloud-b" />
-            <span className="city city-a" />
-            <span className="city city-b" />
-            <span className="city city-c" />
           </div>
           <span className="blind blind-a" />
           <span className="blind blind-b" />
@@ -33,34 +32,27 @@ export default function RetroRoomScene({
           <span className="window-vine vine-b" />
         </div>
 
-        <div className="poster poster-one">
-          <span>A BRIGHTER</span>
-          <strong>TOMORROW</strong>
-          <i>✦</i>
-        </div>
-        <div className="poster poster-two">
-          <span>SAME KID</span>
-          <strong>DIFFERENT UNIVERSE</strong>
-          <i>◎</i>
-        </div>
-        <div className="poster poster-three">
-          <span>KEEP</span>
-          <strong>GOING</strong>
-          <i>★</i>
-        </div>
-        <div className="tiny-print print-a">✿</div>
-        <div className="tiny-print print-b">☾</div>
-        <div className="tiny-print print-c">✦</div>
-
-        <div className="neon-sign">
-          <span>There&apos;s</span>
-          <strong>More Out There</strong>
-          <i>✦ ◯</i>
+        <div className="poster-cluster-v6">
+          <div className="poster poster-one poster-one-v6">
+            <span>A BRIGHTER</span>
+            <strong>TOMORROW</strong>
+            <i>✦</i>
+          </div>
+          <div className="poster poster-two poster-two-v6">
+            <span>SAME KID</span>
+            <strong>DIFFERENT UNIVERSE</strong>
+            <i>◎</i>
+          </div>
+          <div className="poster poster-three poster-three-v6">
+            <span>KEEP</span>
+            <strong>GOING</strong>
+            <i>★</i>
+          </div>
         </div>
 
         <button
           type="button"
-          className="room-pinboard hotspot"
+          className="room-pinboard room-pinboard-v6 hotspot"
           onClick={() => onSelect("pinboard")}
           aria-label="Open room pin board"
         >
@@ -71,13 +63,18 @@ export default function RetroRoomScene({
           <span className="mini-board-ticket">GOOD DAYS</span>
           <span className="object-tip">pin board</span>
         </button>
+
+        <div className="neon-sign neon-sign-v6">
+          <span>There&apos;s</span>
+          <strong>More Out There</strong>
+        </div>
       </div>
 
-      <div className="retro-desk">
-        <div className="desk-surface">
+      <div className="retro-desk retro-desk-v6">
+        <div className="desk-surface desk-surface-v6">
           <button
             type="button"
-            className="desk-computer hotspot"
+            className="desk-computer desk-computer-v6 hotspot"
             onClick={() => onSelect("computer")}
             aria-label="Open retro computer"
           >
@@ -95,7 +92,7 @@ export default function RetroRoomScene({
 
           <button
             type="button"
-            className="desk-typewriter-mini hotspot"
+            className="desk-typewriter-mini desk-typewriter-mini-v6 hotspot"
             onClick={() => onSelect("typewriter")}
             aria-label="Use the typewriter"
           >
@@ -106,38 +103,14 @@ export default function RetroRoomScene({
               <i className="mini-tw-spool mini-tw-right" />
               <b className="mini-tw-keys" />
             </span>
-            <span className="object-tip">use typewriter</span>
+            <span className="object-tip">typewriter</span>
           </button>
 
-          <div className="keyboard" aria-hidden="true">
-            {Array.from({ length: 24 }).map((_, i) => (
-              <span key={i} />
-            ))}
-          </div>
-
-          <button
-            type="button"
-            className={`lava-lamp hotspot ${lampOn ? "lava-on" : ""}`}
-            onClick={onToggleLamp}
-            aria-label="Toggle mood lighting"
-            aria-pressed={lampOn}
-          >
-            <span className="lava-cap" />
-            <span className="lava-glass">
-              <i className="lava-blob blob-a" />
-              <i className="lava-blob blob-b" />
-            </span>
-            <span className="lava-base" />
-            <span className="object-tip">mood light</span>
-          </button>
-
-          <div className="desk-polaroid" aria-hidden="true">
-            <span />
-          </div>
-          <div className="desk-plant" aria-hidden="true">✿</div>
-          <div className="desk-cup" aria-hidden="true">☕</div>
+          <div className="desk-polaroid desk-polaroid-v6" aria-hidden="true"><span /></div>
+          <div className="desk-cup desk-cup-v6" aria-hidden="true">☕</div>
         </div>
-        <div className="desk-drawers" aria-label="Desk drawers">
+
+        <div className="desk-drawers desk-drawers-v6" aria-label="Desk drawers">
           {[0, 1, 2].map((drawer) => (
             <button
               key={drawer}
@@ -153,127 +126,77 @@ export default function RetroRoomScene({
         </div>
       </div>
 
-      <div className="retro-shelf">
-        <div className="shelf-crown">
-          <div className="shelf-globe">◉</div>
-          <div className="shelf-books-top">
-            <span>space</span><span>dreams</span><span>music</span><span>places</span>
-          </div>
-          <div className="shelf-dino">🦕</div>
+      <div className="retro-shelf retro-shelf-v6">
+        <div className="shelf-crown shelf-crown-v6">
+          <div className="shelf-globe shelf-globe-v6">◉</div>
+          <div className="shelf-books-top shelf-books-top-v6"><span>SPACE</span><span>DREAMS</span><span>MUSIC</span></div>
+          <div className="shelf-dino shelf-dino-v6">🦕</div>
         </div>
 
-        <div className="shelf-level shelf-turntable-level">
-          <button
-            type="button"
-            className="room-turntable hotspot"
-            onClick={() => onSelect("vinyl")}
-            aria-label="Open vinyl collection"
-          >
+        <div className="shelf-level shelf-turntable-level shelf-turntable-level-v6">
+          <button type="button" className="room-turntable hotspot" onClick={() => onSelect("vinyl")} aria-label="Open vinyl collection">
             <span className="turntable-lid" />
             <span className="turntable-base">
-              <span className="turntable-platter">
-                <i />
-              </span>
+              <span className="turntable-platter"><i /></span>
               <span className="turntable-arm" />
             </span>
             <span className="object-tip">vinyl collection</span>
           </button>
-          <div className="vinyl-stack" aria-hidden="true">
-            <span /><span /><span /><span /><span /><span />
-          </div>
-          <div className="shelf-moon-lamp" aria-hidden="true" />
+          <div className="vinyl-stack vinyl-stack-v6" aria-hidden="true"><span /><span /><span /><span /><span /></div>
+          <button type="button" className={`shelf-moon-lamp shelf-moon-lamp-v6 hotspot ${lampOn ? "lamp-on-v6" : ""}`} onClick={onToggleLamp} aria-label="Toggle shelf lamp">
+            <span className="object-tip">mood lamp</span>
+          </button>
         </div>
 
-        <div className="shelf-level shelf-player-level">
-          <button
-            type="button"
-            className="room-cassette-deck hotspot"
-            onClick={() => onSelect("cassette")}
-            aria-label="Open cassette collection"
-          >
+        <div className="shelf-level shelf-player-level shelf-player-level-v6">
+          <button type="button" className="room-cassette-deck hotspot" onClick={() => onSelect("cassette")} aria-label="Open cassette collection">
             <span className="deck-display">TAPE</span>
-            <span className="deck-window">
-              <i /><b /><i />
-            </span>
+            <span className="deck-window"><i /><b /><i /></span>
             <span className="deck-buttons">● ● ▷</span>
             <span className="object-tip">cassette collection</span>
           </button>
-
-          <button
-            type="button"
-            className="room-cd-deck hotspot"
-            onClick={() => onSelect("cd")}
-            aria-label="Open CD collection"
-          >
+          <button type="button" className="room-cd-deck hotspot" onClick={() => onSelect("cd")} aria-label="Open CD collection">
             <span className="cd-slot" />
-            <span className="cd-display">TRACK 03&nbsp;&nbsp; 02:17</span>
+            <span className="cd-display">TRACK 03&nbsp;&nbsp;02:17</span>
             <span className="cd-knob" />
             <span className="object-tip">CD collection</span>
           </button>
-
-          <div className="cassette-piles" aria-hidden="true">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <span key={i} />
-            ))}
+          <div className="cassette-piles cassette-piles-v6" aria-hidden="true">
+            {Array.from({ length: 9 }).map((_, i) => <span key={i} />)}
           </div>
         </div>
 
-        <div className="shelf-level shelf-memory-level">
-          <button
-            type="button"
-            className="photo-stack hotspot"
-            onClick={() => onSelect("journal")}
-            aria-label="Open memories and journal"
-          >
+        <div className="shelf-level shelf-memory-level shelf-memory-level-v6">
+          <button type="button" className="photo-stack hotspot" onClick={() => onSelect("journal")} aria-label="Open memories and journal">
             <span className="photo-card card-a"><i /></span>
             <span className="photo-card card-b"><i /></span>
             <span className="photo-card card-c"><i /></span>
             <span className="object-tip">memories</span>
           </button>
-          <div className="mini-tv" aria-hidden="true">
-            <span className="mini-tv-screen">PRESS START ♡</span>
-          </div>
-          <button
-            type="button"
-            className="shelf-journal hotspot"
-            onClick={() => onSelect("journal")}
-            aria-label="Open journal"
-          >
-            <span>late nights</span>
-            <strong>bright ideas</strong>
-            <span className="object-tip">journal</span>
+          <button type="button" className="shelf-journal shelf-journal-v6 hotspot" onClick={() => onSelect("journal")} aria-label="Open journal">
+            <span>late nights</span><strong>bright ideas</strong><span className="object-tip">journal</span>
           </button>
         </div>
 
-        <div className="shelf-level shelf-books-level">
-          <button
-            type="button"
-            className="book-row hotspot"
-            onClick={() => onSelect("books")}
-            aria-label="Open books and letters"
-          >
-            {[
-              ["MOON", 54], ["SIDE A", 66], ["SMALL", 61], ["AFTER", 72],
-              ["PHOTO", 58], ["NOTES", 69], ["DREAM", 63], ["PLACES", 70],
-            ].map(([label, height], i) => (
-              <span key={String(label)} className={`shelf-book-spine shelf-book-${i + 1}`} style={{ height: `${height}px` }}>
+        <div className="shelf-level shelf-books-level shelf-books-level-v6">
+          <button type="button" className="book-row book-row-v6 hotspot" onClick={() => onSelect("books")} aria-label="Open readable books">
+            {shelfBooks.map((label, i) => (
+              <span key={label} className={`shelf-book-spine shelf-book-${i + 1}`}>
                 <b>{label}</b>
               </span>
             ))}
             <span className="object-tip">read the books</span>
           </button>
-          <div className="radio-box" aria-hidden="true">♫</div>
+          <div className="radio-box radio-box-v6" aria-hidden="true">♫</div>
         </div>
       </div>
 
-      <div className="retro-floor" aria-hidden="true">
-        <div className="checker-rug"><span>☺</span></div>
-        <div className="floor-crate"><i /><i /><i /><i /></div>
-        <div className="floor-tapes"><span /><span /><span /></div>
-        <div className="headphones">◖◗</div>
+      <div className="retro-floor retro-floor-v6" aria-hidden="true">
+        <div className="checker-rug checker-rug-v6"><span>☺</span></div>
+        <div className="floor-tapes floor-tapes-v6"><span /><span /><span /></div>
       </div>
 
-      <p className="room-instruction">click the objects that glow when you hover</p>
+      <p className="room-instruction room-instruction-v6">hover, click, explore</p>
     </section>
   );
 }
