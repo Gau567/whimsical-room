@@ -126,15 +126,30 @@ export default function RetroRoomScene({
         </div>
       </div>
 
-      <div className="retro-shelf retro-shelf-v6">
-        <div className="shelf-crown shelf-crown-v6">
-          <div className="shelf-globe shelf-globe-v6">◉</div>
-          <div className="shelf-books-top shelf-books-top-v6"><span>SPACE</span><span>DREAMS</span><span>MUSIC</span></div>
-          <div className="shelf-dino shelf-dino-v6">🦕</div>
+      <div className="retro-shelf retro-shelf-v7" aria-label="Media cabinet">
+        <div className="shelf-top-decor" aria-hidden="true">
+          <div className="shelf-top-books">
+            <span>SPACE</span>
+            <span>DREAMS</span>
+            <span>MUSIC</span>
+          </div>
+          <button
+            type="button"
+            className={`shelf-lamp-v7 hotspot ${lampOn ? "lamp-on-v7" : ""}`}
+            onClick={onToggleLamp}
+            aria-label="Toggle shelf lamp"
+          >
+            <span className="object-tip">mood lamp</span>
+          </button>
         </div>
 
-        <div className="shelf-level shelf-turntable-level shelf-turntable-level-v6">
-          <button type="button" className="room-turntable hotspot" onClick={() => onSelect("vinyl")} aria-label="Open vinyl collection">
+        <div className="cabinet-row cabinet-row-player">
+          <button
+            type="button"
+            className="room-turntable room-turntable-v7 hotspot"
+            onClick={() => onSelect("vinyl")}
+            aria-label="Open vinyl collection"
+          >
             <span className="turntable-lid" />
             <span className="turntable-base">
               <span className="turntable-platter"><i /></span>
@@ -142,44 +157,70 @@ export default function RetroRoomScene({
             </span>
             <span className="object-tip">vinyl collection</span>
           </button>
-          <div className="vinyl-stack vinyl-stack-v6" aria-hidden="true"><span /><span /><span /><span /><span /></div>
-          <button type="button" className={`shelf-moon-lamp shelf-moon-lamp-v6 hotspot ${lampOn ? "lamp-on-v6" : ""}`} onClick={onToggleLamp} aria-label="Toggle shelf lamp">
-            <span className="object-tip">mood lamp</span>
-          </button>
+
+          <div className="record-bin-v7" aria-hidden="true">
+            <span /><span /><span /><span /><span /><span />
+          </div>
         </div>
 
-        <div className="shelf-level shelf-player-level shelf-player-level-v6">
-          <button type="button" className="room-cassette-deck hotspot" onClick={() => onSelect("cassette")} aria-label="Open cassette collection">
+        <div className="cabinet-row cabinet-row-audio">
+          <button
+            type="button"
+            className="room-cassette-deck room-cassette-deck-v7 hotspot"
+            onClick={() => onSelect("cassette")}
+            aria-label="Open cassette collection"
+          >
             <span className="deck-display">TAPE</span>
             <span className="deck-window"><i /><b /><i /></span>
             <span className="deck-buttons">● ● ▷</span>
             <span className="object-tip">cassette collection</span>
           </button>
-          <button type="button" className="room-cd-deck hotspot" onClick={() => onSelect("cd")} aria-label="Open CD collection">
+
+          <button
+            type="button"
+            className="room-cd-deck room-cd-deck-v7 hotspot"
+            onClick={() => onSelect("cd")}
+            aria-label="Open CD collection"
+          >
             <span className="cd-slot" />
             <span className="cd-display">TRACK 03&nbsp;&nbsp;02:17</span>
             <span className="cd-knob" />
             <span className="object-tip">CD collection</span>
           </button>
-          <div className="cassette-piles cassette-piles-v6" aria-hidden="true">
-            {Array.from({ length: 9 }).map((_, i) => <span key={i} />)}
-          </div>
         </div>
 
-        <div className="shelf-level shelf-memory-level shelf-memory-level-v6">
-          <button type="button" className="photo-stack hotspot" onClick={() => onSelect("journal")} aria-label="Open memories and journal">
+        <div className="cabinet-row cabinet-row-memory">
+          <button
+            type="button"
+            className="photo-stack photo-stack-v7 hotspot"
+            onClick={() => onSelect("journal")}
+            aria-label="Open memories and journal"
+          >
             <span className="photo-card card-a"><i /></span>
             <span className="photo-card card-b"><i /></span>
             <span className="photo-card card-c"><i /></span>
             <span className="object-tip">memories</span>
           </button>
-          <button type="button" className="shelf-journal shelf-journal-v6 hotspot" onClick={() => onSelect("journal")} aria-label="Open journal">
-            <span>late nights</span><strong>bright ideas</strong><span className="object-tip">journal</span>
+
+          <button
+            type="button"
+            className="shelf-journal shelf-journal-v7 hotspot"
+            onClick={() => onSelect("journal")}
+            aria-label="Open journal"
+          >
+            <span>late nights</span>
+            <strong>bright ideas</strong>
+            <span className="object-tip">journal</span>
           </button>
         </div>
 
-        <div className="shelf-level shelf-books-level shelf-books-level-v6">
-          <button type="button" className="book-row book-row-v6 hotspot" onClick={() => onSelect("books")} aria-label="Open readable books">
+        <div className="cabinet-row cabinet-row-books">
+          <button
+            type="button"
+            className="book-row book-row-v7 hotspot"
+            onClick={() => onSelect("books")}
+            aria-label="Open readable books"
+          >
             {shelfBooks.map((label, i) => (
               <span key={label} className={`shelf-book-spine shelf-book-${i + 1}`}>
                 <b>{label}</b>
@@ -187,7 +228,6 @@ export default function RetroRoomScene({
             ))}
             <span className="object-tip">read the books</span>
           </button>
-          <div className="radio-box radio-box-v6" aria-hidden="true">♫</div>
         </div>
       </div>
 

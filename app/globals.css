@@ -3186,3 +3186,248 @@ button {
   .retro-shelf-v6 .shelf-level { height: 25%; }
   .shelf-crown-v6 { display: none; }
 }
+
+/* =========================================================
+   V7 — CLEAN MEDIA CABINET
+   A calmer, more believable retro shelf composition.
+   ========================================================= */
+
+.retro-shelf-v7 {
+  position: absolute;
+  right: 4.2%;
+  top: 21%;
+  width: 34%;
+  height: 67%;
+  padding: 18px 18px 16px;
+  border: 9px solid #4a2d28;
+  border-radius: 3px;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.018), transparent 22%, rgba(0,0,0,.05)),
+    #3d2728;
+  box-shadow:
+    0 20px 34px rgba(0,0,0,.34),
+    inset 0 0 0 2px rgba(255,255,255,.02);
+  display: grid;
+  grid-template-rows: 58px 1.15fr .95fr .9fr .95fr;
+  gap: 0;
+  overflow: visible;
+}
+
+.retro-shelf-v7::before,
+.retro-shelf-v7::after {
+  content: "";
+  position: absolute;
+  left: -16px;
+  right: -16px;
+  height: 12px;
+  background: linear-gradient(#76463a,#4d2e29);
+  box-shadow: 0 5px 8px rgba(0,0,0,.25);
+}
+.retro-shelf-v7::before { top: -15px; }
+.retro-shelf-v7::after { bottom: -15px; }
+
+.shelf-top-decor {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  padding: 0 10px 8px;
+  border-bottom: 8px solid #603a31;
+}
+
+.shelf-top-books {
+  display: flex;
+  align-items: end;
+  gap: 4px;
+  height: 42px;
+}
+.shelf-top-books span {
+  display: grid;
+  place-items: center;
+  width: 17px;
+  border-radius: 2px 2px 0 0;
+  color: #ead8c8;
+  font-family: var(--font-mono);
+  font-size: 5px;
+  writing-mode: vertical-rl;
+  text-transform: uppercase;
+  box-shadow: inset -2px 0 rgba(0,0,0,.12);
+}
+.shelf-top-books span:nth-child(1){height:38px;background:#8a5260}
+.shelf-top-books span:nth-child(2){height:34px;background:#55717b}
+.shelf-top-books span:nth-child(3){height:43px;background:#a66b48}
+
+.shelf-lamp-v7 {
+  position: relative;
+  width: 34px;
+  aspect-ratio: 1;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  background: radial-gradient(circle at 38% 34%,#fff8cf,#ffc978 56%,#dd7d50 82%);
+  box-shadow: 0 0 14px rgba(255,180,90,.45);
+}
+.shelf-lamp-v7.lamp-on-v7 {
+  box-shadow: 0 0 18px rgba(255,190,96,.8), 0 0 38px rgba(255,155,72,.35);
+}
+
+.cabinet-row {
+  position: relative;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 14px 12px 10px;
+  border-bottom: 8px solid #603a31;
+  box-shadow: 0 7px 8px rgba(0,0,0,.18);
+  overflow: hidden;
+}
+.cabinet-row:last-child { border-bottom: 0; box-shadow: none; }
+
+.cabinet-row-player {
+  justify-content: space-between;
+  align-items: end;
+}
+.room-turntable-v7 {
+  width: 62%;
+  height: 86%;
+  min-width: 0;
+  align-self: end;
+}
+.room-turntable-v7 .turntable-lid {
+  top: -14%;
+  height: 30%;
+}
+.room-turntable-v7 .turntable-base {
+  inset: 17% 0 0;
+}
+.room-turntable-v7 .turntable-platter {
+  left: 11%;
+  top: 15%;
+  width: 45%;
+}
+.room-turntable-v7 .turntable-arm {
+  right: 17%;
+  top: 14%;
+  height: 57%;
+}
+
+.record-bin-v7 {
+  width: 29%;
+  height: 72%;
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  padding: 0 4px;
+}
+.record-bin-v7 span {
+  flex: 1;
+  min-width: 4px;
+  border: 1px solid rgba(255,255,255,.06);
+  background: linear-gradient(#7a4864,#bb6a79);
+}
+.record-bin-v7 span:nth-child(1){height:82%}
+.record-bin-v7 span:nth-child(2){height:94%;background:linear-gradient(#3e5e79,#8a72a5)}
+.record-bin-v7 span:nth-child(3){height:76%;background:linear-gradient(#82533f,#c8865c)}
+.record-bin-v7 span:nth-child(4){height:91%;background:linear-gradient(#71445f,#a85f76)}
+.record-bin-v7 span:nth-child(5){height:84%;background:linear-gradient(#4c6f70,#8fa07b)}
+.record-bin-v7 span:nth-child(6){height:88%;background:linear-gradient(#8d5840,#c99064)}
+
+.cabinet-row-audio {
+  display: grid;
+  grid-template-columns: 1fr 1.22fr;
+  align-items: center;
+  gap: 14px;
+}
+.room-cassette-deck-v7,
+.room-cd-deck-v7 {
+  width: 100%;
+  height: 76%;
+  min-height: 66px;
+}
+
+.cabinet-row-memory {
+  display: grid;
+  grid-template-columns: 1.35fr .65fr;
+  align-items: center;
+  gap: 16px;
+}
+.photo-stack-v7 {
+  width: 100%;
+  height: 84%;
+  min-width: 0;
+}
+.shelf-journal-v7 {
+  width: 100%;
+  max-width: 76px;
+  justify-self: center;
+  transform: rotate(-2deg);
+}
+
+.cabinet-row-books {
+  align-items: end;
+  padding-inline: 10px;
+}
+.book-row-v7 {
+  width: 100%;
+  height: 88%;
+  gap: 3px;
+}
+.book-row-v7 > span:not(.object-tip) {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 38px;
+  height: 74%;
+  border-radius: 2px 2px 0 0;
+  box-shadow: inset -2px 0 rgba(0,0,0,.13), 0 2px 3px rgba(0,0,0,.12);
+}
+.book-row-v7 > span:nth-child(2n){height:83%}
+.book-row-v7 > span:nth-child(3n){height:70%}
+.book-row-v7 > span:nth-child(4n){height:88%}
+.book-row-v7 b {
+  display: block;
+  padding-top: 6px;
+  color: #ead9c8;
+  font-family: var(--font-mono);
+  font-size: 5px;
+  writing-mode: vertical-rl;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+/* Remove the old decorative crown pieces when V7 is active. */
+.retro-shelf-v7 .shelf-crown,
+.retro-shelf-v7 .vinyl-stack,
+.retro-shelf-v7 .cassette-piles,
+.retro-shelf-v7 .radio-box { display: none !important; }
+
+@media (max-width: 900px) {
+  .retro-shelf-v7 {
+    right: 2%;
+    top: 22%;
+    width: 39%;
+    height: 64%;
+    padding: 14px;
+    grid-template-rows: 48px 1.15fr .95fr .9fr .95fr;
+  }
+  .cabinet-row { gap: 10px; padding: 10px 8px 8px; }
+  .room-turntable-v7 { width: 64%; }
+}
+
+@media (max-width: 650px) {
+  .retro-shelf-v7 {
+    left: 6%;
+    right: auto;
+    top: 39%;
+    width: 88%;
+    height: 38%;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 40px 1fr 1fr;
+    gap: 0;
+  }
+  .shelf-top-decor { grid-column: 1 / -1; }
+  .cabinet-row { border-right: 4px solid #603a31; border-bottom-width: 6px; }
+  .cabinet-row-memory,
+  .cabinet-row-books { display: none; }
+  .room-turntable-v7 { width: 70%; }
+  .record-bin-v7 { width: 24%; }
+}
