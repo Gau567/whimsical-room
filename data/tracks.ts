@@ -1,82 +1,198 @@
 import { Track } from "@/lib/types";
 
-export const cassettes: Track[] = [
-  {
-    id: "c1",
-    title: "Like we just met",
-    artist: "NCT Dream",
-    youtubeId: "eA9pwL-8wJw",
-    format: "cassette",
-    color: "#5C7A6B",
-  },
-  {
-    id: "c2",
-    title: "Shape of You",
-    artist: "Ed Sheeran",
-    youtubeId: "JGwWNGJdvx8",
-    format: "cassette",
-    color: "#B97A70",
-  },
-  {
-    id: "c3",
-    title: "Despacito",
-    artist: "Luis Fonsi ft. Daddy Yankee",
-    youtubeId: "kJQP7kiw5Fk",
-    format: "cassette",
-    color: "#C79A3E",
-  },
-];
-
-export const cds: Track[] = [
-  {
-    id: "d1",
-    title: "Gangnam Style",
-    artist: "PSY",
-    youtubeId: "9bZkp7q19f0",
-    format: "cd",
-    color: "#7A5C6E",
-  },
-  {
-    id: "d2",
-    title: "Uptown Funk",
-    artist: "Mark Ronson ft. Bruno Mars",
-    youtubeId: "OPf0YbXqDm0",
-    format: "cd",
-    color: "#5C7A6B",
-  },
-  {
-    id: "d3",
-    title: "Counting Stars",
-    artist: "OneRepublic",
-    youtubeId: "hT_nvWreIhg",
-    format: "cd",
-    color: "#B97A70",
-  },
-];
+/* =========================================================
+   VINYL COLLECTION
+========================================================= */
 
 export const vinyls: Track[] = [
   {
     id: "v1",
-    title: "September",
-    artist: "Earth, Wind & Fire",
-    youtubeId: "Gs069dndIYk",
+    title: "Money, Money, Money",
+    artist: "ABBA",
+    youtubeId: "ETxmCCsMoD0",
     format: "vinyl",
-    color: "#B77752",
+    color: "#b07a5a",
   },
   {
     id: "v2",
-    title: "Dreams",
-    artist: "Fleetwood Mac",
-    youtubeId: "mrZRURcb1cM",
+    title: "Dancing Queen",
+    artist: "ABBA",
+    youtubeId: "xFrGuyw1V8s",
     format: "vinyl",
-    color: "#6E7B77",
+    color: "#c68b6d",
   },
   {
     id: "v3",
-    title: "Put Your Records On",
-    artist: "Corinne Bailey Rae",
-    youtubeId: "rjOhZZyn30k",
+    title: "Gimme! Gimme! Gimme!",
+    artist: "ABBA",
+    youtubeId: "M7Wu1_h-NxY",
     format: "vinyl",
-    color: "#A68166",
+    color: "#8d6f8f",
+  },
+  {
+    id: "v4",
+    title: "Slipping Through My Fingers",
+    artist: "ABBA",
+    youtubeId: "AA83dnYWlPo",
+    format: "vinyl",
+    color: "#7f8ca3",
+  },
+  {
+    id: "v5",
+    title: "9 to 5",
+    artist: "Dolly Parton",
+    youtubeId: "UbxUSsFXYo4",
+    format: "vinyl",
+    color: "#bb845e",
+  },
+  {
+    id: "v6",
+    title: "Rivers of Babylon",
+    artist: "Boney M.",
+    youtubeId: "2FgDles4xq8",
+    format: "vinyl",
+    color: "#8a6358",
+  },
+  {
+    id: "v7",
+    title: "Rainbow",
+    artist: "NCT DREAM",
+    youtubeId: "T5a-FfbC1OA",
+    format: "vinyl",
+    color: "#7aa49e",
+  },
+  {
+    id: "v8",
+    title: "Graduation",
+    artist: "NCT DREAM",
+    youtubeId: "EznbdoHi0Zs",
+    format: "vinyl",
+    color: "#94a77e",
+  },
+  {
+    id: "v9",
+    title: "My Youth",
+    artist: "NCT DREAM",
+    youtubeId: "cJ9J9F3g9cY",
+    format: "vinyl",
+    color: "#5e7b95",
+  },
+  {
+    id: "v10",
+    title: "Breathing",
+    artist: "NCT DREAM",
+    youtubeId: "6vY0RtXelSM",
+    format: "vinyl",
+    color: "#72867e",
+  },
+];
+
+/* =========================================================
+   CASSETTE COLLECTION
+========================================================= */
+
+export const cassettes: Track[] = [
+  {
+    id: "c1",
+    title: "Jolene",
+    artist: "Dolly Parton",
+    youtubeId: "GFPlF6rXnik",
+    format: "cassette",
+    color: "#b88267",
+  },
+  {
+    id: "c2",
+    title: "Mamma Mia",
+    artist: "ABBA",
+    youtubeId: "unfzfe8f9NI",
+    format: "cassette",
+    color: "#c59d5f",
+  },
+  {
+    id: "c3",
+    title: "Rasputin",
+    artist: "Boney M.",
+    youtubeId: "Nl_Eo2QzqU4",
+    format: "cassette",
+    color: "#7d6f92",
+  },
+  {
+    id: "c4",
+    title: "Love Again",
+    artist: "NCT DREAM",
+    youtubeId: "DhSezlkvQl4",
+    format: "cassette",
+    color: "#78998c",
+  },
+  {
+    id: "c5",
+    title: "Like We Just Met",
+    artist: "NCT DREAM",
+    youtubeId: "eA9pwL-8wJw",
+    format: "cassette",
+    color: "#6e7c97",
+  },
+  {
+    id: "c6",
+    title: "UNKNOWN",
+    artist: "NCT DREAM",
+    youtubeId: "UgVPGQMLP5s",
+    format: "cassette",
+    color: "#8b6c67",
+  },
+];
+
+/* =========================================================
+   CD COLLECTION
+========================================================= */
+
+export const cds: Track[] = [
+  {
+    id: "d1",
+    title: "Quiet Down",
+    artist: "NCT DREAM",
+    youtubeId: "QYcw4W8kr8k",
+    format: "cd",
+    color: "#7794a5",
+  },
+  {
+    id: "d2",
+    title: "Diggity",
+    artist: "NCT DREAM",
+    youtubeId: "5cpqXChdTTs",
+    format: "cd",
+    color: "#a1798d",
+  },
+  {
+    id: "d3",
+    title: "Déjà Vu",
+    artist: "NCT DREAM",
+    youtubeId: "QyKe4VXDx5I",
+    format: "cd",
+    color: "#7a8f74",
+  },
+  {
+    id: "d4",
+    title: "Better Than Gold",
+    artist: "NCT DREAM",
+    youtubeId: "2FQAWaNV4Ns",
+    format: "cd",
+    color: "#b68e5f",
+  },
+  {
+    id: "d5",
+    title: "Saturday Drip",
+    artist: "NCT DREAM",
+    youtubeId: "G037h8vE3vw",
+    format: "cd",
+    color: "#866887",
+  },
+  {
+    id: "d6",
+    title: "Poison",
+    artist: "NCT DREAM",
+    youtubeId: "f1Cly7TQ3M0",
+    format: "cd",
+    color: "#5f7b84",
   },
 ];
