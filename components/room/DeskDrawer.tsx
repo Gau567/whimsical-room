@@ -1,6 +1,7 @@
 "use client";
 
 import { addPinboardItem, PinItemType } from "@/lib/pinboard";
+import { insertRetroMedia, RetroMediaDisk, RETRO_MEDIA } from "@/lib/retroMedia";
 
 type DrawerItem = {
   icon: string;
@@ -8,6 +9,7 @@ type DrawerItem = {
   pinType?: PinItemType;
   pinText?: string;
   color?: string;
+  mediaId?: string;
 };
 
 const drawerData: { title: string; subtitle: string; items: DrawerItem[] }[] = [
@@ -37,26 +39,34 @@ const drawerData: { title: string; subtitle: string; items: DrawerItem[] }[] = [
   },
   {
     title: "bottom drawer",
-    subtitle: "technology graveyard",
+    subtitle: "technology graveyard — some of it still boots",
     items: [
-      { icon: "🎮", label: "old game cartridge" },
+      { icon: "🎮", label: "old game cartridge", mediaId: "pixelquest-cart" },
       { icon: "🔌", label: "cable for something unknown" },
       { icon: "🎧", label: "wired earphones" },
-      { icon: "💾", label: "floppy disk: IMPORTANT", pinType: "keepsake", pinText: "IMPORTANT.BAK\nprobably not important anymore", color: "#b8c3d6" },
-      { icon: "🔋", label: "two questionable batteries" },
+      { icon: "💾", label: "floppy disk: IMPORTANT", mediaId: "important-floppy", pinType: "keepsake", pinText: "IMPORTANT.BAK\nprobably not important anymore", color: "#b8c3d6" },
+      { icon: "💾", label: "purple floppy: SUMMER_98", mediaId: "summer98-floppy" },
+      { icon: "💿", label: "CD-R: ROOM_ARCHIVE", mediaId: "room-archive-cd" },
       { icon: "📼", label: "blank mixtape", pinType: "keepsake", pinText: "BLANK MIXTAPE\nside A: ________\nside B: ________", color: "#be8b8f" },
+      { icon: "🔋", label: "two questionable batteries" },
     ],
   },
 ];
+
+function mediaById(id?: string): RetroMediaDisk | undefined {
+  return RETRO_MEDIA.find((disk) => disk.id === id);
+}
 
 export default function DeskDrawer({
   drawer,
   onClose,
   onOpenBoard,
+  onOpenComputer,
 }: {
   drawer: number;
   onClose: () => void;
   onOpenBoard: () => void;
+  onOpenComputer: () => void;
 }) {
   const data = drawerData[Math.max(0, Math.min(drawer, drawerData.length - 1))];
 
@@ -84,6 +94,13 @@ export default function DeskDrawer({
     onOpenBoard();
   }
 
+  function plugIntoComputer(item: DrawerItem) {
+    if (!item.mediaId) return;
+    insertRetroMedia(item.mediaId);
+    onClose();
+    onOpenComputer();
+  }
+
   return (
     <section className="drawer-modal" aria-label={data.title}>
       <div className="drawer-modal-bar">
@@ -95,20 +112,28 @@ export default function DeskDrawer({
         <div className="drawer-copy">
           <h2>{data.title}</h2>
           <p>{data.subtitle}</p>
-          <small>paper items can now be pinned to the room board</small>
+          <small>paper items can be pinned · disks can be inserted into the computer</small>
         </div>
-        <div className="drawer-items">
-          {data.items.map((item) => (
-            <article key={item.label} className={`drawer-item ${item.pinType ? "drawer-item-pinnable" : ""}`} title={item.label}>
-              <span>{item.icon}</span>
-              <small>{item.label}</small>
-              {item.pinType ? (
-                <button type="button" onClick={() => pinItem(item)}>📌 PIN TO BOARD</button>
-              ) : (
-                <em>just drawer junk</em>
-              )}
-            </article>
-          ))}
+        <div className="drawer-items drawer-items-v13">
+          {data.items.map((item) => {
+            const media = mediaById(item.mediaId);
+            return (
+              <article key={item.label} className={`drawer-item ${item.pinType ? "drawer-item-pinnable" : ""} ${item.mediaId ? "drawer-item-media" : ""}`} title={item.label}>
+                <span>{item.icon}</span>
+                <small>{item.label}</small>
+                {media && <em>{media.files.length} files · {media.kind}</em>}
+                <div className="drawer-item-actions">
+                  {item.mediaId && (
+                    <button type="button" onClick={() => plugIntoComputer(item)}>⌁ INSERT INTO PC</button>
+                  )}
+                  {item.pinType && (
+                    <button type="button" onClick={() => pinItem(item)}>📌 PIN TO BOARD</button>
+                  )}
+                  {!item.pinType && !item.mediaId && <em>just drawer junk</em>}
+                </div>
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>

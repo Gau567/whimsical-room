@@ -95,7 +95,12 @@ export default function Home() {
             <button type="button" className="station-back" onClick={() => setOpenDrawer(null)}>
               ← close drawer
             </button>
-            <DeskDrawer drawer={openDrawer} onClose={() => setOpenDrawer(null)} onOpenBoard={() => setView("pinboard")} />
+            <DeskDrawer
+              drawer={openDrawer}
+              onClose={() => setOpenDrawer(null)}
+              onOpenBoard={() => setView("pinboard")}
+              onOpenComputer={() => setView("computer")}
+            />
           </section>
         )}
 

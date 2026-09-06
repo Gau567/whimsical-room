@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { cassettes, cds, vinyls } from "@/data/tracks";
 import { PinItem, readPinboardItems } from "@/lib/pinboard";
 import { Track } from "@/lib/types";
+import { ejectRetroMedia, readInsertedMedia, RetroMediaDisk, RetroMediaFile } from "@/lib/retroMedia";
 
 type AppName =
   | "home"
@@ -14,9 +15,74 @@ type AppName =
   | "guess"
   | "catch"
   | "fortune"
-  | "memory";
+  | "memory"
+  | "scramble"
+  | "lights"
+  | "drive"
+  | "mailread";
 
 type Card = { id: number; symbol: string; matched: boolean };
+
+type BuiltInMail = { id: string; subject: string; from: string; date: string; preview: string; body: string };
+
+const BUILT_IN_MAIL: BuiltInMail[] = [
+  {
+    id: "welcome",
+    subject: "WELCOME TO NOSTALGIA OS",
+    from: "SYSTEM@ROOM.LOCAL",
+    date: "09/06/95",
+    preview: "A quick note before you start clicking absolutely everything...",
+    body: "Welcome to NOSTALGIA OS 95.\n\nThis computer is connected to the room around it. Photos pinned to the board may appear in PHOTOS. Notes and journal pages can surface in MAIL. Songs attached to memories show up in MIXES.\n\nThere is no cloud sync, no algorithm, and absolutely no reason for the modem to make that noise.\n\nHave fun. Save often. Do not unplug mysterious disks while they are being read.",
+  },
+  {
+    id: "future",
+    subject: "RE: A NOTE FROM LATER",
+    from: "FUTURE_YOU@SOMEWHERE.NET",
+    date: "??/??/??",
+    preview: "You are worrying about something that eventually becomes a funny story.",
+    body: "Hey,\n\nYou are worrying about something right now that eventually becomes a story you tell while laughing. I cannot tell you which thing, because apparently time-travel email has rules.\n\nKeep the ticket stubs. Take more ordinary photos. Write down the tiny details because those are the first things memory edits out.\n\nAlso: that song you nearly skipped? Keep it.\n\n— you, eventually",
+  },
+  {
+    id: "mixtape",
+    subject: "MIXTAPE RULES.txt",
+    from: "NO_REPLY@SIDE-A.FM",
+    date: "07/18/98",
+    preview: "Rule one: the first track has to make the person trust you.",
+    body: "UNOFFICIAL MIXTAPE RULES\n\n1. The first track has to make the person trust you.\n2. Track three is where you show off.\n3. Never put your favourite song first. Make them earn it.\n4. Side B is allowed to get weird.\n5. Leave one song unexplained.\n6. Handwritten labels are mandatory.\n\nBonus rule: if you recorded it from the radio and the DJ talks over the intro, that is now part of the song forever.",
+  },
+  {
+    id: "unsent",
+    subject: "UNSENT_01.DRAFT",
+    from: "ME@ROOM.LOCAL",
+    date: "11:47 PM",
+    preview: "I almost sent this, then decided some thoughts are allowed to stay unfinished.",
+    body: "I almost sent this, then decided some thoughts are allowed to stay unfinished.\n\nNot everything needs a neat ending. Some days can just be a half-written note, a cold cup of coffee, and a song paused at 2:14.\n\nMaybe tomorrow I will know what I meant.\nMaybe I do not have to.",
+  },
+  {
+    id: "arcade",
+    subject: "ARCADE SCORE CHALLENGE",
+    from: "PIXELPAL@ARCADE.BBS",
+    date: "FRI 08:32",
+    preview: "Your high score has been described as 'technically a score'.",
+    body: "HELLO PLAYER,\n\nYour latest PIXEL.EXE score has been reviewed by the extremely serious Arcade Committee.\n\nVERDICT: technically a score.\n\nRecommended training schedule:\n- 3 rounds of PIXEL.EXE\n- 1 round of MEMORY.EXE\n- unnecessary confidence\n- snacks\n\nReport back when your reflexes are less decorative.",
+  },
+];
+
+const SCRAMBLE_WORDS = ["cassette", "polaroid", "mixtape", "arcade", "journal", "vinyl", "typewriter", "nostalgia"];
+
+function scrambleText(word: string) {
+  let out = word;
+  for (let tries = 0; tries < 8 && out === word; tries += 1) {
+    out = word.split("").sort(() => Math.random() - 0.5).join("");
+  }
+  return out.toUpperCase();
+}
+
+function randomLights() {
+  const board = Array.from({ length: 16 }, () => Math.random() > 0.48);
+  return board.some(Boolean) ? board : board.map((_, i) => i % 3 === 0);
+}
+
 
 const symbols = ["📼", "💿", "☕", "🌙"];
 const ALL_TRACKS = [...cassettes, ...cds, ...vinyls];
@@ -54,6 +120,14 @@ export default function RetroComputer({
   const [flipped, setFlipped] = useState<number[]>([]);
   const [moves, setMoves] = useState(0);
   const [memoryLocked, setMemoryLocked] = useState(false);
+  const [selectedMail, setSelectedMail] = useState<{ subject: string; from: string; date: string; body: string } | null>(null);
+  const [insertedMedia, setInsertedMedia] = useState<RetroMediaDisk | null>(null);
+  const [selectedMediaFile, setSelectedMediaFile] = useState<RetroMediaFile | null>(null);
+  const [scrambleWord, setScrambleWord] = useState(() => SCRAMBLE_WORDS[0]);
+  const [scrambleInput, setScrambleInput] = useState("");
+  const [scrambleMessage, setScrambleMessage] = useState("unscramble the word");
+  const [lights, setLights] = useState<boolean[]>(() => randomLights());
+  const [lightMoves, setLightMoves] = useState(0);
 
   useEffect(() => {
     const refresh = () => setRoomItems(readPinboardItems([]));
@@ -61,6 +135,19 @@ export default function RetroComputer({
     window.addEventListener("nostalgia-pinboard-updated", refresh);
     return () => window.removeEventListener("nostalgia-pinboard-updated", refresh);
   }, []);
+
+  useEffect(() => {
+    const refreshMedia = () => {
+      const disk = readInsertedMedia();
+      setInsertedMedia(disk);
+      setSelectedMediaFile(null);
+    };
+    refreshMedia();
+    window.addEventListener("nostalgia-media-inserted", refreshMedia);
+    return () => window.removeEventListener("nostalgia-media-inserted", refreshMedia);
+  }, []);
+
+  const scrambledWord = useMemo(() => scrambleText(scrambleWord), [scrambleWord]);
 
   const photos = useMemo(() => roomItems.filter((item) => item.type === "photo"), [roomItems]);
   const mail = useMemo(
@@ -133,6 +220,44 @@ export default function RetroComputer({
     };
   }, [fortuneSeed, fortunes]);
 
+  function resetScramble() {
+    const next = SCRAMBLE_WORDS[Math.floor(Math.random() * SCRAMBLE_WORDS.length)];
+    setScrambleWord(next);
+    setScrambleInput("");
+    setScrambleMessage("unscramble the word");
+  }
+
+  function submitScramble() {
+    if (scrambleInput.trim().toLowerCase() === scrambleWord) {
+      setScrambleMessage("CORRECT — loading a fresh puzzle...");
+      window.setTimeout(resetScramble, 650);
+    } else {
+      setScrambleMessage("not quite. the letters are judging you quietly.");
+    }
+  }
+
+  function resetLights() {
+    setLights(randomLights());
+    setLightMoves(0);
+  }
+
+  function toggleLight(index: number) {
+    const row = Math.floor(index / 4);
+    const col = index % 4;
+    const affected = [index];
+    if (row > 0) affected.push(index - 4);
+    if (row < 3) affected.push(index + 4);
+    if (col > 0) affected.push(index - 1);
+    if (col < 3) affected.push(index + 1);
+    setLights((current) => current.map((value, i) => affected.includes(i) ? !value : value));
+    setLightMoves((value) => value + 1);
+  }
+
+  function openMail(message: { subject: string; from: string; date: string; body: string }) {
+    setSelectedMail(message);
+    setApp("mailread");
+  }
+
   function openApp(next: AppName) {
     if (next === "guess") {
       setTarget(Math.floor(Math.random() * 20) + 1);
@@ -145,6 +270,9 @@ export default function RetroComputer({
     }
     if (next === "fortune") setFortuneSeed((value) => value + 1);
     if (next === "memory") resetMemory();
+    if (next === "scramble") resetScramble();
+    if (next === "lights") resetLights();
+    if (next === "drive") setSelectedMediaFile(null);
     setApp(next);
   }
 
@@ -218,9 +346,10 @@ export default function RetroComputer({
 
             <div className="desktop-icons desktop-icons-v12">
               <button type="button" onClick={() => openApp("mixes")}><i>♫</i><span>mixes</span><small>{linkedTracks.length || ALL_TRACKS.length}</small></button>
-              <button type="button" onClick={() => openApp("mail")}><i>✉</i><span>mail</span><small>{mail.length}</small></button>
-              <button type="button" onClick={() => openApp("games")}><i>☻</i><span>games</span><small>4</small></button>
+              <button type="button" onClick={() => openApp("mail")}><i>✉</i><span>mail</span><small>{BUILT_IN_MAIL.length + mail.length}</small></button>
+              <button type="button" onClick={() => openApp("games")}><i>☻</i><span>games</span><small>6</small></button>
               <button type="button" onClick={() => openApp("photos")}><i>▣</i><span>photos</span><small>{photos.length}</small></button>
+              {insertedMedia && <button type="button" className="desktop-drive-icon" onClick={() => openApp("drive")}><i>{insertedMedia.icon}</i><span>{insertedMedia.label.toLowerCase()}</span><small>DRIVE A:</small></button>}
             </div>
           </div>
         )}
@@ -260,12 +389,28 @@ export default function RetroComputer({
           <div className="computer-app-panel computer-library-app">
             <div className="folder-topline"><p className="computer-prompt">C:\ROOM\MAIL&gt; dir</p><button type="button" className="retro-small-button" onClick={() => setApp("home")}>← DESKTOP</button></div>
             <h3>MAIL</h3>
+            <div className="mail-section-label">INBOX · {BUILT_IN_MAIL.length} messages</div>
+            <div className="computer-mail-list">
+              {BUILT_IN_MAIL.map((message) => (
+                <button type="button" key={message.id} onClick={() => openMail(message)}>
+                  <i>✉</i>
+                  <span><strong>{message.subject}</strong><small>{message.from} · {message.preview}</small></span>
+                  <b>›</b>
+                </button>
+              ))}
+            </div>
+            <div className="mail-section-label">ROOM NOTES · {mail.length}</div>
             {mail.length === 0 ? (
-              <div className="computer-empty-state"><i>✉</i><strong>NO MAIL YET</strong><span>Type a note, tear a journal page, or pin a letter first.</span><button type="button" onClick={onOpenBoard}>OPEN PINBOARD</button></div>
+              <div className="computer-empty-state compact"><span>No room notes yet. Tear a journal page or type a note.</span><button type="button" onClick={onOpenBoard}>OPEN PINBOARD</button></div>
             ) : (
               <div className="computer-mail-list">
                 {mail.slice().reverse().map((item, index) => (
-                  <button type="button" key={item.id} onClick={onOpenBoard}>
+                  <button type="button" key={item.id} onClick={() => openMail({
+                    subject: `${item.type.toUpperCase()}_${String(index + 1).padStart(2, "0")}.TXT`,
+                    from: item.source ? `${item.source.toUpperCase()}@ROOM.LOCAL` : "PINBOARD@ROOM.LOCAL",
+                    date: new Date(item.createdAt).toLocaleDateString(),
+                    body: item.text || item.caption || "An untitled room memory.",
+                  })}>
                     <i>{item.type === "letter" ? "✉" : item.type === "journal" ? "▤" : "▪"}</i>
                     <span><strong>{item.type.toUpperCase()}_{String(index + 1).padStart(2, "0")}.TXT</strong><small>{itemLabel(item).slice(0, 78)}</small></span>
                     {item.linkedTrackId && <b>♫</b>}
@@ -273,6 +418,14 @@ export default function RetroComputer({
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {app === "mailread" && selectedMail && (
+          <div className="computer-app-panel mail-reader-app">
+            <div className="folder-topline"><p className="computer-prompt">C:\ROOM\MAIL\MESSAGE.TXT</p><button type="button" className="retro-small-button" onClick={() => setApp("mail")}>← INBOX</button></div>
+            <div className="mail-reader-head"><h3>{selectedMail.subject}</h3><p><b>FROM:</b> {selectedMail.from}<br/><b>DATE:</b> {selectedMail.date}</p></div>
+            <pre className="mail-reader-body">{selectedMail.body}</pre>
           </div>
         )}
 
@@ -299,6 +452,21 @@ export default function RetroComputer({
           </div>
         )}
 
+        {app === "drive" && insertedMedia && (
+          <div className="computer-app-panel drive-app">
+            <div className="folder-topline"><p className="computer-prompt">A:\{insertedMedia.label}&gt; dir</p><button type="button" className="retro-small-button" onClick={() => setApp("home")}>← DESKTOP</button></div>
+            <div className="drive-header"><i>{insertedMedia.icon}</i><div><h3>{insertedMedia.label}</h3><p>{insertedMedia.description}</p></div><button type="button" className="retro-small-button" onClick={() => { ejectRetroMedia(); setInsertedMedia(null); setApp("home"); }}>EJECT</button></div>
+            <div className="drive-layout">
+              <div className="drive-file-list">
+                {insertedMedia.files.map((file) => <button type="button" key={file.name} className={selectedMediaFile?.name === file.name ? "active" : ""} onClick={() => setSelectedMediaFile(file)}><i>{file.type === "text" ? "▤" : file.type === "image" ? "▣" : file.type === "audio" ? "♫" : "☻"}</i><span>{file.name}</span></button>)}
+              </div>
+              <div className="drive-preview">
+                {selectedMediaFile ? <><strong>{selectedMediaFile.name}</strong><pre>{selectedMediaFile.content}</pre></> : <div className="drive-empty">Select a file to read it.</div>}
+              </div>
+            </div>
+          </div>
+        )}
+
         {app === "games" && (
           <div className="computer-app-panel games-folder">
             <div className="folder-topline"><p className="computer-prompt">C:\ROOM\GAMES&gt; dir</p><button type="button" className="retro-small-button" onClick={() => setApp("home")}>← DESKTOP</button></div>
@@ -308,6 +476,8 @@ export default function RetroComputer({
               <button type="button" onClick={() => openApp("catch")}><i>✦</i><strong>PIXEL.EXE</strong><span>catch the pixel</span></button>
               <button type="button" onClick={() => openApp("fortune")}><i>☾</i><strong>ORACLE.EXE</strong><span>questionable wisdom</span></button>
               <button type="button" onClick={() => openApp("memory")}><i>▦</i><strong>MEMORY.EXE</strong><span>match the pairs</span></button>
+              <button type="button" onClick={() => openApp("scramble")}><i>ABC</i><strong>SCRAMBLE.EXE</strong><span>unscramble lost words</span></button>
+              <button type="button" onClick={() => openApp("lights")}><i>▦</i><strong>LIGHTS.EXE</strong><span>switch every light off</span></button>
             </div>
           </div>
         )}
@@ -345,6 +515,26 @@ export default function RetroComputer({
             <div className="memory-grid">{cards.map((card, index) => { const visible = card.matched || flipped.includes(index); return <button key={card.id} type="button" className={`memory-tile ${visible ? "is-open" : ""}`} onClick={() => flipCard(index)} aria-label={visible ? card.symbol : "Hidden card"}>{visible ? card.symbol : "?"}</button>; })}</div>
             {cards.every((card) => card.matched) && <div className="computer-status-line">ALL PAIRS FOUND — nostalgia restored.</div>}
             <button type="button" className="retro-run-button" onClick={resetMemory}>NEW GAME</button>
+          </div>
+        )}
+
+        {app === "scramble" && (
+          <div className="computer-app-panel scramble-app">
+            <div className="folder-topline"><p className="computer-prompt">C:\GAMES\SCRAMBLE.EXE</p><button type="button" className="retro-small-button" onClick={() => setApp("games")}>← GAMES</button></div>
+            <h3>WORD SCRAMBLE</h3><p>recover the lost word from a very questionable disk sector.</p>
+            <div className="scramble-word">{scrambledWord}</div>
+            <div className="guess-controls"><input value={scrambleInput} onChange={(e) => setScrambleInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && submitScramble()} placeholder="type the word" aria-label="Unscrambled word"/><button type="button" onClick={submitScramble}>CHECK</button></div>
+            <div className="computer-status-line">{scrambleMessage}</div><button type="button" className="retro-run-button" onClick={resetScramble}>NEW WORD</button>
+          </div>
+        )}
+
+        {app === "lights" && (
+          <div className="computer-app-panel lights-app">
+            <div className="folder-topline"><p className="computer-prompt">C:\GAMES\LIGHTS.EXE</p><button type="button" className="retro-small-button" onClick={() => setApp("games")}>← GAMES</button></div>
+            <div className="memory-game-heading"><div><h3>LIGHTS OUT</h3><p>turn every square dark. clicking a light also flips its neighbours.</p></div><strong>MOVES {String(lightMoves).padStart(2, "0")}</strong></div>
+            <div className="lights-grid">{lights.map((on, index) => <button type="button" key={index} className={on ? "is-on" : ""} onClick={() => toggleLight(index)} aria-label={`Light ${index + 1} ${on ? "on" : "off"}`} />)}</div>
+            {!lights.some(Boolean) && <div className="computer-status-line">ALL LIGHTS OUT — suspiciously competent.</div>}
+            <button type="button" className="retro-run-button" onClick={resetLights}>RANDOMIZE</button>
           </div>
         )}
       </div>
