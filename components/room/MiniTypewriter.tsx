@@ -9,6 +9,9 @@ type PinItem = {
   caption?: string;
   color?: string;
   createdAt: number;
+  x?: number;
+  y?: number;
+  rotation?: number;
 };
 
 const STORAGE_KEY = "nostalgia-pinboard-items";
@@ -61,6 +64,9 @@ export default function MiniTypewriter({ onOpenBoard }: { onOpenBoard: () => voi
         text: trimmed,
         color: ["#f2df9f", "#e8c8b4", "#c9d8cf", "#d4c8e8"][items.length % 4],
         createdAt: Date.now(),
+        x: 38 + ((items.length % 3) * 11),
+        y: 16 + ((items.length % 4) * 12),
+        rotation: ((items.length % 5) - 2) * 1.5,
       },
     ];
 

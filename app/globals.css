@@ -3431,3 +3431,257 @@ button {
   .room-turntable-v7 { width: 70%; }
   .record-bin-v7 { width: 24%; }
 }
+
+/* =========================================================
+   V8 — movable / editable pin board
+   ========================================================= */
+.pinboard-workspace-v8 {
+  width: min(1180px, 96vw);
+  margin: 0 auto;
+}
+
+.pinboard-toolbar small {
+  display: block;
+  margin-top: 5px;
+  color: #978b92;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: .04em;
+}
+
+.pinboard-toolbar-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pinboard-toolbar .board-reset-button {
+  background: #30242d;
+  color: #b8a9a5;
+}
+
+.cork-board-v8 {
+  min-height: 650px;
+  touch-action: none;
+}
+
+.pinned-item-v8 {
+  width: 178px;
+  min-height: 0;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  transition: filter 140ms ease, box-shadow 140ms ease;
+}
+
+.pinned-item-v8:active {
+  cursor: grabbing;
+  filter: brightness(1.03);
+}
+
+.pinned-item-v8 .sticky-note,
+.pinned-item-v8 .pinned-polaroid {
+  transition: box-shadow 150ms ease;
+}
+
+.pinned-item-v8:hover .sticky-note,
+.pinned-item-v8:hover .pinned-polaroid {
+  box-shadow: 0 11px 18px rgba(44, 25, 20, .28);
+}
+
+.pin-item-actions {
+  position: absolute;
+  z-index: 8;
+  top: -16px;
+  right: -12px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 130ms ease, transform 130ms ease;
+}
+
+.pinned-item-v8:hover .pin-item-actions,
+.pinned-item-v8:focus-within .pin-item-actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.pin-item-actions button {
+  min-width: 28px;
+  height: 27px;
+  padding: 0 7px;
+  border: 1px solid rgba(237, 222, 196, .25);
+  border-radius: 999px;
+  background: #382a2c;
+  color: #eadfca;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  cursor: pointer;
+  box-shadow: 0 3px 7px rgba(0, 0, 0, .22);
+}
+
+.pin-item-actions .pin-remove {
+  position: static;
+  width: 27px;
+  opacity: 1;
+  background: #5f3738;
+}
+
+.pinboard-add-bar-v8 {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+}
+
+.pin-editor-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(13, 9, 15, .72);
+  backdrop-filter: blur(7px);
+}
+
+.pin-editor {
+  width: min(520px, 94vw);
+  padding: 20px;
+  border: 1px solid rgba(236, 220, 195, .17);
+  border-radius: 10px;
+  background: #241923;
+  color: #eadfcd;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .48);
+}
+
+.pin-editor-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.pin-editor-heading p {
+  margin: 0;
+  color: #b58b66;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: .16em;
+}
+
+.pin-editor-heading h3 {
+  margin: 4px 0 0;
+  font-family: var(--font-hand);
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.pin-editor-heading > button {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(236, 220, 195, .15);
+  border-radius: 6px;
+  background: #31232e;
+  color: #e6d8c3;
+  cursor: pointer;
+}
+
+.pin-editor textarea {
+  width: 100%;
+  min-height: 150px;
+  margin-top: 18px;
+  resize: vertical;
+  border: 1px solid rgba(236, 220, 195, .17);
+  border-radius: 6px;
+  background: #f1e2bd;
+  color: #56443a;
+  padding: 18px;
+  outline: none;
+  font-family: var(--font-hand);
+  font-size: 23px;
+  line-height: 1.25;
+  box-shadow: inset 0 0 18px rgba(108, 76, 51, .08);
+}
+
+.pin-editor textarea:focus {
+  border-color: #bd916c;
+}
+
+.pin-editor-position {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 14px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(236, 220, 195, .08);
+  border-bottom: 1px solid rgba(236, 220, 195, .08);
+}
+
+.pin-editor-position > span {
+  color: #93878d;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.pin-editor-position > div {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.pin-editor-position button,
+.pin-editor-actions button {
+  border: 1px solid rgba(236, 220, 195, .14);
+  border-radius: 5px;
+  background: #31242e;
+  color: #d9cbbb;
+  padding: 8px 10px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  cursor: pointer;
+}
+
+.pin-editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 7px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+.pin-editor-actions .save-pin-button {
+  background: #73513f;
+  color: #f3e5cf;
+}
+
+.pin-editor-actions .danger-quiet {
+  margin-right: auto;
+  color: #d3a6a0;
+}
+
+@media (max-width: 760px) {
+  .cork-board-v8 {
+    min-height: 760px;
+  }
+
+  .pinned-item-v8 {
+    width: 145px;
+  }
+
+  .pinboard-add-bar-v8 {
+    grid-template-columns: 1fr;
+  }
+
+  .pin-item-actions {
+    opacity: 1;
+    transform: none;
+  }
+
+  .pin-editor-position {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
