@@ -5,6 +5,8 @@ import { cassettes, cds, vinyls } from "@/data/tracks";
 import { PinItem, readPinboardItems } from "@/lib/pinboard";
 import { Track } from "@/lib/types";
 import { ejectRetroMedia, readInsertedMedia, RetroMediaDisk, RetroMediaFile } from "@/lib/retroMedia";
+import RetroFileViewer from "@/components/room/RetroFileViewer";
+import StarMazeGame from "@/components/room/StarMazeGame";
 
 type AppName =
   | "home"
@@ -19,7 +21,8 @@ type AppName =
   | "scramble"
   | "lights"
   | "drive"
-  | "mailread";
+  | "mailread"
+  | "starmaze";
 
 type Card = { id: number; symbol: string; matched: boolean };
 
@@ -107,6 +110,8 @@ export default function RetroComputer({
   onPlayTrack: (track: Track) => void;
 }) {
   const [app, setApp] = useState<AppName>("home");
+  const [powerState, setPowerState] = useState<"booting" | "on" | "off">("booting");
+  const [soundOn, setSoundOn] = useState(true);
   const [roomItems, setRoomItems] = useState<PinItem[]>([]);
 
   const [guess, setGuess] = useState("");
@@ -123,6 +128,41 @@ export default function RetroComputer({
   const [selectedMail, setSelectedMail] = useState<{ subject: string; from: string; date: string; body: string } | null>(null);
   const [insertedMedia, setInsertedMedia] = useState<RetroMediaDisk | null>(null);
   const [selectedMediaFile, setSelectedMediaFile] = useState<RetroMediaFile | null>(null);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setPowerState("on"), 1450);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  function playComputerTone(kind: "click" | "open" | "eject" | "boot" | "error") {
+    if (!soundOn || typeof window === "undefined") return;
+    try {
+      const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (!AudioContextClass) return;
+      const context = new AudioContextClass();
+      const osc = context.createOscillator();
+      const gain = context.createGain();
+      const now = context.currentTime;
+      const tones = {
+        click: [520, 0.035],
+        open: [740, 0.055],
+        eject: [260, 0.08],
+        boot: [880, 0.12],
+        error: [150, 0.12],
+      } as const;
+      const [freq, duration] = tones[kind];
+      osc.frequency.setValueAtTime(freq, now);
+      osc.type = kind === "error" ? "square" : "triangle";
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(kind === "boot" ? 0.045 : 0.025, now + 0.008);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+      osc.connect(gain);
+      gain.connect(context.destination);
+      osc.start(now);
+      osc.stop(now + duration + 0.01);
+      window.setTimeout(() => context.close().catch(() => undefined), 250);
+    } catch {}
+  }
   const [scrambleWord, setScrambleWord] = useState(() => SCRAMBLE_WORDS[0]);
   const [scrambleInput, setScrambleInput] = useState("");
   const [scrambleMessage, setScrambleMessage] = useState("unscramble the word");
@@ -259,6 +299,7 @@ export default function RetroComputer({
   }
 
   function openApp(next: AppName) {
+    playComputerTone("open");
     if (next === "guess") {
       setTarget(Math.floor(Math.random() * 20) + 1);
       setGuess("");
@@ -332,13 +373,28 @@ export default function RetroComputer({
     <section className="retro-computer-window computer-os computer-os-v12" aria-label="Retro computer">
       <div className="computer-window-bar">
         <span>NOSTALGIA OS 95</span>
-        <button type="button" onClick={onBack} aria-label="Close computer">×</button>
+        <div className="computer-title-actions">
+          <button type="button" className="computer-sound-toggle" onClick={() => setSoundOn((value) => !value)} aria-label="Toggle computer sounds">{soundOn ? "SND" : "MUTE"}</button>
+          <button type="button" onClick={() => { playComputerTone("click"); setPowerState("off"); }} aria-label="Shut down computer">⏻</button>
+          <button type="button" onClick={onBack} aria-label="Close computer">×</button>
+        </div>
       </div>
 
       <div className="computer-window-body computer-desktop">
         <div className="computer-scanlines" aria-hidden="true" />
 
-        {app === "home" && (
+        {powerState === "booting" && <div className="computer-boot-screen">
+          <div className="boot-logo">NOSTALGIA<br/><span>OS 95</span></div>
+          <pre>{`Memory test ........ 640K OK\nFloppy controller .. READY\nRoom archive ....... FOUND\nLoading desktop ....`}</pre>
+          <div className="boot-progress"><i /></div>
+        </div>}
+
+        {powerState === "off" && <div className="computer-off-screen">
+          <span>☾</span><h3>It is now safe to turn on your computer.</h3>
+          <button type="button" onClick={() => { setPowerState("booting"); setApp("home"); playComputerTone("boot"); window.setTimeout(() => setPowerState("on"), 1200); }}>POWER ON</button>
+        </div>}
+
+        {powerState === "on" && app === "home" && (
           <div className="computer-home-screen computer-home-v12">
             <p className="computer-prompt">C:\ROOM\DESKTOP&gt; dir</p>
             <h2>GOOD!<br />things ahead.</h2>
@@ -347,14 +403,14 @@ export default function RetroComputer({
             <div className="desktop-icons desktop-icons-v12">
               <button type="button" onClick={() => openApp("mixes")}><i>♫</i><span>mixes</span><small>{linkedTracks.length || ALL_TRACKS.length}</small></button>
               <button type="button" onClick={() => openApp("mail")}><i>✉</i><span>mail</span><small>{BUILT_IN_MAIL.length + mail.length}</small></button>
-              <button type="button" onClick={() => openApp("games")}><i>☻</i><span>games</span><small>6</small></button>
+              <button type="button" onClick={() => openApp("games")}><i>☻</i><span>games</span><small>{insertedMedia?.id === "pixelquest-cart" ? 7 : 6}</small></button>
               <button type="button" onClick={() => openApp("photos")}><i>▣</i><span>photos</span><small>{photos.length}</small></button>
               {insertedMedia && <button type="button" className="desktop-drive-icon" onClick={() => openApp("drive")}><i>{insertedMedia.icon}</i><span>{insertedMedia.label.toLowerCase()}</span><small>DRIVE A:</small></button>}
             </div>
           </div>
         )}
 
-        {app === "mixes" && (
+        {powerState === "on" && app === "mixes" && (
           <div className="computer-app-panel computer-library-app">
             <div className="folder-topline"><p className="computer-prompt">C:\ROOM\MIXES&gt; dir</p><button type="button" className="retro-small-button" onClick={() => setApp("home")}>← DESKTOP</button></div>
             <h3>MIXES</h3>
@@ -385,7 +441,7 @@ export default function RetroComputer({
           </div>
         )}
 
-        {app === "mail" && (
+        {powerState === "on" && app === "mail" && (
           <div className="computer-app-panel computer-library-app">
             <div className="folder-topline"><p className="computer-prompt">C:\ROOM\MAIL&gt; dir</p><button type="button" className="retro-small-button" onClick={() => setApp("home")}>← DESKTOP</button></div>
             <h3>MAIL</h3>
@@ -421,7 +477,7 @@ export default function RetroComputer({
           </div>
         )}
 
-        {app === "mailread" && selectedMail && (
+        {powerState === "on" && app === "mailread" && selectedMail && (
           <div className="computer-app-panel mail-reader-app">
             <div className="folder-topline"><p className="computer-prompt">C:\ROOM\MAIL\MESSAGE.TXT</p><button type="button" className="retro-small-button" onClick={() => setApp("mail")}>← INBOX</button></div>
             <div className="mail-reader-head"><h3>{selectedMail.subject}</h3><p><b>FROM:</b> {selectedMail.from}<br/><b>DATE:</b> {selectedMail.date}</p></div>
@@ -429,7 +485,7 @@ export default function RetroComputer({
           </div>
         )}
 
-        {app === "photos" && (
+        {powerState === "on" && app === "photos" && (
           <div className="computer-app-panel computer-library-app">
             <div className="folder-topline"><p className="computer-prompt">C:\ROOM\PHOTOS&gt; dir</p><button type="button" className="retro-small-button" onClick={() => setApp("home")}>← DESKTOP</button></div>
             <h3>PHOTOS</h3>
@@ -452,22 +508,29 @@ export default function RetroComputer({
           </div>
         )}
 
-        {app === "drive" && insertedMedia && (
+        {powerState === "on" && app === "drive" && insertedMedia && (
           <div className="computer-app-panel drive-app">
             <div className="folder-topline"><p className="computer-prompt">A:\{insertedMedia.label}&gt; dir</p><button type="button" className="retro-small-button" onClick={() => setApp("home")}>← DESKTOP</button></div>
-            <div className="drive-header"><i>{insertedMedia.icon}</i><div><h3>{insertedMedia.label}</h3><p>{insertedMedia.description}</p></div><button type="button" className="retro-small-button" onClick={() => { ejectRetroMedia(); setInsertedMedia(null); setApp("home"); }}>EJECT</button></div>
+            <div className="drive-header"><i>{insertedMedia.icon}</i><div><h3>{insertedMedia.label}</h3><p>{insertedMedia.description}</p></div><button type="button" className="retro-small-button" onClick={() => { playComputerTone("eject"); ejectRetroMedia(); setInsertedMedia(null); setApp("home"); }}>EJECT</button></div>
             <div className="drive-layout">
               <div className="drive-file-list">
-                {insertedMedia.files.map((file) => <button type="button" key={file.name} className={selectedMediaFile?.name === file.name ? "active" : ""} onClick={() => setSelectedMediaFile(file)}><i>{file.type === "text" ? "▤" : file.type === "image" ? "▣" : file.type === "audio" ? "♫" : "☻"}</i><span>{file.name}</span></button>)}
+                {insertedMedia.files.map((file) => (
+                  <button type="button" key={file.name} className={selectedMediaFile?.name === file.name ? "active" : ""} onClick={() => { playComputerTone("click"); setSelectedMediaFile(file); }}>
+                    <i>{file.type === "text" ? "▤" : file.type === "image" ? "▣" : file.type === "playlist" ? "♫" : file.type === "log" ? "≣" : file.type === "data" ? "01" : "☻"}</i>
+                    <span>{file.name}</span>
+                  </button>
+                ))}
               </div>
               <div className="drive-preview">
-                {selectedMediaFile ? <><strong>{selectedMediaFile.name}</strong><pre>{selectedMediaFile.content}</pre></> : <div className="drive-empty">Select a file to read it.</div>}
+                {selectedMediaFile ? (
+                  <RetroFileViewer file={selectedMediaFile} tracks={ALL_TRACKS} onPlayTrack={onPlayTrack} onLaunchGame={() => openApp("starmaze")} />
+                ) : <div className="drive-empty">Select a file to open it.</div>}
               </div>
             </div>
           </div>
         )}
 
-        {app === "games" && (
+        {powerState === "on" && app === "games" && (
           <div className="computer-app-panel games-folder">
             <div className="folder-topline"><p className="computer-prompt">C:\ROOM\GAMES&gt; dir</p><button type="button" className="retro-small-button" onClick={() => setApp("home")}>← DESKTOP</button></div>
             <h3>GAMES</h3>
@@ -478,11 +541,12 @@ export default function RetroComputer({
               <button type="button" onClick={() => openApp("memory")}><i>▦</i><strong>MEMORY.EXE</strong><span>match the pairs</span></button>
               <button type="button" onClick={() => openApp("scramble")}><i>ABC</i><strong>SCRAMBLE.EXE</strong><span>unscramble lost words</span></button>
               <button type="button" onClick={() => openApp("lights")}><i>▦</i><strong>LIGHTS.EXE</strong><span>switch every light off</span></button>
+              {insertedMedia?.id === "pixelquest-cart" && <button type="button" className="secret-game-file" onClick={() => openApp("starmaze")}><i>☄</i><strong>STARMAZE.EXE</strong><span>cartridge bonus unlocked</span></button>}
             </div>
           </div>
         )}
 
-        {app === "guess" && (
+        {powerState === "on" && app === "guess" && (
           <div className="computer-app-panel">
             <div className="folder-topline"><p className="computer-prompt">C:\GAMES\GUESS.EXE</p><button type="button" className="retro-small-button" onClick={() => setApp("games")}>← GAMES</button></div>
             <h3>NUMBER GUESSER</h3><p>I picked a fresh secret number between 1 and 20.</p>
@@ -491,7 +555,7 @@ export default function RetroComputer({
           </div>
         )}
 
-        {app === "catch" && (
+        {powerState === "on" && app === "catch" && (
           <div className="computer-app-panel catch-app">
             <div className="catch-header"><div><p className="computer-prompt">C:\GAMES\PIXEL.EXE</p><h3>CATCH THE PIXEL</h3></div><div className="catch-actions"><strong>SCORE {String(score).padStart(2, "0")}</strong><button type="button" className="retro-small-button" onClick={() => setApp("games")}>← GAMES</button></div></div>
             <p>click the glowing pixel. every hit moves it somewhere random.</p>
@@ -499,7 +563,7 @@ export default function RetroComputer({
           </div>
         )}
 
-        {app === "fortune" && (
+        {powerState === "on" && app === "fortune" && (
           <div className="computer-app-panel fortune-app">
             <div className="folder-topline"><p className="computer-prompt">C:\GAMES\ORACLE.EXE</p><button type="button" className="retro-small-button" onClick={() => setApp("games")}>← GAMES</button></div>
             <h3>ORACLE 2.0</h3><div className="fortune-orb">◎</div>
@@ -508,7 +572,7 @@ export default function RetroComputer({
           </div>
         )}
 
-        {app === "memory" && (
+        {powerState === "on" && app === "memory" && (
           <div className="computer-app-panel memory-game-app">
             <div className="folder-topline"><p className="computer-prompt">C:\GAMES\MEMORY.EXE</p><button type="button" className="retro-small-button" onClick={() => setApp("games")}>← GAMES</button></div>
             <div className="memory-game-heading"><div><h3>MEMORY MATCH</h3><p>find all four pairs.</p></div><strong>MOVES {String(moves).padStart(2, "0")}</strong></div>
@@ -518,7 +582,7 @@ export default function RetroComputer({
           </div>
         )}
 
-        {app === "scramble" && (
+        {powerState === "on" && app === "scramble" && (
           <div className="computer-app-panel scramble-app">
             <div className="folder-topline"><p className="computer-prompt">C:\GAMES\SCRAMBLE.EXE</p><button type="button" className="retro-small-button" onClick={() => setApp("games")}>← GAMES</button></div>
             <h3>WORD SCRAMBLE</h3><p>recover the lost word from a very questionable disk sector.</p>
@@ -528,7 +592,7 @@ export default function RetroComputer({
           </div>
         )}
 
-        {app === "lights" && (
+        {powerState === "on" && app === "lights" && (
           <div className="computer-app-panel lights-app">
             <div className="folder-topline"><p className="computer-prompt">C:\GAMES\LIGHTS.EXE</p><button type="button" className="retro-small-button" onClick={() => setApp("games")}>← GAMES</button></div>
             <div className="memory-game-heading"><div><h3>LIGHTS OUT</h3><p>turn every square dark. clicking a light also flips its neighbours.</p></div><strong>MOVES {String(lightMoves).padStart(2, "0")}</strong></div>
@@ -537,6 +601,8 @@ export default function RetroComputer({
             <button type="button" className="retro-run-button" onClick={resetLights}>RANDOMIZE</button>
           </div>
         )}
+
+        {powerState === "on" && app === "starmaze" && <StarMazeGame onBack={() => setApp("games")} />}
       </div>
     </section>
   );

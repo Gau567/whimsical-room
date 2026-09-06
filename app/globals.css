@@ -4951,3 +4951,387 @@ button {
   .lights-grid button { width: 44px; height: 44px; }
   .drawer-items-v13 { grid-template-columns: repeat(2,minmax(0,1fr)); }
 }
+
+/* =========================================================
+   V14 · EXECUTABLE MEDIA / RETRO APPS / POWER POLISH
+   ========================================================= */
+.computer-title-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.computer-window-bar .computer-title-actions button {
+  min-width: 26px;
+  margin: 0;
+  padding: 2px 6px;
+  border: 1px solid #8d8881;
+  background: #c7c1b8;
+  color: #312f2d;
+  line-height: 1.2;
+}
+
+.computer-window-bar .computer-title-actions button:hover {
+  background: #eee8de;
+}
+
+.computer-window-bar .computer-title-actions .computer-sound-toggle {
+  min-width: 38px;
+  font-size: 7px;
+  letter-spacing: .08em;
+}
+
+.computer-boot-screen,
+.computer-off-screen {
+  position: relative;
+  z-index: 4;
+  min-height: 390px;
+  display: grid;
+  place-content: center;
+  text-align: center;
+}
+
+.computer-boot-screen {
+  color: #a7c8a0;
+  background: #07110b;
+  margin: -24px;
+  padding: 38px;
+}
+
+.boot-logo {
+  margin-bottom: 24px;
+  color: #c4dfbc;
+  font: 700 34px/0.9 var(--font-mono);
+  letter-spacing: .08em;
+  text-shadow: 0 0 10px rgba(168, 218, 158, .2);
+}
+
+.boot-logo span {
+  color: #7e9d79;
+  font-size: 18px;
+}
+
+.computer-boot-screen pre {
+  margin: 0;
+  text-align: left;
+  color: #7d9d78;
+  font: 8px/1.8 var(--font-mono);
+}
+
+.boot-progress {
+  width: 220px;
+  height: 7px;
+  margin-top: 18px;
+  border: 1px solid #5b7357;
+  overflow: hidden;
+}
+
+.boot-progress i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #8fb089;
+  transform-origin: left;
+  animation: nostalgia-boot-progress 1.35s steps(10, end) both;
+}
+
+@keyframes nostalgia-boot-progress {
+  from { transform: scaleX(.03); }
+  to { transform: scaleX(1); }
+}
+
+.computer-off-screen {
+  margin: -24px;
+  padding: 38px;
+  background: #050907;
+  color: #71806e;
+}
+
+.computer-off-screen > span {
+  margin-bottom: 12px;
+  font-size: 34px;
+}
+
+.computer-off-screen h3 {
+  max-width: 280px;
+  margin: 0 auto 22px !important;
+  color: #8ca188 !important;
+  font: 11px/1.7 var(--font-mono) !important;
+}
+
+.computer-off-screen button {
+  justify-self: center;
+  margin: 0 !important;
+}
+
+/* Drive: files now open as actual miniature applications. */
+.drive-preview {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.retro-file-app {
+  min-height: 220px;
+  border: 1px solid #667f64;
+  background: #101b13;
+  color: #b9cdb4;
+  box-shadow: inset 0 0 22px rgba(0,0,0,.35);
+}
+
+.retro-app-titlebar {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 8px;
+  border-bottom: 1px solid #657b63;
+  background: #72866d;
+  color: #071009;
+  font: 700 7px var(--font-mono);
+  letter-spacing: .05em;
+}
+
+.notepad-menu {
+  padding: 5px 8px;
+  border-bottom: 1px solid rgba(146, 177, 140, .18);
+  color: #788f74;
+  font: 7px var(--font-mono);
+}
+
+.notepad-paper {
+  min-height: 175px;
+  max-height: 235px;
+  overflow: auto;
+  margin: 0;
+  padding: 13px;
+  white-space: pre-wrap;
+  color: #b5c9b0;
+  font: 8px/1.75 var(--font-mono);
+}
+
+.file-mode-log .notepad-paper {
+  color: #8db58a;
+  background: #07100a;
+}
+
+.file-mode-data .notepad-paper {
+  color: #c3ae7d;
+  background:
+    linear-gradient(rgba(200,174,121,.035) 1px, transparent 1px),
+    #110f09;
+  background-size: 100% 14px;
+}
+
+.image-viewer-app {
+  background: #aaa49a;
+  color: #272522;
+}
+
+.retro-image-canvas {
+  position: relative;
+  width: calc(100% - 18px);
+  aspect-ratio: 4 / 3;
+  max-height: 210px;
+  margin: 9px auto 6px;
+  overflow: hidden;
+  border: 6px solid #d0cbc1;
+  outline: 1px solid #5f5a53;
+  image-rendering: pixelated;
+}
+
+.retro-image-noise {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  opacity: .18;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 3px, rgba(0,0,0,.18) 4px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 1px, transparent 1px 4px);
+}
+
+.retro-image-sunset {
+  background: linear-gradient(#624663 0 42%, #d58f70 43% 61%, #392b35 62% 100%);
+}
+.pixel-sun {
+  position: absolute;
+  left: 60%;
+  top: 20%;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #edc77f;
+}
+.pixel-horizon {
+  position: absolute;
+  left: -5%;
+  right: -5%;
+  bottom: 26%;
+  height: 22%;
+  clip-path: polygon(0 60%, 10% 42%, 22% 70%, 36% 25%, 51% 60%, 64% 33%, 77% 65%, 88% 35%, 100% 61%, 100% 100%, 0 100%);
+  background: #201923;
+}
+.pixel-date {
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  color: #f4c78f;
+  font: 8px var(--font-mono);
+}
+
+.retro-image-arcade {
+  background: linear-gradient(#141020, #23172c 66%, #0f0d13 67%);
+}
+.arcade-cab {
+  position: absolute;
+  bottom: 22px;
+  width: 43px;
+  height: 88px;
+  border: 4px solid #26222d;
+  background: #15141a;
+  box-shadow: inset 0 0 0 2px #08070a;
+}
+.arcade-cab::before {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 10px;
+  width: 21px;
+  height: 27px;
+  background: #6c9a91;
+  box-shadow: 0 0 10px rgba(109,174,157,.35);
+}
+.cab-a { left: 18%; transform: skewY(-2deg); }
+.cab-b { left: 43%; height: 99px; }
+.cab-b::before { background: #bb775f; }
+.cab-c { right: 17%; }
+.cab-c::before { background: #856f9f; }
+
+.retro-image-desk {
+  background: linear-gradient(#28364b 0 60%, #684b3c 61% 69%, #21191c 70%);
+}
+.bitmap-monitor {
+  position: absolute;
+  left: 27%;
+  top: 24%;
+  width: 82px;
+  height: 59px;
+  border: 8px solid #aaa49b;
+  background: #18293b;
+  box-shadow: 0 0 0 3px #655f59;
+}
+.bitmap-monitor::after {
+  content: "> GOOD!";
+  display: grid;
+  height: 100%;
+  place-items: center;
+  color: #94b38f;
+  font: 7px var(--font-mono);
+}
+.bitmap-lamp { position:absolute; right:25%; top:37%; width:22px; height:35px; border-radius:50% 50% 25% 25%; background:#b48661; }
+.bitmap-mug { position:absolute; right:17%; bottom:25%; width:19px; height:17px; border:3px solid #94836d; }
+
+.retro-image-stars {
+  background: radial-gradient(circle at 52% 50%, #25314d, #080c16 68%);
+}
+.star-pixel { position:absolute; color:#e4ce8e; font-style:normal; font-size:20px; text-shadow:0 0 8px rgba(229,205,139,.4); }
+.s1 { left:14%; top:18%; } .s2 { left:67%; top:22%; } .s3 { left:44%; top:58%; } .s4 { left:80%; top:68%; } .s5 { left:25%; top:72%; }
+
+.retro-file-caption {
+  margin: 0 !important;
+  padding: 7px 10px 10px;
+  color: #4d4943 !important;
+  font: 7px/1.5 var(--font-mono) !important;
+}
+
+.playlist-viewer-app {
+  background: #111913;
+}
+.playlist-description {
+  margin: 0 !important;
+  padding: 10px;
+  border-bottom: 1px dotted rgba(148,180,142,.2);
+  color: #859b81 !important;
+  white-space: pre-line;
+  font: 8px/1.5 var(--font-mono) !important;
+}
+.retro-playlist-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+}
+.retro-playlist-list li + li { border-top: 1px dotted rgba(145,173,139,.15); }
+.retro-playlist-list button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 25px minmax(0,1fr) 22px;
+  gap: 4px 8px;
+  align-items: center;
+  margin: 0 !important;
+  padding: 8px !important;
+  border: 0 !important;
+  background: transparent !important;
+  text-align: left;
+}
+.retro-playlist-list button:hover { background: rgba(139,174,134,.08) !important; }
+.retro-playlist-list span { grid-row:1/3; color:#687e65; }
+.retro-playlist-list strong { font-size:8px; color:#b7cdb2; }
+.retro-playlist-list small { color:#758972; font-size:7px; }
+.retro-playlist-list b { grid-column:3; grid-row:1/3; color:#9db998; }
+
+.executable-viewer-app {
+  padding-bottom: 14px;
+  text-align: center;
+}
+.executable-viewer-app .retro-app-titlebar { text-align:left; }
+.exe-icon { margin: 16px auto 4px; font-size: 34px; }
+.executable-viewer-app h4 { margin: 0 0 8px; font: 10px var(--font-mono); }
+.executable-viewer-app pre { max-width: 280px; margin: 0 auto; padding: 0 12px; white-space: pre-wrap; color:#82947f; font:7px/1.6 var(--font-mono); }
+.executable-viewer-app .retro-run-button { margin-top: 14px !important; }
+
+.secret-game-file {
+  border-color: rgba(203,174,99,.45) !important;
+  background: rgba(127,92,42,.08) !important;
+}
+.secret-game-file i,
+.secret-game-file strong { color: #d2bd7d !important; }
+
+/* Cartridge-only STARMAZE.EXE */
+.starmaze-app { min-height: 410px; }
+.starmaze-board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  width: min(300px, 100%);
+  margin: 13px auto;
+  border: 2px solid #60795e;
+  background: #071009;
+}
+.maze-cell {
+  display: grid;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px solid rgba(113,143,109,.08);
+  color: #d4c276;
+  font: 11px var(--font-mono);
+}
+.maze-cell.wall { background: #344834; box-shadow: inset 0 0 0 2px #263528; }
+.maze-cell.exit { color:#86ad81; background:rgba(83,126,78,.15); }
+.maze-cell:not(.wall) { text-shadow:0 0 7px rgba(214,192,111,.25); }
+.maze-status { min-height: 22px; text-align:center; color:#81977e; font:8px var(--font-mono); }
+.maze-controls {
+  display: grid;
+  grid-template-columns: repeat(3, 34px);
+  justify-content: center;
+  gap: 4px;
+}
+.maze-controls button {
+  min-width: 34px !important;
+  min-height: 30px;
+  margin: 0 !important;
+  padding: 5px !important;
+}
+
+@media (max-width: 650px) {
+  .drive-layout { grid-template-columns: 1fr; }
+  .retro-file-app { min-height: 190px; }
+  .computer-boot-screen, .computer-off-screen { min-height: 330px; }
+}
