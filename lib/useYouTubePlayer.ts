@@ -49,6 +49,34 @@ export type PlayerStatus =
   | "ended"
   | "error";
 
+
+function normalizeYouTubeVideoId(value: string): string | null {
+  const input = value.trim();
+
+  // Normal case: tracks.ts stores the raw 11-character YouTube ID.
+  if (/^[A-Za-z0-9_-]{11}$/.test(input)) return input;
+
+  // Be forgiving if a full YouTube URL is accidentally pasted into tracks.ts.
+  try {
+    const url = new URL(input);
+    const host = url.hostname.replace(/^www\./, "");
+
+    let candidate = "";
+    if (host === "youtu.be") {
+      candidate = url.pathname.split("/").filter(Boolean)[0] || "";
+    } else if (host.endsWith("youtube.com")) {
+      candidate =
+        url.searchParams.get("v") ||
+        url.pathname.match(/^\/(?:embed|shorts|live)\/([^/?#]+)/)?.[1] ||
+        "";
+    }
+
+    return /^[A-Za-z0-9_-]{11}$/.test(candidate) ? candidate : null;
+  } catch {
+    return null;
+  }
+}
+
 export function useYouTubePlayer(elementId: string) {
   const playerRef = useRef<any>(null);
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -101,7 +129,16 @@ export function useYouTubePlayer(elementId: string) {
             },
             onError: (event: any) => {
               if (cancelled) return;
-              console.error(`YouTube player "${elementId}" error:`, event.data);
+              const messages: Record<number, string> = {
+                2: "invalid video ID / parameter",
+                5: "HTML5 player error",
+                100: "video not found or private",
+                101: "embedding disabled by uploader",
+                150: "embedding disabled by uploader",
+              };
+              console.error(
+                `YouTube audio engine "${elementId}" error ${event.data}: ${messages[event.data] || "unknown playback error"}`,
+              );
               setStatus("error");
             },
           },
@@ -143,8 +180,12 @@ export function useYouTubePlayer(elementId: string) {
   }, []);
 
   const load = useCallback((videoId: string) => {
-    if (!videoId.trim()) {
-      console.error("Cannot load a YouTube video without a video ID.");
+    const normalizedId = normalizeYouTubeVideoId(videoId);
+    if (!normalizedId) {
+      console.error(
+        `Invalid YouTube video ID for player "${elementId}":`,
+        videoId,
+      );
       setStatus("error");
       return;
     }
@@ -160,7 +201,7 @@ export function useYouTubePlayer(elementId: string) {
       const player = playerRef.current;
 
       if (player?.cueVideoById) {
-        player.cueVideoById({ videoId, startSeconds: 0 });
+        player.cueVideoById({ videoId: normalizedId, startSeconds: 0 });
         return;
       }
 

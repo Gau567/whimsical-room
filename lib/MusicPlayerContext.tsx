@@ -164,11 +164,12 @@ export function MusicPlayerProvider({ children }: { children: React.ReactNode })
 
   return (
     <MusicPlayerContext.Provider value={value}>
-      <div
-        id="global-yt-engine"
-        aria-hidden="true"
-        className="pointer-events-none fixed -left-[9999px] top-0 h-[200px] w-[200px]"
-      />
+      {/* Keep YouTube as an audio engine only. The API replaces the target node
+          with an iframe, so the *wrapper* must be hidden rather than relying
+          on classes placed on the target element itself. */}
+      <div className="global-youtube-audio-engine" aria-hidden="true">
+        <div id="global-yt-engine" />
+      </div>
       {children}
     </MusicPlayerContext.Provider>
   );
