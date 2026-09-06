@@ -5,6 +5,7 @@ import TrackShelf from "@/components/TrackShelf";
 import CassettePlayer from "@/components/CassettePlayer";
 import CDPlayer from "@/components/CDPlayer";
 import VinylPlayer from "@/components/VinylPlayer";
+import { useMusicPlayer } from "@/lib/MusicPlayerContext";
 
 const copy: Record<MediaFormat, { eyebrow: string; title: string; hint: string; collection: string }> = {
   cassette: {
@@ -39,6 +40,8 @@ export default function MediaStation({
   onBack: () => void;
 }) {
   const text = copy[format];
+  const { currentTrack } = useMusicPlayer();
+  const activeTrack = currentTrack?.format === format ? currentTrack : null;
 
   return (
     <section className={`station station-${format} station-v19`}>
@@ -68,7 +71,7 @@ export default function MediaStation({
         <div className="station-player station-player-v19">
           <div className="station-player-label">
             <span>{format === "vinyl" ? "TURNTABLE" : format === "cd" ? "DISC PLAYER" : "WALKMAN"}</span>
-            <small>now playing</small>
+            <small>{activeTrack ? `playing · ${activeTrack.title}` : "ready"}</small>
           </div>
           {format === "cassette" && <CassettePlayer initialTrack={initialTrack} />}
           {format === "cd" && <CDPlayer initialTrack={initialTrack} />}

@@ -6697,3 +6697,262 @@ button {
     display: none;
   }
 }
+
+/* =========================================================
+   V21 — MUSIC UI POLISH
+   Clean selected states, remove duplicate record metadata,
+   reserve room for the persistent player, and tighten the
+   physical collection layouts.
+========================================================= */
+
+/* The media pages now reserve a little space for the long player instead
+   of letting it cover the last row of records / tapes / CDs. */
+.nostalgia-room.has-persistent-music {
+  padding-bottom: 104px;
+}
+
+.room-view-room.has-persistent-music {
+  padding-bottom: 86px;
+}
+
+.retro-focus-shell.media-focus-shell {
+  padding-bottom: 108px;
+}
+
+/* Keep the persistent player long, but less bulky. */
+.persistent-music-player {
+  bottom: 14px;
+  width: min(720px, calc(100vw - 28px));
+  grid-template-columns: minmax(0, 1fr) minmax(145px, 225px) auto;
+  gap: 13px;
+  padding: 8px 10px;
+  border-radius: 12px;
+}
+
+.persistent-media-icon {
+  width: 34px;
+  height: 34px;
+}
+
+.persistent-play-button {
+  width: 40px;
+  height: 35px;
+}
+
+.persistent-stop-button {
+  width: 32px;
+  height: 32px;
+}
+
+/* The player label no longer stretches "WALKMAN" and "NOW PLAYING" to
+   opposite ends of the column. It behaves like one compact label. */
+.station-player-label {
+  justify-content: flex-start;
+  gap: 12px;
+  max-width: 360px;
+  padding-inline: 4px;
+}
+
+.station-player-label small {
+  max-width: 190px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: rgba(233, 190, 117, .74);
+}
+
+/* Slightly favour the collection while preserving a dependable player width. */
+.station-grid-v19 {
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 360px);
+  gap: clamp(22px, 2.6vw, 36px);
+}
+
+.station-player-v19 {
+  top: 20px;
+  gap: 9px;
+}
+
+/* ---------------- VINYL ---------------- */
+
+/* V19 rendered the song metadata both on the sleeve AND in a second dark
+   strip. The second strip is no longer rendered by DraggableTrack; this rule
+   also protects against stale hot-reload markup. */
+.record-spine-label {
+  display: none !important;
+}
+
+.vinyl-crate-shell {
+  min-height: 470px;
+  padding: 30px 22px 92px;
+}
+
+.physical-vinyl {
+  grid-template-columns: repeat(3, minmax(112px, 1fr));
+  gap: 10px 12px;
+}
+
+.physical-track-vinyl {
+  height: 180px;
+}
+
+.crate-record-wrap {
+  width: min(158px, 93%);
+}
+
+.physical-track-vinyl:hover .crate-record-wrap,
+.physical-track-vinyl:focus-visible .crate-record-wrap {
+  transform: translateX(-50%) translateY(-16px) rotate(-.7deg);
+}
+
+.physical-track-vinyl.physical-track-active .crate-record-wrap {
+  transform: translateX(-50%) translateY(-24px) rotate(-.8deg);
+}
+
+.physical-track-vinyl.physical-track-active .record-sleeve-v19 {
+  box-shadow:
+    0 0 0 2px rgba(232, 189, 118, .92),
+    0 0 0 5px rgba(232, 189, 118, .08),
+    0 15px 26px rgba(0,0,0,.3);
+}
+
+/* ---------------- CASSETTE ---------------- */
+
+.cassette-drawer-shell {
+  padding: 50px 20px 52px;
+}
+
+.physical-cassette {
+  gap: 6px;
+  padding: 9px;
+}
+
+.physical-track-cassette {
+  height: 50px;
+}
+
+/* Hover = small preview pull. Loaded cassette = intentionally farther out. */
+.physical-track-cassette:hover,
+.physical-track-cassette:focus-visible {
+  transform: translateX(8px);
+}
+
+.physical-track-cassette.physical-track-active {
+  z-index: 3;
+  transform: translateX(18px);
+}
+
+.physical-track-cassette.physical-track-active .tape-drawer-item {
+  box-shadow:
+    0 0 0 2px rgba(232, 189, 118, .8),
+    inset 0 1px rgba(255,255,255,.14),
+    0 8px 15px rgba(0,0,0,.28);
+}
+
+.tape-drawer-item {
+  grid-template-columns: 11px minmax(0, 1fr) 68px 26px;
+  gap: 7px;
+}
+
+/* ---------------- CD ---------------- */
+
+.cd-rack-shell {
+  padding: 30px 18px 58px;
+}
+
+.physical-cd {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.physical-track-cd {
+  height: 108px;
+}
+
+/* Seven discs otherwise leave the final case awkwardly stuck on the left. */
+.physical-cd > .physical-track-cd:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+  width: calc(50% - 5px);
+  justify-self: center;
+}
+
+.physical-track-cd:hover .jewel-case,
+.physical-track-cd:focus-visible .jewel-case {
+  transform: translateY(-5px) rotateY(0deg) rotate(-.25deg);
+}
+
+.physical-track-cd.physical-track-active .jewel-case {
+  transform: translateY(-9px) rotateY(0deg);
+  outline: 2px solid rgba(230,188,117,.88);
+  outline-offset: 2px;
+  box-shadow: 0 13px 22px rgba(0,0,0,.3);
+}
+
+/* A loaded disc gets a tiny "spinning" cue without making every case move. */
+.physical-track-cd.physical-track-active .jewel-disc {
+  animation: v21-disc-spin 3.2s linear infinite;
+}
+
+@keyframes v21-disc-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Make the shared selected badge readable but quieter. */
+.physical-now-playing {
+  top: 7px;
+  right: 7px;
+  padding: 4px 6px;
+  background: rgba(40, 27, 29, .92);
+  box-shadow: 0 3px 8px rgba(0,0,0,.18);
+}
+
+/* Laptop widths: player first, then collection, with no sticky/overlap. */
+@media (max-width: 1180px) {
+  .station-grid-v19 {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+
+  .station-player-v19 {
+    position: static;
+    order: -1;
+    width: min(390px, 100%);
+  }
+
+  .station-player-label {
+    max-width: 390px;
+  }
+}
+
+@media (max-width: 760px) {
+  .nostalgia-room.has-persistent-music {
+    padding-bottom: 126px;
+  }
+
+  .persistent-music-player {
+    width: calc(100vw - 20px);
+    bottom: 10px;
+  }
+
+  .physical-vinyl {
+    grid-template-columns: repeat(2, minmax(106px, 1fr));
+  }
+
+  .physical-track-vinyl {
+    height: 158px;
+  }
+
+  .crate-record-wrap {
+    width: min(138px, 93%);
+  }
+
+  .physical-cd > .physical-track-cd:last-child:nth-child(odd) {
+    grid-column: auto;
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .physical-track-cd.physical-track-active .jewel-disc {
+    animation: none;
+  }
+}

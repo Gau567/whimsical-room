@@ -48,6 +48,7 @@ export default function DraggableTrack({
         onClick={handleClick}
         role="listitem"
         aria-label={`Load ${track.title} by ${track.artist}`}
+        aria-current={active ? "true" : undefined}
         className={`physical-track physical-track-${track.format} ${
           isDragging ? "physical-dragging" : ""
         } ${active ? "physical-track-active" : ""}`}
@@ -95,10 +96,6 @@ export default function DraggableTrack({
               <span className="peek-record">
                 <span className="peek-label" />
               </span>
-            </span>
-            <span className="record-spine-label">
-              <strong>{track.title}</strong>
-              <small>{track.artist}</small>
             </span>
           </span>
         )}

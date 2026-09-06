@@ -32,7 +32,7 @@ function RoomApp() {
   const [lampOn, setLampOn] = useState(true);
   const [openDrawer, setOpenDrawer] = useState<number | null>(null);
   const [preloadedTrack, setPreloadedTrack] = useState<Track | null>(null);
-  const { loadTrack } = useMusicPlayer();
+  const { loadTrack, currentTrack } = useMusicPlayer();
 
   const tracks = view === "cassette" ? cassettes : view === "cd" ? cds : vinyls;
   const mediaOpen = view === "cassette" || view === "cd" || view === "vinyl";
@@ -59,7 +59,7 @@ function RoomApp() {
 
   return (
     <>
-      <main className={`nostalgia-room retro-room-page room-view-${view} ${lampOn ? "room-lit" : "room-dim"}`}>
+      <main className={`nostalgia-room retro-room-page room-view-${view} ${lampOn ? "room-lit" : "room-dim"} ${currentTrack ? "has-persistent-music" : ""}`}>
         <div className="ambient-grain" />
 
         {view === "room" && (
