@@ -1,6 +1,8 @@
 "use client";
 
 import { PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from "react";
+import { cassettes, cds, vinyls } from "@/data/tracks";
+import { MediaFormat, Track } from "@/lib/types";
 
 type PinItem = {
   id: string;
@@ -14,9 +16,11 @@ type PinItem = {
   y?: number;
   rotation?: number;
   font?: "type" | "hand";
+  linkedTrackId?: string;
 };
 
 const STORAGE_KEY = "nostalgia-pinboard-items";
+const ALL_TRACKS = [...cassettes, ...cds, ...vinyls];
 
 const STARTER_ITEMS: PinItem[] = [
   {
@@ -28,6 +32,7 @@ const STARTER_ITEMS: PinItem[] = [
     x: 9,
     y: 12,
     rotation: -4,
+    linkedTrackId: "v2",
   },
   {
     id: "starter-note-1",
@@ -38,6 +43,7 @@ const STARTER_ITEMS: PinItem[] = [
     x: 40,
     y: 9,
     rotation: 3,
+    linkedTrackId: "c1",
   },
   {
     id: "starter-photo-2",
@@ -87,12 +93,26 @@ function loadItems(): PinItem[] {
   }
 }
 
-export default function PinBoard({ onOpenTypewriter }: { onOpenTypewriter: () => void }) {
+function getTrack(id?: string): Track | null {
+  if (!id) return null;
+  return ALL_TRACKS.find((track) => track.id === id) ?? null;
+}
+
+export default function PinBoard({
+  onOpenTypewriter,
+  onPlayMemory,
+}: {
+  onOpenTypewriter: () => void;
+  onPlayMemory: (track: Track) => void;
+}) {
   const [items, setItems] = useState<PinItem[]>([]);
   const [newNote, setNewNote] = useState("");
   const [photoCaption, setPhotoCaption] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingText, setEditingText] = useState("");
+  const [editingTrackId, setEditingTrackId] = useState("");
+  const [formatFilter, setFormatFilter] = useState<MediaFormat | "all">("all");
+  const [viewingId, setViewingId] = useState<string | null>(null);
   const boardRef = useRef<HTMLDivElement | null>(null);
   const dragRef = useRef<{
     id: string;
@@ -100,6 +120,7 @@ export default function PinBoard({ onOpenTypewriter }: { onOpenTypewriter: () =>
     startClientY: number;
     startX: number;
     startY: number;
+    moved: boolean;
   } | null>(null);
 
   function refresh() {
@@ -203,11 +224,15 @@ export default function PinBoard({ onOpenTypewriter }: { onOpenTypewriter: () =>
   function removeItem(id: string) {
     save(items.filter((item) => item.id !== id));
     if (editingId === id) setEditingId(null);
+    if (viewingId === id) setViewingId(null);
   }
 
   function beginEdit(item: PinItem) {
     setEditingId(item.id);
     setEditingText(item.type === "note" ? item.text || "" : item.caption || "");
+    setEditingTrackId(item.linkedTrackId || "");
+    const track = getTrack(item.linkedTrackId);
+    setFormatFilter(track?.format ?? "all");
   }
 
   function saveEdit() {
@@ -217,9 +242,11 @@ export default function PinBoard({ onOpenTypewriter }: { onOpenTypewriter: () =>
     save(
       items.map((item) =>
         item.id === editingId
-          ? item.type === "note"
-            ? { ...item, text: value }
-            : { ...item, caption: value }
+          ? {
+              ...item,
+              ...(item.type === "note" ? { text: value } : { caption: value }),
+              linkedTrackId: editingTrackId || undefined,
+            }
           : item,
       ),
     );
@@ -260,6 +287,7 @@ export default function PinBoard({ onOpenTypewriter }: { onOpenTypewriter: () =>
       startClientY: event.clientY,
       startX: item.x ?? 0,
       startY: item.y ?? 0,
+      moved: false,
     };
     event.currentTarget.setPointerCapture(event.pointerId);
   }
@@ -269,8 +297,11 @@ export default function PinBoard({ onOpenTypewriter }: { onOpenTypewriter: () =>
     const board = boardRef.current;
     if (!drag || !board) return;
     const rect = board.getBoundingClientRect();
-    const dx = ((event.clientX - drag.startClientX) / rect.width) * 100;
-    const dy = ((event.clientY - drag.startClientY) / rect.height) * 100;
+    const pixelDx = event.clientX - drag.startClientX;
+    const pixelDy = event.clientY - drag.startClientY;
+    if (Math.abs(pixelDx) + Math.abs(pixelDy) > 5) drag.moved = true;
+    const dx = (pixelDx / rect.width) * 100;
+    const dy = (pixelDy / rect.height) * 100;
     setItems((current) =>
       current.map((item) =>
         item.id === drag.id
@@ -285,7 +316,8 @@ export default function PinBoard({ onOpenTypewriter }: { onOpenTypewriter: () =>
   }
 
   function handlePointerUp(event: ReactPointerEvent<HTMLElement>) {
-    if (!dragRef.current) return;
+    const drag = dragRef.current;
+    if (!drag) return;
     dragRef.current = null;
     try {
       event.currentTarget.releasePointerCapture(event.pointerId);
@@ -293,6 +325,7 @@ export default function PinBoard({ onOpenTypewriter }: { onOpenTypewriter: () =>
       // Pointer capture may already have been released by the browser.
     }
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    if (!drag.moved) setViewingId(drag.id);
   }
 
   function resetBoard() {
@@ -302,14 +335,17 @@ export default function PinBoard({ onOpenTypewriter }: { onOpenTypewriter: () =>
 
   const noteCount = useMemo(() => items.filter((item) => item.type === "note").length, [items]);
   const editingItem = items.find((item) => item.id === editingId) ?? null;
+  const viewingItem = items.find((item) => item.id === viewingId) ?? null;
+  const viewingTrack = getTrack(viewingItem?.linkedTrackId);
+  const visibleTracks = formatFilter === "all" ? ALL_TRACKS : ALL_TRACKS.filter((track) => track.format === formatFilter);
 
   return (
-    <div className="pinboard-workspace pinboard-workspace-v8">
+    <div className="pinboard-workspace pinboard-workspace-v8 pinboard-workspace-v10">
       <div className="pinboard-toolbar">
         <div>
           <p>ROOM PIN BOARD</p>
-          <h2>move things around until they feel right</h2>
-          <small>drag any note or photo · click edit to rewrite it</small>
+          <h2>memories can have soundtracks now</h2>
+          <small>click a memory to inspect · drag to move · edit to attach a song</small>
         </div>
         <div className="pinboard-toolbar-actions">
           <button type="button" onClick={onOpenTypewriter}>⌨ TYPE A NOTE</button>
@@ -320,44 +356,55 @@ export default function PinBoard({ onOpenTypewriter }: { onOpenTypewriter: () =>
       <div className="cork-board cork-board-v8" ref={boardRef}>
         <div className="board-string string-one" />
         <div className="board-string string-two" />
-        {items.map((item) => (
-          <article
-            key={item.id}
-            className={`pinned-item pinned-${item.type} pinned-item-v8`}
-            style={{
-              left: `${item.x ?? 0}%`,
-              top: `${item.y ?? 0}%`,
-              transform: `rotate(${item.rotation ?? 0}deg)`,
-              zIndex: editingId === item.id ? 20 : undefined,
-            }}
-            onPointerDown={(event) => handlePointerDown(event, item)}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            onPointerCancel={() => { dragRef.current = null; }}
-          >
-            <span className="push-pin" />
-            {item.type === "note" ? (
-              <div className={`sticky-note ${item.font === "hand" ? "sticky-font-hand" : "sticky-font-type"}`} style={{ background: item.color || "#f0dd9e" }}>
-                <p>{item.text}</p>
-              </div>
-            ) : (
-              <div className="pinned-polaroid">
-                {item.image ? (
-                  <img className="pin-photo pin-photo-image" src={item.image} alt={item.caption || "Pinned memory"} />
-                ) : (
-                  <span className="pin-photo" style={{ background: item.color }} />
-                )}
-                <small>{item.caption}</small>
-              </div>
-            )}
+        {items.map((item) => {
+          const linkedTrack = getTrack(item.linkedTrackId);
+          return (
+            <article
+              key={item.id}
+              className={`pinned-item pinned-${item.type} pinned-item-v8`}
+              style={{
+                left: `${item.x ?? 0}%`,
+                top: `${item.y ?? 0}%`,
+                transform: `rotate(${item.rotation ?? 0}deg)`,
+                zIndex: editingId === item.id ? 20 : undefined,
+              }}
+              onPointerDown={(event) => handlePointerDown(event, item)}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={() => { dragRef.current = null; }}
+            >
+              <span className="push-pin" />
+              {item.type === "note" ? (
+                <div className={`sticky-note ${item.font === "hand" ? "sticky-font-hand" : "sticky-font-type"}`} style={{ background: item.color || "#f0dd9e" }}>
+                  <p>{item.text}</p>
+                </div>
+              ) : (
+                <div className="pinned-polaroid">
+                  {item.image ? (
+                    <img className="pin-photo pin-photo-image" src={item.image} alt={item.caption || "Pinned memory"} />
+                  ) : (
+                    <span className="pin-photo" style={{ background: item.color }} />
+                  )}
+                  <small>{item.caption}</small>
+                </div>
+              )}
 
-            <div className="pin-item-actions" aria-label="Pin controls">
-              <button type="button" onClick={() => beginEdit(item)}>edit</button>
-              <button type="button" onClick={() => rotateItem(item.id)} aria-label="Rotate item">↻</button>
-              <button type="button" className="pin-remove" onClick={() => removeItem(item.id)} aria-label="Remove pinned item">×</button>
-            </div>
-          </article>
-        ))}
+              {linkedTrack && (
+                <div className={`pin-song-tag pin-song-${linkedTrack.format}`}>
+                  <span>♫</span>
+                  <strong>{linkedTrack.title}</strong>
+                </div>
+              )}
+
+              <div className="pin-item-actions" aria-label="Pin controls">
+                <button type="button" onClick={() => setViewingId(item.id)}>view</button>
+                <button type="button" onClick={() => beginEdit(item)}>edit</button>
+                <button type="button" onClick={() => rotateItem(item.id)} aria-label="Rotate item">↻</button>
+                <button type="button" className="pin-remove" onClick={() => removeItem(item.id)} aria-label="Remove pinned item">×</button>
+              </div>
+            </article>
+          );
+        })}
       </div>
 
       <div className="pinboard-add-bar pinboard-add-bar-v8">
@@ -394,12 +441,60 @@ export default function PinBoard({ onOpenTypewriter }: { onOpenTypewriter: () =>
             />
           </label>
         </div>
-        <small>{noteCount} note{noteCount === 1 ? "" : "s"} · positions saved locally</small>
+        <small>{noteCount} note{noteCount === 1 ? "" : "s"} · positions + songs saved locally</small>
       </div>
+
+      {viewingItem && (
+        <div className="memory-viewer-backdrop" onClick={() => setViewingId(null)}>
+          <section className="memory-viewer" onClick={(event) => event.stopPropagation()}>
+            <button type="button" className="memory-viewer-close" onClick={() => setViewingId(null)} aria-label="Close memory">×</button>
+            <p className="memory-viewer-kicker">PINNED MEMORY</p>
+
+            <div className={`memory-viewer-paper memory-viewer-${viewingItem.type}`}>
+              {viewingItem.type === "photo" ? (
+                <>
+                  {viewingItem.image ? (
+                    <img src={viewingItem.image} alt={viewingItem.caption || "Memory"} />
+                  ) : (
+                    <span className="memory-viewer-placeholder" style={{ background: viewingItem.color }} />
+                  )}
+                  <h3>{viewingItem.caption || "untitled memory"}</h3>
+                </>
+              ) : (
+                <p className={viewingItem.font === "hand" ? "memory-note-hand" : "memory-note-type"}>{viewingItem.text}</p>
+              )}
+            </div>
+
+            {viewingTrack ? (
+              <div className="memory-soundtrack-card">
+                <span>this memory sounds like</span>
+                <div>
+                  <i>♫</i>
+                  <div>
+                    <strong>{viewingTrack.title}</strong>
+                    <small>{viewingTrack.artist}</small>
+                  </div>
+                  <em>{viewingTrack.format}</em>
+                </div>
+                <button type="button" onClick={() => onPlayMemory(viewingTrack)}>▶ PLAY THIS MEMORY</button>
+              </div>
+            ) : (
+              <div className="memory-no-soundtrack">
+                <span>no soundtrack attached yet</span>
+                <button type="button" onClick={() => { beginEdit(viewingItem); setViewingId(null); }}>+ ATTACH A SONG</button>
+              </div>
+            )}
+
+            <button type="button" className="memory-edit-link" onClick={() => { beginEdit(viewingItem); setViewingId(null); }}>
+              edit memory
+            </button>
+          </section>
+        </div>
+      )}
 
       {editingItem && (
         <div className="pin-editor-backdrop" onClick={() => setEditingId(null)}>
-          <section className="pin-editor" onClick={(event) => event.stopPropagation()}>
+          <section className="pin-editor pin-editor-v10" onClick={(event) => event.stopPropagation()}>
             <div className="pin-editor-heading">
               <div>
                 <p>{editingItem.type === "note" ? "EDIT NOTE" : "EDIT MEMORY"}</p>
@@ -413,6 +508,47 @@ export default function PinBoard({ onOpenTypewriter }: { onOpenTypewriter: () =>
               onChange={(event) => setEditingText(event.target.value.slice(0, editingItem.type === "note" ? 220 : 90))}
               autoFocus
             />
+
+            <div className="song-link-editor">
+              <div className="song-link-heading">
+                <div>
+                  <span>MEMORY SOUNDTRACK</span>
+                  <strong>attach a song</strong>
+                </div>
+                {editingTrackId && <button type="button" onClick={() => setEditingTrackId("")}>REMOVE SONG</button>}
+              </div>
+
+              <div className="song-format-tabs">
+                {(["all", "cassette", "cd", "vinyl"] as const).map((format) => (
+                  <button
+                    key={format}
+                    type="button"
+                    className={formatFilter === format ? "active" : ""}
+                    onClick={() => setFormatFilter(format)}
+                  >
+                    {format === "all" ? "ALL" : format.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+
+              <div className="song-choice-grid">
+                {visibleTracks.map((track) => (
+                  <button
+                    type="button"
+                    key={track.id}
+                    className={`song-choice ${editingTrackId === track.id ? "selected" : ""}`}
+                    onClick={() => setEditingTrackId(track.id)}
+                  >
+                    <span className="song-choice-icon" style={{ borderColor: track.color }}>{track.format === "cassette" ? "▣" : track.format === "cd" ? "◉" : "●"}</span>
+                    <span>
+                      <strong>{track.title}</strong>
+                      <small>{track.artist}</small>
+                    </span>
+                    <em>{track.format}</em>
+                  </button>
+                ))}
+              </div>
+            </div>
 
             <div className="pin-editor-position">
               <span>fine tune position</span>
@@ -428,7 +564,7 @@ export default function PinBoard({ onOpenTypewriter }: { onOpenTypewriter: () =>
             <div className="pin-editor-actions">
               <button type="button" className="danger-quiet" onClick={() => removeItem(editingItem.id)}>REMOVE</button>
               <button type="button" onClick={() => setEditingId(null)}>CANCEL</button>
-              <button type="button" className="save-pin-button" onClick={saveEdit}>SAVE CHANGES</button>
+              <button type="button" className="save-pin-button" onClick={saveEdit}>SAVE MEMORY</button>
             </div>
           </section>
         </div>

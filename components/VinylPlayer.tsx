@@ -6,15 +6,21 @@ import { Track } from "@/lib/types";
 import { formatTime, useYouTubePlayer } from "@/lib/useYouTubePlayer";
 import { useSpin } from "@/lib/motion";
 
-export default function VinylPlayer() {
+export default function VinylPlayer({ initialTrack }: { initialTrack?: Track | null }) {
   const { isOver, setNodeRef } = useDroppable({
     id: "vinyl-slot",
     data: { format: "vinyl" },
   });
-  const [track, setTrack] = useState<Track | null>(null);
+  const [track, setTrack] = useState<Track | null>(initialTrack ?? null);
 
   const { status, currentTime, duration, load, play, pause } =
     useYouTubePlayer("vinyl-yt-engine");
+
+  useEffect(() => {
+    if (initialTrack?.format && initialTrack.format === "vinyl" && initialTrack.id !== track?.id) {
+      setTrack(initialTrack);
+    }
+  }, [initialTrack, track?.id]);
 
   useDndMonitor({
     onDragEnd(event) {

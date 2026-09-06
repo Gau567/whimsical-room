@@ -7,9 +7,9 @@ import { formatTime, useYouTubePlayer } from "@/lib/useYouTubePlayer";
 import gsap from "gsap";
 import { playInsertBounce, useLid, useSpin } from "@/lib/motion";
 
-export default function CDPlayer() {
+export default function CDPlayer({ initialTrack }: { initialTrack?: Track | null }) {
   const { isOver, setNodeRef } = useDroppable({ id: "cd-slot", data: { format: "cd" } });
-  const [track, setTrack] = useState<Track | null>(null);
+  const [track, setTrack] = useState<Track | null>(initialTrack ?? null);
   const [lidOpen, setLidOpen] = useState(false);
   const lidRef = useRef<HTMLDivElement>(null);
   const discRef = useRef<HTMLDivElement>(null);
@@ -27,6 +27,12 @@ export default function CDPlayer() {
       ease: "power2.out",
     });
   }, [lidOpen]);
+
+  useEffect(() => {
+    if (initialTrack?.format && initialTrack.format === "cd" && initialTrack.id !== track?.id) {
+      setTrack(initialTrack);
+    }
+  }, [initialTrack, track?.id]);
 
   useDndMonitor({
     onDragStart() {

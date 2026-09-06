@@ -11,7 +11,7 @@ import MiniTypewriter from "@/components/room/MiniTypewriter";
 import PinBoard from "@/components/room/PinBoard";
 import MediaStation from "@/components/stations/MediaStation";
 import { cassettes, cds, vinyls } from "@/data/tracks";
-import { MediaFormat } from "@/lib/types";
+import { MediaFormat, Track } from "@/lib/types";
 
 type RoomView = "room" | MediaFormat | "journal" | "books" | "computer" | "typewriter" | "pinboard";
 
@@ -19,9 +19,22 @@ export default function Home() {
   const [view, setView] = useState<RoomView>("room");
   const [lampOn, setLampOn] = useState(true);
   const [openDrawer, setOpenDrawer] = useState<number | null>(null);
+  const [preloadedTrack, setPreloadedTrack] = useState<Track | null>(null);
 
   const tracks = view === "cassette" ? cassettes : view === "cd" ? cds : vinyls;
   const mediaOpen = view === "cassette" || view === "cd" || view === "vinyl";
+
+  function openMemorySong(track: Track) {
+    setPreloadedTrack(track);
+    setView(track.format);
+  }
+
+  function openView(nextView: RoomView) {
+    if (nextView !== "cassette" && nextView !== "cd" && nextView !== "vinyl") {
+      setPreloadedTrack(null);
+    }
+    setView(nextView);
+  }
 
   return (
     <DndContext>
@@ -37,7 +50,7 @@ export default function Home() {
             </header>
 
             <RetroRoomScene
-              onSelect={setView}
+              onSelect={openView}
               lampOn={lampOn}
               onToggleLamp={() => setLampOn((value) => !value)}
               onOpenDrawer={setOpenDrawer}
@@ -47,7 +60,15 @@ export default function Home() {
 
         {mediaOpen && (
           <div className="retro-focus-shell">
-            <MediaStation format={view} tracks={tracks} onBack={() => setView("room")} />
+            <MediaStation
+              format={view}
+              tracks={tracks}
+              initialTrack={preloadedTrack?.format === view ? preloadedTrack : null}
+              onBack={() => {
+                setPreloadedTrack(null);
+                setView("room");
+              }}
+            />
           </div>
         )}
 
@@ -83,7 +104,6 @@ export default function Home() {
             <button type="button" className="station-back" onClick={() => setView("room")}>
               ← back to room
             </button>
-
             <RetroComputer onBack={() => setView("room")} />
           </section>
         )}
@@ -102,7 +122,10 @@ export default function Home() {
             <button type="button" className="station-back" onClick={() => setView("room")}>
               ← back to room
             </button>
-            <PinBoard onOpenTypewriter={() => setView("typewriter")} />
+            <PinBoard
+              onOpenTypewriter={() => setView("typewriter")}
+              onPlayMemory={openMemorySong}
+            />
           </section>
         )}
       </main>

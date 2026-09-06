@@ -6,13 +6,19 @@ import { Track } from "@/lib/types";
 import { useYouTubePlayer, formatTime } from "@/lib/useYouTubePlayer";
 import { useSpin, playInsertBounce, playEjectOut } from "@/lib/motion";
 
-export default function CassettePlayer() {
+export default function CassettePlayer({ initialTrack }: { initialTrack?: Track | null }) {
   const { isOver, setNodeRef } = useDroppable({ id: "cassette-slot", data: { format: "cassette" } });
-  const [track, setTrack] = useState<Track | null>(null);
+  const [track, setTrack] = useState<Track | null>(initialTrack ?? null);
   const [ejecting, setEjecting] = useState(false);
   const bodyRef = useRef<HTMLDivElement>(null);
 
   const { status, currentTime, duration, load, play, pause } = useYouTubePlayer("cassette-yt-engine");
+
+  useEffect(() => {
+    if (initialTrack?.format && initialTrack.format === "cassette" && initialTrack.id !== track?.id) {
+      setTrack(initialTrack);
+    }
+  }, [initialTrack, track?.id]);
 
   useDndMonitor({
     onDragEnd(event) {

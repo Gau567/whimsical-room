@@ -27,10 +27,12 @@ const copy: Record<MediaFormat, { eyebrow: string; title: string; hint: string }
 export default function MediaStation({
   format,
   tracks,
+  initialTrack,
   onBack,
 }: {
   format: MediaFormat;
   tracks: Track[];
+  initialTrack?: Track | null;
   onBack: () => void;
 }) {
   const text = copy[format];
@@ -44,8 +46,16 @@ export default function MediaStation({
       <header className="station-header">
         <p>{text.eyebrow}</p>
         <h2>{text.title}</h2>
-        <span>{text.hint}</span>
+        <span>{initialTrack ? `memory loaded: ${initialTrack.title}` : text.hint}</span>
       </header>
+
+      {initialTrack && (
+        <div className="memory-loaded-banner">
+          <span>♫ memory soundtrack</span>
+          <strong>{initialTrack.title}</strong>
+          <small>{initialTrack.artist} · {initialTrack.format}</small>
+        </div>
+      )}
 
       <div className="station-grid">
         <div className="station-collection">
@@ -53,9 +63,9 @@ export default function MediaStation({
         </div>
 
         <div className="station-player">
-          {format === "cassette" && <CassettePlayer />}
-          {format === "cd" && <CDPlayer />}
-          {format === "vinyl" && <VinylPlayer />}
+          {format === "cassette" && <CassettePlayer initialTrack={initialTrack} />}
+          {format === "cd" && <CDPlayer initialTrack={initialTrack} />}
+          {format === "vinyl" && <VinylPlayer initialTrack={initialTrack} />}
         </div>
       </div>
     </section>
