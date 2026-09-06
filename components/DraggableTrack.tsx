@@ -2,25 +2,40 @@
 
 import { useDraggable } from "@dnd-kit/core";
 import { Track } from "@/lib/types";
+import { useMusicPlayer } from "@/lib/MusicPlayerContext";
 
 export default function DraggableTrack({
   track,
   physical = false,
+  index = 0,
+  active = false,
 }: {
   track: Track;
   physical?: boolean;
+  index?: number;
+  active?: boolean;
 }) {
+  const { loadTrack } = useMusicPlayer();
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: track.id,
     data: { track },
   });
 
-  const style: React.CSSProperties = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-        zIndex: 50,
-      }
-    : {};
+  const style: React.CSSProperties = {
+    ...(transform
+      ? {
+          transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+          zIndex: 50,
+        }
+      : {}),
+    ["--track-color" as string]: track.color,
+    ["--track-index" as string]: index,
+  };
+
+  const handleClick = () => {
+    if (isDragging) return;
+    loadTrack(track);
+  };
 
   if (physical) {
     return (
@@ -30,49 +45,48 @@ export default function DraggableTrack({
         {...attributes}
         style={style}
         type="button"
+        onClick={handleClick}
+        role="listitem"
+        aria-label={`Load ${track.title} by ${track.artist}`}
         className={`physical-track physical-track-${track.format} ${
           isDragging ? "physical-dragging" : ""
-        }`}
+        } ${active ? "physical-track-active" : ""}`}
       >
         {track.format === "cassette" && (
-          <>
-            <span className="cassette-shell" style={{ backgroundColor: track.color }}>
-              <span className="cassette-label">
-                <strong>{track.title}</strong>
-                <small>{track.artist}</small>
-              </span>
-              <span className="cassette-window">
-                <span className="cassette-reel" />
-                <span className="cassette-tape" />
-                <span className="cassette-reel" />
-              </span>
-              <span className="cassette-screws">•&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;•</span>
-            </span>
-          </>
-        )}
-
-        {track.format === "cd" && (
-          <>
-            <span
-              className="compact-disc"
-              style={{
-                background: `conic-gradient(from 45deg, #eef2f4, ${track.color}, #d7e5e8, #fbf1e6, ${track.color}, #eef2f4)`,
-              }}
-            >
-              <span className="cd-ring" />
-              <span className="cd-hole" />
-              <span className="cd-title">{track.title}</span>
-            </span>
-            <span className="physical-caption">
+          <span className="tape-drawer-item" style={{ backgroundColor: track.color }}>
+            <span className="tape-spine-tab" />
+            <span className="tape-spine-copy">
               <strong>{track.title}</strong>
               <small>{track.artist}</small>
             </span>
-          </>
+            <span className="tape-spine-reels" aria-hidden="true">
+              <i /><b /><i />
+            </span>
+            <span className="tape-pull-word">PULL</span>
+          </span>
+        )}
+
+        {track.format === "cd" && (
+          <span className="jewel-case" style={{ backgroundColor: track.color }}>
+            <span className="jewel-spine">
+              <strong>{track.title}</strong>
+              <small>{track.artist}</small>
+            </span>
+            <span className="jewel-cover">
+              <span className="jewel-disc" aria-hidden="true">
+                <i />
+              </span>
+              <span className="jewel-cover-copy">
+                <b>{track.title}</b>
+                <em>{track.artist}</em>
+              </span>
+            </span>
+          </span>
         )}
 
         {track.format === "vinyl" && (
-          <>
-            <span className="record-sleeve" style={{ backgroundColor: track.color }}>
+          <span className="crate-record-wrap">
+            <span className="record-sleeve record-sleeve-v19" style={{ backgroundColor: track.color }}>
               <span className="sleeve-art">✦</span>
               <span className="sleeve-copy">
                 <strong>{track.title}</strong>
@@ -82,8 +96,14 @@ export default function DraggableTrack({
                 <span className="peek-label" />
               </span>
             </span>
-          </>
+            <span className="record-spine-label">
+              <strong>{track.title}</strong>
+              <small>{track.artist}</small>
+            </span>
+          </span>
         )}
+
+        {active && <span className="physical-now-playing">NOW PLAYING</span>}
       </button>
     );
   }
@@ -94,7 +114,7 @@ export default function DraggableTrack({
 
   if (track.format === "cassette") {
     return (
-      <button ref={setNodeRef} {...listeners} {...attributes} style={style} className={sharedClasses}>
+      <button ref={setNodeRef} {...listeners} {...attributes} style={style} onClick={handleClick} className={sharedClasses}>
         <div className="flex items-center gap-2.5">
           <div
             className="flex h-6 w-9 shrink-0 items-center justify-around rounded-sm border border-black/30 px-1"
@@ -113,7 +133,7 @@ export default function DraggableTrack({
   }
 
   return (
-    <button ref={setNodeRef} {...listeners} {...attributes} style={style} className={sharedClasses}>
+    <button ref={setNodeRef} {...listeners} {...attributes} style={style} onClick={handleClick} className={sharedClasses}>
       <div className="flex items-center gap-2.5">
         <div
           className="relative h-7 w-7 shrink-0 rounded-full border border-black/30"

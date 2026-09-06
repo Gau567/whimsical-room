@@ -5803,3 +5803,694 @@ button {
   min-height: 0 !important;
   border: 0 !important;
 }
+
+/* =========================================================
+   V19 — PHYSICAL MUSIC COLLECTIONS
+   Record crate / cassette drawer / jewel-case CD rack
+========================================================= */
+
+.station-v19 {
+  width: min(1500px, calc(100vw - 56px));
+  margin: 0 auto;
+}
+
+.station-header-v19 {
+  margin-bottom: 30px;
+}
+
+.station-grid-v19 {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.78fr);
+  align-items: start;
+  gap: clamp(28px, 4vw, 64px);
+}
+
+.station-collection-v19,
+.station-player-v19 {
+  min-width: 0;
+}
+
+.station-player-v19 {
+  position: sticky;
+  top: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.station-player-label {
+  width: min(100%, 430px);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0 6px;
+  font-family: var(--font-mono), monospace;
+  text-transform: uppercase;
+  letter-spacing: .18em;
+  color: rgba(241, 228, 211, .62);
+}
+
+.station-player-label span {
+  font-size: 10px;
+}
+
+.station-player-label small {
+  font-size: 8px;
+  opacity: .58;
+}
+
+.physical-collection-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 20px;
+  margin-bottom: 14px;
+}
+
+.physical-collection-title {
+  margin: 0;
+  font-family: var(--font-hand), cursive;
+  font-size: clamp(24px, 2.1vw, 34px);
+  color: #eadbd0;
+}
+
+.physical-collection-count,
+.physical-collection-action {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font-mono), monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: rgba(232, 214, 204, .48);
+}
+
+.physical-collection-action {
+  margin: 0 0 3px;
+  text-align: right;
+}
+
+/* ---------------- VINYL CRATE ---------------- */
+
+.vinyl-crate-shell {
+  position: relative;
+  min-height: 560px;
+  padding: 36px 34px 108px;
+  overflow: hidden;
+  border: 1px solid rgba(25, 14, 18, .72);
+  border-radius: 8px 8px 18px 18px;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.025), transparent 18%, transparent 82%, rgba(0,0,0,.08)),
+    #3a241d;
+  box-shadow:
+    inset 0 0 0 7px rgba(103, 59, 40, .52),
+    inset 0 -30px 42px rgba(13, 6, 8, .3),
+    0 22px 46px rgba(0,0,0,.22);
+}
+
+.vinyl-crate-back {
+  position: absolute;
+  inset: 15px 18px auto;
+  height: 32px;
+  border-radius: 5px 5px 0 0;
+  background: linear-gradient(#6d4331, #4a2d24);
+  border: 1px solid rgba(21,12,14,.62);
+}
+
+.physical-vinyl {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(150px, 1fr));
+  align-items: end;
+  gap: 12px 10px;
+  padding: 18px 12px 4px;
+}
+
+.physical-track-vinyl {
+  position: relative;
+  min-width: 0;
+  height: 214px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: grab;
+  touch-action: none;
+  transform-origin: 50% 100%;
+  transition: transform .22s ease, filter .22s ease;
+}
+
+.physical-track-vinyl:active {
+  cursor: grabbing;
+}
+
+.crate-record-wrap {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: min(188px, 94%);
+  aspect-ratio: 1;
+  transform: translateX(-50%) rotate(calc((var(--track-index) - 2) * .18deg));
+  transition: transform .24s cubic-bezier(.2,.8,.2,1);
+}
+
+.record-sleeve-v19 {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  border: 1px solid rgba(20,13,17,.58);
+  box-shadow: 0 8px 15px rgba(0,0,0,.23);
+}
+
+.physical-track-vinyl:hover .crate-record-wrap,
+.physical-track-vinyl:focus-visible .crate-record-wrap,
+.physical-track-vinyl.physical-track-active .crate-record-wrap {
+  transform: translateX(-50%) translateY(-25px) rotate(-1deg);
+}
+
+.physical-track-vinyl.physical-track-active .record-sleeve-v19 {
+  box-shadow: 0 0 0 2px rgba(232, 189, 118, .9), 0 14px 26px rgba(0,0,0,.32);
+}
+
+.record-spine-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  min-height: 42px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 5px 8px;
+  background: linear-gradient(180deg, rgba(16,11,15,.18), rgba(16,11,15,.76));
+  color: #f2e8df;
+  text-align: left;
+}
+
+.record-spine-label strong {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: var(--font-mono), monospace;
+  font-size: 9px;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.record-spine-label small {
+  margin-top: 2px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: var(--font-hand), cursive;
+  font-size: 12px;
+  opacity: .86;
+}
+
+.vinyl-crate-front {
+  position: absolute;
+  z-index: 5;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 95px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 34px;
+  border-top: 2px solid rgba(33,18,18,.7);
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.018) 0 2px, transparent 2px 8px),
+    linear-gradient(#704831, #4d2f24);
+  box-shadow: inset 0 7px 14px rgba(255,255,255,.035), 0 -10px 20px rgba(0,0,0,.18);
+  color: rgba(240, 215, 186, .66);
+  pointer-events: none;
+}
+
+.vinyl-crate-front span {
+  font-family: var(--font-mono), monospace;
+  font-size: 13px;
+  letter-spacing: .28em;
+}
+
+.vinyl-crate-front small {
+  font-family: var(--font-mono), monospace;
+  font-size: 8px;
+  letter-spacing: .15em;
+}
+
+/* ---------------- CASSETTE DRAWER ---------------- */
+
+.cassette-drawer-shell {
+  position: relative;
+  padding: 54px 28px 58px;
+  border: 1px solid rgba(20,12,16,.7);
+  border-radius: 9px 9px 18px 18px;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.025), transparent 15%, transparent 85%, rgba(0,0,0,.09)),
+    #4d3028;
+  box-shadow:
+    inset 0 0 0 7px rgba(117, 73, 55, .35),
+    inset 0 -28px 30px rgba(0,0,0,.18),
+    0 20px 42px rgba(0,0,0,.2);
+}
+
+.cassette-drawer-handle {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  width: 122px;
+  height: 22px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(18,11,14,.7);
+  border-radius: 3px 3px 8px 8px;
+  background: linear-gradient(#332624, #1f1717);
+  box-shadow: inset 0 1px rgba(255,255,255,.08), 0 5px 8px rgba(0,0,0,.25);
+}
+
+.cassette-drawer-handle span {
+  position: absolute;
+  inset: 6px 17px;
+  border-top: 1px solid rgba(238,214,197,.18);
+}
+
+.physical-cassette {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid rgba(16,10,13,.55);
+  border-radius: 6px;
+  background: #281b1b;
+  box-shadow: inset 0 10px 20px rgba(0,0,0,.38);
+}
+
+.physical-track-cassette {
+  position: relative;
+  width: 100%;
+  height: 56px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: grab;
+  touch-action: none;
+  transition: transform .18s ease;
+}
+
+.physical-track-cassette:hover,
+.physical-track-cassette:focus-visible,
+.physical-track-cassette.physical-track-active {
+  transform: translateX(14px);
+}
+
+.tape-drawer-item {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 13px minmax(0, 1fr) 80px 34px;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px 7px 8px;
+  border: 1px solid rgba(18,12,15,.62);
+  border-radius: 4px;
+  box-shadow: inset 0 1px rgba(255,255,255,.13), 0 4px 8px rgba(0,0,0,.22);
+  color: #231a1b;
+}
+
+.tape-spine-tab {
+  height: 34px;
+  border-radius: 2px;
+  background: rgba(26,17,20,.74);
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.07);
+}
+
+.tape-spine-copy {
+  min-width: 0;
+  text-align: left;
+}
+
+.tape-spine-copy strong,
+.tape-spine-copy small {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tape-spine-copy strong {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.tape-spine-copy small {
+  margin-top: 2px;
+  font-family: var(--font-hand), cursive;
+  font-size: 13px;
+}
+
+.tape-spine-reels {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 31px;
+  padding: 0 8px;
+  border-radius: 4px;
+  background: rgba(248,235,220,.5);
+  border: 1px solid rgba(30,19,22,.32);
+}
+
+.tape-spine-reels i,
+.tape-spine-reels b {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(226,215,199,.7) 0 22%, #34272a 24% 45%, #171214 47% 100%);
+}
+
+.tape-spine-reels b {
+  width: 10px;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(37,25,28,.7);
+}
+
+.tape-pull-word {
+  font-family: var(--font-mono), monospace;
+  font-size: 7px;
+  letter-spacing: .13em;
+  transform: rotate(-90deg);
+  opacity: .55;
+}
+
+.cassette-drawer-label {
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  bottom: 18px;
+  text-align: center;
+  font-family: var(--font-mono), monospace;
+  font-size: 8px;
+  letter-spacing: .2em;
+  color: rgba(240,219,203,.45);
+}
+
+/* ---------------- CD JEWEL-CASE RACK ---------------- */
+
+.cd-rack-shell {
+  position: relative;
+  padding: 34px 24px 66px;
+  border: 1px solid rgba(21,13,16,.66);
+  border-radius: 8px;
+  background: linear-gradient(180deg, #34282b 0%, #261c20 100%);
+  box-shadow: inset 0 0 0 6px rgba(95,72,69,.28), 0 20px 42px rgba(0,0,0,.2);
+}
+
+.cd-rack-top {
+  position: absolute;
+  left: 15px;
+  right: 15px;
+  top: 13px;
+  height: 8px;
+  border-radius: 8px;
+  background: #181214;
+  box-shadow: 0 3px 0 rgba(255,255,255,.035);
+}
+
+.physical-cd {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.physical-track-cd {
+  position: relative;
+  min-width: 0;
+  height: 126px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: grab;
+  touch-action: none;
+  perspective: 700px;
+}
+
+.jewel-case {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 27px 1fr;
+  overflow: hidden;
+  border: 1px solid rgba(225,225,225,.32);
+  border-radius: 4px;
+  background-color: rgba(235,237,240,.18) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.32), 0 7px 13px rgba(0,0,0,.24);
+  transform: rotateY(-2deg);
+  transition: transform .22s cubic-bezier(.2,.8,.2,1), box-shadow .22s ease;
+}
+
+.physical-track-cd:hover .jewel-case,
+.physical-track-cd:focus-visible .jewel-case,
+.physical-track-cd.physical-track-active .jewel-case {
+  transform: translateY(-8px) rotateY(0deg) rotate(-.5deg);
+  box-shadow: 0 13px 22px rgba(0,0,0,.3);
+}
+
+.physical-track-cd.physical-track-active .jewel-case {
+  outline: 2px solid rgba(230,188,117,.86);
+  outline-offset: 2px;
+}
+
+.jewel-spine {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 3px;
+  background: var(--track-color);
+  color: #261c1f;
+}
+
+.jewel-spine strong,
+.jewel-spine small {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  overflow: hidden;
+  max-height: 78px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.jewel-spine strong {
+  font-family: var(--font-mono), monospace;
+  font-size: 7px;
+  text-transform: uppercase;
+}
+
+.jewel-spine small {
+  font-family: var(--font-hand), cursive;
+  font-size: 9px;
+}
+
+.jewel-cover {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.5), transparent 29%, transparent 70%, rgba(255,255,255,.14)),
+    var(--track-color);
+}
+
+.jewel-cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-left: 1px solid rgba(255,255,255,.38);
+  pointer-events: none;
+}
+
+.jewel-disc {
+  position: absolute;
+  right: -11px;
+  top: 11px;
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  background: conic-gradient(#d7dde0, #f5d9c8, #b8d4d2, #efe8f0, #cbd3da, #f0d2cf, #d7dde0);
+  box-shadow: 0 3px 8px rgba(0,0,0,.18);
+  opacity: .86;
+}
+
+.jewel-disc i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 17px;
+  height: 17px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #34292b;
+  box-shadow: 0 0 0 5px rgba(255,255,255,.28);
+}
+
+.jewel-cover-copy {
+  position: absolute;
+  z-index: 2;
+  left: 10px;
+  right: 10px;
+  bottom: 8px;
+  text-align: left;
+  color: #271b1e;
+  text-shadow: 0 1px rgba(255,255,255,.24);
+}
+
+.jewel-cover-copy b,
+.jewel-cover-copy em {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.jewel-cover-copy b {
+  font-family: var(--font-mono), monospace;
+  font-size: 8px;
+  text-transform: uppercase;
+}
+
+.jewel-cover-copy em {
+  margin-top: 1px;
+  font-family: var(--font-hand), cursive;
+  font-size: 11px;
+  font-style: normal;
+}
+
+.cd-rack-base {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px 3px 8px 8px;
+  background: linear-gradient(#171214, #302226);
+  box-shadow: inset 0 1px rgba(255,255,255,.05);
+}
+
+.cd-rack-base span {
+  font-family: var(--font-mono), monospace;
+  font-size: 8px;
+  letter-spacing: .17em;
+  color: rgba(232,217,208,.45);
+}
+
+/* Shared collection feedback */
+
+.physical-track {
+  outline: none;
+}
+
+.physical-track:focus-visible {
+  outline: 2px solid rgba(231,188,119,.92);
+  outline-offset: 5px;
+}
+
+.physical-now-playing {
+  position: absolute;
+  z-index: 20;
+  top: 6px;
+  right: 6px;
+  padding: 4px 6px;
+  border-radius: 3px;
+  background: #281b1d;
+  border: 1px solid rgba(233,190,117,.45);
+  color: #e9be75;
+  font-family: var(--font-mono), monospace;
+  font-size: 6px;
+  letter-spacing: .1em;
+  pointer-events: none;
+}
+
+.physical-dragging {
+  opacity: .72;
+  filter: brightness(1.08);
+}
+
+@media (max-width: 1080px) {
+  .station-v19 {
+    width: min(980px, calc(100vw - 34px));
+  }
+
+  .station-grid-v19 {
+    grid-template-columns: 1fr;
+  }
+
+  .station-player-v19 {
+    position: static;
+  }
+
+  .physical-vinyl {
+    grid-template-columns: repeat(3, minmax(130px, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .station-v19 {
+    width: min(100%, calc(100vw - 22px));
+  }
+
+  .physical-collection-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .physical-collection-action {
+    text-align: left;
+  }
+
+  .vinyl-crate-shell {
+    min-height: 0;
+    padding: 32px 17px 92px;
+  }
+
+  .physical-vinyl {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+    gap: 8px;
+  }
+
+  .physical-track-vinyl {
+    height: 174px;
+  }
+
+  .physical-cd {
+    grid-template-columns: 1fr;
+  }
+
+  .cassette-drawer-shell {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .tape-drawer-item {
+    grid-template-columns: 10px minmax(0, 1fr) 62px;
+  }
+
+  .tape-pull-word {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crate-record-wrap,
+  .physical-track-cassette,
+  .jewel-case {
+    transition: none !important;
+  }
+}
