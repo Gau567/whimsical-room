@@ -1,11 +1,25 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { cassettes, cds, vinyls } from "@/data/tracks";
+import { PinItem, readPinboardItems } from "@/lib/pinboard";
+import { Track } from "@/lib/types";
 
-type AppName = "home" | "games" | "guess" | "catch" | "fortune" | "memory";
+type AppName =
+  | "home"
+  | "mixes"
+  | "mail"
+  | "photos"
+  | "games"
+  | "guess"
+  | "catch"
+  | "fortune"
+  | "memory";
+
 type Card = { id: number; symbol: string; matched: boolean };
 
 const symbols = ["📼", "💿", "☕", "🌙"];
+const ALL_TRACKS = [...cassettes, ...cds, ...vinyls];
 
 function shuffleCards(): Card[] {
   return [...symbols, ...symbols]
@@ -13,8 +27,21 @@ function shuffleCards(): Card[] {
     .sort(() => Math.random() - 0.5);
 }
 
-export default function RetroComputer({ onBack }: { onBack: () => void }) {
+function itemLabel(item: PinItem) {
+  return item.caption || item.text || item.icon || "untitled memory";
+}
+
+export default function RetroComputer({
+  onBack,
+  onOpenBoard,
+  onPlayTrack,
+}: {
+  onBack: () => void;
+  onOpenBoard: () => void;
+  onPlayTrack: (track: Track) => void;
+}) {
   const [app, setApp] = useState<AppName>("home");
+  const [roomItems, setRoomItems] = useState<PinItem[]>([]);
 
   const [guess, setGuess] = useState("");
   const [guessMessage, setGuessMessage] = useState("pick a number from 1 to 20");
@@ -22,13 +49,38 @@ export default function RetroComputer({ onBack }: { onBack: () => void }) {
 
   const [score, setScore] = useState(0);
   const [pixelPos, setPixelPos] = useState({ x: 42, y: 48 });
-
   const [fortuneSeed, setFortuneSeed] = useState(0);
-
   const [cards, setCards] = useState<Card[]>(() => shuffleCards());
   const [flipped, setFlipped] = useState<number[]>([]);
   const [moves, setMoves] = useState(0);
   const [memoryLocked, setMemoryLocked] = useState(false);
+
+  useEffect(() => {
+    const refresh = () => setRoomItems(readPinboardItems([]));
+    refresh();
+    window.addEventListener("nostalgia-pinboard-updated", refresh);
+    return () => window.removeEventListener("nostalgia-pinboard-updated", refresh);
+  }, []);
+
+  const photos = useMemo(() => roomItems.filter((item) => item.type === "photo"), [roomItems]);
+  const mail = useMemo(
+    () => roomItems.filter((item) => item.type === "letter" || item.type === "journal" || item.type === "note"),
+    [roomItems],
+  );
+
+  const linkedTracks = useMemo(() => {
+    const ids = new Set(roomItems.map((item) => item.linkedTrackId).filter(Boolean));
+    return ALL_TRACKS.filter((track) => ids.has(track.id));
+  }, [roomItems]);
+
+  const mixGroups = useMemo(
+    () => [
+      { name: "TAPE BOX", subtitle: "soft, worn-in favourites", icon: "📼", tracks: cassettes },
+      { name: "DISC CASE", subtitle: "bright 2000s energy", icon: "💿", tracks: cds },
+      { name: "RECORD CRATE", subtitle: "warm late-night spins", icon: "◉", tracks: vinyls },
+    ],
+    [],
+  );
 
   const fortunes = useMemo(
     () => [
@@ -41,7 +93,7 @@ export default function RetroComputer({ onBack }: { onBack: () => void }) {
       "today has excellent side-quest energy.",
       "something old is about to feel new again.",
     ],
-    []
+    [],
   );
 
   const luckyObjects = [
@@ -146,35 +198,110 @@ export default function RetroComputer({ onBack }: { onBack: () => void }) {
     }
   }
 
+  const desktopCount = photos.length + mail.length + linkedTracks.length;
+
   return (
-    <section className="retro-computer-window computer-os" aria-label="Retro computer">
+    <section className="retro-computer-window computer-os computer-os-v12" aria-label="Retro computer">
       <div className="computer-window-bar">
         <span>NOSTALGIA OS 95</span>
         <button type="button" onClick={onBack} aria-label="Close computer">×</button>
       </div>
 
       <div className="computer-window-body computer-desktop">
+        <div className="computer-scanlines" aria-hidden="true" />
+
         {app === "home" && (
-          <div className="computer-home-screen">
+          <div className="computer-home-screen computer-home-v12">
             <p className="computer-prompt">C:\ROOM\DESKTOP&gt; dir</p>
             <h2>GOOD!<br />things ahead.</h2>
-            <p>Welcome to NOSTALGIA OS. Double-clicking is emotionally optional.</p>
+            <p>{desktopCount > 0 ? `${desktopCount} room memories indexed.` : "Your room is quiet. Add some memories and come back."}</p>
 
-            <div className="desktop-icons">
-              <button type="button" onClick={() => setApp("home")}><i>♫</i><span>mixes</span></button>
-              <button type="button" onClick={() => setApp("home")}><i>✉</i><span>mail</span></button>
-              <button type="button" onClick={() => openApp("games")}><i>☻</i><span>games</span></button>
-              <button type="button" onClick={() => setApp("home")}><i>▣</i><span>photos</span></button>
+            <div className="desktop-icons desktop-icons-v12">
+              <button type="button" onClick={() => openApp("mixes")}><i>♫</i><span>mixes</span><small>{linkedTracks.length || ALL_TRACKS.length}</small></button>
+              <button type="button" onClick={() => openApp("mail")}><i>✉</i><span>mail</span><small>{mail.length}</small></button>
+              <button type="button" onClick={() => openApp("games")}><i>☻</i><span>games</span><small>4</small></button>
+              <button type="button" onClick={() => openApp("photos")}><i>▣</i><span>photos</span><small>{photos.length}</small></button>
             </div>
+          </div>
+        )}
+
+        {app === "mixes" && (
+          <div className="computer-app-panel computer-library-app">
+            <div className="folder-topline"><p className="computer-prompt">C:\ROOM\MIXES&gt; dir</p><button type="button" className="retro-small-button" onClick={() => setApp("home")}>← DESKTOP</button></div>
+            <h3>MIXES</h3>
+            {linkedTracks.length > 0 && (
+              <div className="computer-linked-strip">
+                <span>MEMORY SOUNDTRACKS</span>
+                {linkedTracks.map((track) => (
+                  <button type="button" key={track.id} onClick={() => onPlayTrack(track)}>♫ {track.title}</button>
+                ))}
+              </div>
+            )}
+            <div className="computer-mix-grid">
+              {mixGroups.map((group) => (
+                <section key={group.name} className="computer-mix-folder">
+                  <div><i>{group.icon}</i><strong>{group.name}</strong><span>{group.subtitle}</span></div>
+                  <ul>
+                    {group.tracks.map((track) => (
+                      <li key={track.id}>
+                        <button type="button" onClick={() => onPlayTrack(track)}>
+                          <span>{track.title}</span><small>{track.artist}</small><b>PLAY</b>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {app === "mail" && (
+          <div className="computer-app-panel computer-library-app">
+            <div className="folder-topline"><p className="computer-prompt">C:\ROOM\MAIL&gt; dir</p><button type="button" className="retro-small-button" onClick={() => setApp("home")}>← DESKTOP</button></div>
+            <h3>MAIL</h3>
+            {mail.length === 0 ? (
+              <div className="computer-empty-state"><i>✉</i><strong>NO MAIL YET</strong><span>Type a note, tear a journal page, or pin a letter first.</span><button type="button" onClick={onOpenBoard}>OPEN PINBOARD</button></div>
+            ) : (
+              <div className="computer-mail-list">
+                {mail.slice().reverse().map((item, index) => (
+                  <button type="button" key={item.id} onClick={onOpenBoard}>
+                    <i>{item.type === "letter" ? "✉" : item.type === "journal" ? "▤" : "▪"}</i>
+                    <span><strong>{item.type.toUpperCase()}_{String(index + 1).padStart(2, "0")}.TXT</strong><small>{itemLabel(item).slice(0, 78)}</small></span>
+                    {item.linkedTrackId && <b>♫</b>}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {app === "photos" && (
+          <div className="computer-app-panel computer-library-app">
+            <div className="folder-topline"><p className="computer-prompt">C:\ROOM\PHOTOS&gt; dir</p><button type="button" className="retro-small-button" onClick={() => setApp("home")}>← DESKTOP</button></div>
+            <h3>PHOTOS</h3>
+            {photos.length === 0 ? (
+              <div className="computer-empty-state"><i>▣</i><strong>NO PHOTOS FOUND</strong><span>Upload a Polaroid to the pinboard and it will appear here.</span><button type="button" onClick={onOpenBoard}>OPEN PINBOARD</button></div>
+            ) : (
+              <div className="computer-photo-grid">
+                {photos.map((item) => {
+                  const linked = ALL_TRACKS.find((track) => track.id === item.linkedTrackId);
+                  return (
+                    <button type="button" key={item.id} className="computer-photo-file" onClick={onOpenBoard}>
+                      {item.image ? <img src={item.image} alt={item.caption || "Room memory"} /> : <span style={{ background: item.color }} />}
+                      <strong>{item.caption || "untitled memory"}</strong>
+                      <small>{linked ? `♫ ${linked.title}` : "POLAROID.JPG"}</small>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 
         {app === "games" && (
           <div className="computer-app-panel games-folder">
-            <div className="folder-topline">
-              <p className="computer-prompt">C:\ROOM\GAMES&gt; dir</p>
-              <button type="button" className="retro-small-button" onClick={() => setApp("home")}>← DESKTOP</button>
-            </div>
+            <div className="folder-topline"><p className="computer-prompt">C:\ROOM\GAMES&gt; dir</p><button type="button" className="retro-small-button" onClick={() => setApp("home")}>← DESKTOP</button></div>
             <h3>GAMES</h3>
             <div className="game-file-grid">
               <button type="button" onClick={() => openApp("guess")}><i>?</i><strong>GUESS.EXE</strong><span>number guesser</span></button>
@@ -188,22 +315,15 @@ export default function RetroComputer({ onBack }: { onBack: () => void }) {
         {app === "guess" && (
           <div className="computer-app-panel">
             <div className="folder-topline"><p className="computer-prompt">C:\GAMES\GUESS.EXE</p><button type="button" className="retro-small-button" onClick={() => setApp("games")}>← GAMES</button></div>
-            <h3>NUMBER GUESSER</h3>
-            <p>I picked a fresh secret number between 1 and 20.</p>
-            <div className="guess-controls">
-              <input value={guess} onChange={(e) => setGuess(e.target.value)} onKeyDown={(e) => e.key === "Enter" && submitGuess()} inputMode="numeric" aria-label="Your number guess" placeholder="1-20" />
-              <button type="button" onClick={submitGuess}>ENTER</button>
-            </div>
+            <h3>NUMBER GUESSER</h3><p>I picked a fresh secret number between 1 and 20.</p>
+            <div className="guess-controls"><input value={guess} onChange={(e) => setGuess(e.target.value)} onKeyDown={(e) => e.key === "Enter" && submitGuess()} inputMode="numeric" aria-label="Your number guess" placeholder="1-20" /><button type="button" onClick={submitGuess}>ENTER</button></div>
             <div className="computer-status-line">{guessMessage}</div>
           </div>
         )}
 
         {app === "catch" && (
           <div className="computer-app-panel catch-app">
-            <div className="catch-header">
-              <div><p className="computer-prompt">C:\GAMES\PIXEL.EXE</p><h3>CATCH THE PIXEL</h3></div>
-              <div className="catch-actions"><strong>SCORE {String(score).padStart(2, "0")}</strong><button type="button" className="retro-small-button" onClick={() => setApp("games")}>← GAMES</button></div>
-            </div>
+            <div className="catch-header"><div><p className="computer-prompt">C:\GAMES\PIXEL.EXE</p><h3>CATCH THE PIXEL</h3></div><div className="catch-actions"><strong>SCORE {String(score).padStart(2, "0")}</strong><button type="button" className="retro-small-button" onClick={() => setApp("games")}>← GAMES</button></div></div>
             <p>click the glowing pixel. every hit moves it somewhere random.</p>
             <div className="pixel-field"><button type="button" className="catch-pixel" style={{ left: `${pixelPos.x}%`, top: `${pixelPos.y}%` }} onClick={catchPixel} aria-label="Catch pixel" /></div>
           </div>
@@ -212,25 +332,8 @@ export default function RetroComputer({ onBack }: { onBack: () => void }) {
         {app === "fortune" && (
           <div className="computer-app-panel fortune-app">
             <div className="folder-topline"><p className="computer-prompt">C:\GAMES\ORACLE.EXE</p><button type="button" className="retro-small-button" onClick={() => setApp("games")}>← GAMES</button></div>
-            <h3>ORACLE 2.0</h3>
-            <div className="fortune-orb">◎</div>
-            {fortune && (
-              <div className="fortune-card">
-                <p className="fortune-omen">✦ SIGNAL RECEIVED ✦<br /><strong>{fortune.omen}</strong></p>
-                <div className="fortune-bars">
-                  <span>LUCK <i><b style={{ width: `${fortune.luck}%` }} /></i> {fortune.luck}%</span>
-                  <span>CHAOS <i><b style={{ width: `${fortune.chaos}%` }} /></i> {fortune.chaos}%</span>
-                  <span>ROMANCE <i><b style={{ width: `${fortune.romance}%` }} /></i> {fortune.romance}%</span>
-                </div>
-                <div className="fortune-details">
-                  <span><b>MOOD</b>{fortune.mood}</span>
-                  <span><b>LUCKY NO.</b>{fortune.lucky}</span>
-                  <span><b>LUCKY TRACK</b>track {fortune.track}</span>
-                  <span><b>LUCKY OBJECT</b>{fortune.object}</span>
-                </div>
-                <p className="fortune-warning"><b>AVOID:</b> {fortune.warning}</p>
-              </div>
-            )}
+            <h3>ORACLE 2.0</h3><div className="fortune-orb">◎</div>
+            {fortune && <div className="fortune-card"><p className="fortune-omen">✦ SIGNAL RECEIVED ✦<br /><strong>{fortune.omen}</strong></p><div className="fortune-bars"><span>LUCK <i><b style={{ width: `${fortune.luck}%` }} /></i> {fortune.luck}%</span><span>CHAOS <i><b style={{ width: `${fortune.chaos}%` }} /></i> {fortune.chaos}%</span><span>ROMANCE <i><b style={{ width: `${fortune.romance}%` }} /></i> {fortune.romance}%</span></div><div className="fortune-details"><span><b>MOOD</b>{fortune.mood}</span><span><b>LUCKY NO.</b>{fortune.lucky}</span><span><b>LUCKY TRACK</b>track {fortune.track}</span><span><b>LUCKY OBJECT</b>{fortune.object}</span></div><p className="fortune-warning"><b>AVOID:</b> {fortune.warning}</p></div>}
             <button type="button" className="retro-run-button" onClick={() => setFortuneSeed((value) => value + 1)}>RUN AGAIN</button>
           </div>
         )}
@@ -239,12 +342,7 @@ export default function RetroComputer({ onBack }: { onBack: () => void }) {
           <div className="computer-app-panel memory-game-app">
             <div className="folder-topline"><p className="computer-prompt">C:\GAMES\MEMORY.EXE</p><button type="button" className="retro-small-button" onClick={() => setApp("games")}>← GAMES</button></div>
             <div className="memory-game-heading"><div><h3>MEMORY MATCH</h3><p>find all four pairs.</p></div><strong>MOVES {String(moves).padStart(2, "0")}</strong></div>
-            <div className="memory-grid">
-              {cards.map((card, index) => {
-                const visible = card.matched || flipped.includes(index);
-                return <button key={card.id} type="button" className={`memory-tile ${visible ? "is-open" : ""}`} onClick={() => flipCard(index)} aria-label={visible ? card.symbol : "Hidden card"}>{visible ? card.symbol : "?"}</button>;
-              })}
-            </div>
+            <div className="memory-grid">{cards.map((card, index) => { const visible = card.matched || flipped.includes(index); return <button key={card.id} type="button" className={`memory-tile ${visible ? "is-open" : ""}`} onClick={() => flipCard(index)} aria-label={visible ? card.symbol : "Hidden card"}>{visible ? card.symbol : "?"}</button>; })}</div>
             {cards.every((card) => card.matched) && <div className="computer-status-line">ALL PAIRS FOUND — nostalgia restored.</div>}
             <button type="button" className="retro-run-button" onClick={resetMemory}>NEW GAME</button>
           </div>

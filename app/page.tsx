@@ -38,7 +38,7 @@ export default function Home() {
 
   return (
     <DndContext>
-      <main className={`nostalgia-room retro-room-page ${lampOn ? "room-lit" : "room-dim"}`}>
+      <main className={`nostalgia-room retro-room-page room-view-${view} ${lampOn ? "room-lit" : "room-dim"}`}>
         <div className="ambient-grain" />
 
         {view === "room" && (
@@ -104,7 +104,11 @@ export default function Home() {
             <button type="button" className="station-back" onClick={() => setView("room")}>
               ← back to room
             </button>
-            <RetroComputer onBack={() => setView("room")} />
+            <RetroComputer
+              onBack={() => setView("room")}
+              onOpenBoard={() => setView("pinboard")}
+              onPlayTrack={openMemorySong}
+            />
           </section>
         )}
 

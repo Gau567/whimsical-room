@@ -4431,3 +4431,368 @@ button {
 .sticky-letter,
 .sticky-journal,
 .sticky-keepsake { position: relative; overflow: hidden; }
+
+/* =========================================================
+   V12 — COHESION / POLISH PASS
+   Makes every view feel like the same little world.
+   ========================================================= */
+
+:root {
+  --retro-rose: #c98cab;
+  --retro-cream: #eadfd5;
+  --retro-shadow: rgba(10, 7, 11, .45);
+  --retro-panel: rgba(32, 24, 30, .92);
+  --retro-line: rgba(235, 217, 224, .12);
+}
+
+/* The main page no longer shifts wildly between tools. */
+.retro-room-page {
+  transition: filter .45s ease, background .45s ease;
+}
+
+.retro-room-page:not(.room-view-room) {
+  background:
+    radial-gradient(circle at 50% 12%, rgba(153, 93, 126, .12), transparent 28%),
+    linear-gradient(180deg, #241a26 0%, #171219 100%);
+}
+
+.retro-focus-shell,
+.retro-modal-shell {
+  animation: room-view-enter .34s cubic-bezier(.2,.75,.25,1) both;
+}
+
+@keyframes room-view-enter {
+  from { opacity: 0; transform: translateY(10px) scale(.992); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.station-back {
+  transition: transform .16s ease, background .16s ease, border-color .16s ease;
+}
+.station-back:hover {
+  transform: translateX(-2px);
+  border-color: rgba(225, 185, 203, .32);
+  background: rgba(255,255,255,.035);
+}
+
+/* Ambient room movement is intentionally tiny. */
+.window-vine { animation: vine-breathe 5.2s ease-in-out infinite alternate; }
+.vine-b { animation-delay: -2.1s; }
+.sky-cloud-a { animation: cloud-drift-a 18s linear infinite alternate; }
+.sky-cloud-b { animation: cloud-drift-b 22s linear infinite alternate; }
+
+@keyframes vine-breathe {
+  from { translate: 0 0; rotate: -1deg; }
+  to { translate: 2px 1px; rotate: 2deg; }
+}
+@keyframes cloud-drift-a { from { transform: translateX(-4px); } to { transform: translateX(16px); } }
+@keyframes cloud-drift-b { from { transform: translateX(8px); } to { transform: translateX(-13px); } }
+
+/* CRT in the room: glass, scanline and restrained phosphor flicker. */
+.crt-screen {
+  overflow: hidden;
+  isolation: isolate;
+}
+.crt-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: .12;
+  background: repeating-linear-gradient(180deg, transparent 0 2px, rgba(8, 18, 12, .65) 3px);
+}
+.crt-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 45%, transparent 44%, rgba(0,0,0,.2));
+  animation: crt-flicker 4.8s steps(1,end) infinite;
+}
+@keyframes crt-flicker {
+  0%, 95%, 100% { opacity: .22; }
+  96% { opacity: .05; }
+  97% { opacity: .3; }
+}
+
+/* A common interaction language across room objects. */
+.retro-scene-v6 .hotspot,
+.retro-scene-v6 .desk-drawer-button {
+  transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
+}
+.retro-scene-v6 .hotspot:hover,
+.retro-scene-v6 .desk-drawer-button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.055) saturate(1.03);
+}
+.retro-scene-v6 .hotspot:active,
+.retro-scene-v6 .desk-drawer-button:active {
+  transform: translateY(0) scale(.985);
+}
+
+.object-tip {
+  letter-spacing: .04em;
+  box-shadow: 0 6px 16px rgba(0,0,0,.22);
+}
+
+/* Warm shelf pool of light when the lamp is on. */
+.room-lit .retro-shelf-v7::after {
+  box-shadow: 0 5px 8px rgba(0,0,0,.25), 0 0 36px rgba(231, 160, 91, .09);
+}
+.room-lit .cabinet-row:first-of-type {
+  background: radial-gradient(circle at 82% 5%, rgba(255, 195, 111, .08), transparent 45%);
+}
+
+/* ---------------------------------------------------------
+   NOSTALGIA OS — actual room content
+   --------------------------------------------------------- */
+.computer-os-v12 {
+  position: relative;
+  overflow: hidden;
+}
+.computer-os-v12 .computer-window-body {
+  position: relative;
+  isolation: isolate;
+}
+.computer-scanlines {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  opacity: .075;
+  background: repeating-linear-gradient(180deg, transparent 0 3px, #06130c 4px);
+  mix-blend-mode: multiply;
+}
+.computer-os-v12 .computer-window-body::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 19;
+  pointer-events: none;
+  box-shadow: inset 0 0 48px rgba(7, 14, 9, .28);
+}
+
+.desktop-icons-v12 button {
+  position: relative;
+}
+.desktop-icons-v12 button small {
+  position: absolute;
+  top: -5px;
+  right: 1px;
+  display: grid;
+  place-items: center;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border: 1px solid rgba(214,234,206,.32);
+  border-radius: 999px;
+  background: #15251b;
+  color: #b9d8b4;
+  font-family: var(--font-mono);
+  font-size: 8px;
+}
+
+.computer-library-app {
+  min-height: 360px;
+}
+
+.computer-linked-strip {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 14px;
+  padding: 8px 9px;
+  overflow-x: auto;
+  border: 1px solid rgba(155, 193, 153, .16);
+  background: rgba(14, 30, 19, .35);
+}
+.computer-linked-strip > span {
+  flex: 0 0 auto;
+  color: #92ad8d;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: .12em;
+}
+.computer-linked-strip button {
+  flex: 0 0 auto;
+  border: 1px solid rgba(167, 205, 160, .16);
+  background: #1b3021;
+  color: #c8dfc3;
+  padding: 5px 8px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  cursor: pointer;
+}
+.computer-linked-strip button:hover { background: #27442e; }
+
+.computer-mix-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.computer-mix-folder {
+  min-width: 0;
+  border: 2px solid #536250;
+  background: rgba(208, 220, 193, .06);
+}
+.computer-mix-folder > div {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  column-gap: 7px;
+  padding: 9px;
+  border-bottom: 1px solid rgba(170,194,163,.16);
+}
+.computer-mix-folder > div i {
+  grid-row: 1 / 3;
+  font-style: normal;
+  font-size: 19px;
+}
+.computer-mix-folder > div strong {
+  color: #d0dfc8;
+  font-family: var(--font-mono);
+  font-size: 8px;
+}
+.computer-mix-folder > div span {
+  color: #8aa087;
+  font-size: 8px;
+}
+.computer-mix-folder ul { list-style: none; padding: 5px; margin: 0; }
+.computer-mix-folder li + li { border-top: 1px dotted rgba(152,183,148,.13); }
+.computer-mix-folder li button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  padding: 6px 5px;
+  border: 0;
+  background: transparent;
+  color: #bdd0b8;
+  text-align: left;
+  cursor: pointer;
+}
+.computer-mix-folder li button:hover { background: rgba(128,165,125,.09); }
+.computer-mix-folder li span,
+.computer-mix-folder li small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.computer-mix-folder li span { font-family: var(--font-mono); font-size: 8px; }
+.computer-mix-folder li small { grid-column: 1; color: #7f967d; font-size: 7px; }
+.computer-mix-folder li b { grid-column: 2; grid-row: 1 / 3; align-self: center; color: #95b391; font-size: 7px; }
+
+.computer-mail-list {
+  display: grid;
+  gap: 5px;
+}
+.computer-mail-list > button {
+  display: grid;
+  grid-template-columns: 26px minmax(0,1fr) 18px;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding: 7px 8px;
+  border: 1px solid rgba(151,185,148,.14);
+  background: rgba(209,221,196,.035);
+  color: #bfd2bb;
+  text-align: left;
+  cursor: pointer;
+}
+.computer-mail-list > button:hover { background: rgba(136,171,132,.09); }
+.computer-mail-list i { font-style: normal; font-size: 17px; text-align: center; }
+.computer-mail-list span { min-width: 0; }
+.computer-mail-list strong,
+.computer-mail-list small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.computer-mail-list strong { font-family: var(--font-mono); font-size: 8px; }
+.computer-mail-list small { margin-top: 2px; color: #81967e; font-size: 8px; }
+.computer-mail-list b { color: #a7c9a2; }
+
+.computer-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 10px;
+}
+.computer-photo-file {
+  min-width: 0;
+  padding: 6px 6px 8px;
+  border: 1px solid rgba(153,184,147,.17);
+  background: rgba(217,227,205,.045);
+  color: #bfd1b8;
+  text-align: left;
+  cursor: pointer;
+}
+.computer-photo-file:hover { background: rgba(154,188,147,.09); }
+.computer-photo-file img,
+.computer-photo-file > span {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  margin-bottom: 6px;
+  background: #27362b;
+  filter: saturate(.8) contrast(.95);
+}
+.computer-photo-file strong,
+.computer-photo-file small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.computer-photo-file strong { font-family: var(--font-mono); font-size: 8px; }
+.computer-photo-file small { margin-top: 2px; color: #839a80; font-size: 7px; }
+
+.computer-empty-state {
+  min-height: 210px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  border: 1px dashed rgba(153,184,147,.18);
+  color: #91a78e;
+  text-align: center;
+}
+.computer-empty-state i { font-style: normal; font-size: 30px; opacity: .72; }
+.computer-empty-state strong { color: #c4d4bd; font-family: var(--font-mono); font-size: 10px; }
+.computer-empty-state span { max-width: 280px; font-size: 9px; }
+.computer-empty-state button {
+  margin-top: 4px;
+  border: 1px solid #5d7559;
+  background: #203125;
+  color: #c4d4bd;
+  padding: 6px 9px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  cursor: pointer;
+}
+
+/* More consistent modal sizing: no giant blank canvas around small tools. */
+.computer-modal-shell,
+.typewriter-modal-shell,
+.pinboard-modal-shell,
+.drawer-shell {
+  align-content: start;
+}
+.computer-modal-shell { padding-top: 44px; }
+
+@media (max-width: 760px) {
+  .computer-mix-grid,
+  .computer-photo-grid { grid-template-columns: 1fr; }
+  .computer-library-app { min-height: 0; }
+  .computer-modal-shell { padding-top: 18px; }
+}
+
+@media (hover: none) {
+  .object-tip { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .window-vine,
+  .sky-cloud-a,
+  .sky-cloud-b,
+  .crt-screen::after,
+  .retro-focus-shell,
+  .retro-modal-shell { animation: none !important; }
+}
