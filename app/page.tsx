@@ -77,7 +77,7 @@ export default function Home() {
             <button type="button" className="station-back" onClick={() => setView("room")}>
               ← back to room
             </button>
-            <TypableJournal onOpenBooks={() => setView("books")} />
+            <TypableJournal onOpenBooks={() => setView("books")} onOpenBoard={() => setView("pinboard")} />
           </section>
         )}
 
@@ -95,7 +95,7 @@ export default function Home() {
             <button type="button" className="station-back" onClick={() => setOpenDrawer(null)}>
               ← close drawer
             </button>
-            <DeskDrawer drawer={openDrawer} onClose={() => setOpenDrawer(null)} />
+            <DeskDrawer drawer={openDrawer} onClose={() => setOpenDrawer(null)} onOpenBoard={() => setView("pinboard")} />
           </section>
         )}
 

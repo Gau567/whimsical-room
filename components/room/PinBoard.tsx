@@ -3,23 +3,7 @@
 import { PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from "react";
 import { cassettes, cds, vinyls } from "@/data/tracks";
 import { MediaFormat, Track } from "@/lib/types";
-
-type PinItem = {
-  id: string;
-  type: "note" | "photo";
-  text?: string;
-  caption?: string;
-  color?: string;
-  image?: string;
-  createdAt: number;
-  x?: number;
-  y?: number;
-  rotation?: number;
-  font?: "type" | "hand";
-  linkedTrackId?: string;
-};
-
-const STORAGE_KEY = "nostalgia-pinboard-items";
+import { PinItem, PINBOARD_STORAGE_KEY, defaultPinPlacement, normalizePinItems, readPinboardItems, writePinboardItems } from "@/lib/pinboard";
 const ALL_TRACKS = [...cassettes, ...cds, ...vinyls];
 
 const STARTER_ITEMS: PinItem[] = [
@@ -57,40 +41,8 @@ const STARTER_ITEMS: PinItem[] = [
   },
 ];
 
-function defaultPlacement(index: number) {
-  const placements = [
-    { x: 8, y: 10 },
-    { x: 39, y: 11 },
-    { x: 68, y: 12 },
-    { x: 13, y: 48 },
-    { x: 43, y: 49 },
-    { x: 70, y: 50 },
-    { x: 26, y: 30 },
-    { x: 57, y: 29 },
-  ];
-  return placements[index % placements.length];
-}
-
-function normalizeItems(items: PinItem[]): PinItem[] {
-  return items.map((item, index) => {
-    const fallback = defaultPlacement(index);
-    return {
-      ...item,
-      x: typeof item.x === "number" ? item.x : fallback.x,
-      y: typeof item.y === "number" ? item.y : fallback.y,
-      rotation: typeof item.rotation === "number" ? item.rotation : ((index % 5) - 2) * 2,
-    };
-  });
-}
-
 function loadItems(): PinItem[] {
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return STARTER_ITEMS;
-    return normalizeItems(JSON.parse(raw) as PinItem[]);
-  } catch {
-    return STARTER_ITEMS;
-  }
+  return readPinboardItems(STARTER_ITEMS);
 }
 
 function getTrack(id?: string): Track | null {
@@ -126,8 +78,8 @@ export default function PinBoard({
   function refresh() {
     const loaded = loadItems();
     setItems(loaded);
-    if (!window.localStorage.getItem(STORAGE_KEY)) {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(loaded));
+    if (!window.localStorage.getItem(PINBOARD_STORAGE_KEY)) {
+      writePinboardItems(loaded);
     }
   }
 
@@ -139,14 +91,13 @@ export default function PinBoard({
   }, []);
 
   function save(next: PinItem[]) {
-    const normalized = normalizeItems(next);
+    const normalized = normalizePinItems(next);
     setItems(normalized);
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
-    window.dispatchEvent(new Event("nostalgia-pinboard-updated"));
+    writePinboardItems(normalized);
   }
 
   function nextPlacement() {
-    return defaultPlacement(items.length);
+    return defaultPinPlacement(items.length);
   }
 
   function addQuickNote() {
@@ -229,7 +180,7 @@ export default function PinBoard({
 
   function beginEdit(item: PinItem) {
     setEditingId(item.id);
-    setEditingText(item.type === "note" ? item.text || "" : item.caption || "");
+    setEditingText(item.type === "photo" ? item.caption || "" : item.text || "");
     setEditingTrackId(item.linkedTrackId || "");
     const track = getTrack(item.linkedTrackId);
     setFormatFilter(track?.format ?? "all");
@@ -244,7 +195,7 @@ export default function PinBoard({
         item.id === editingId
           ? {
               ...item,
-              ...(item.type === "note" ? { text: value } : { caption: value }),
+              ...(item.type === "photo" ? { caption: value } : { text: value }),
               linkedTrackId: editingTrackId || undefined,
             }
           : item,
@@ -324,7 +275,7 @@ export default function PinBoard({
     } catch {
       // Pointer capture may already have been released by the browser.
     }
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    writePinboardItems(items);
     if (!drag.moved) setViewingId(drag.id);
   }
 
@@ -333,7 +284,7 @@ export default function PinBoard({
     save(STARTER_ITEMS);
   }
 
-  const noteCount = useMemo(() => items.filter((item) => item.type === "note").length, [items]);
+  const paperCount = useMemo(() => items.filter((item) => item.type !== "photo").length, [items]);
   const editingItem = items.find((item) => item.id === editingId) ?? null;
   const viewingItem = items.find((item) => item.id === viewingId) ?? null;
   const viewingTrack = getTrack(viewingItem?.linkedTrackId);
@@ -374,11 +325,7 @@ export default function PinBoard({
               onPointerCancel={() => { dragRef.current = null; }}
             >
               <span className="push-pin" />
-              {item.type === "note" ? (
-                <div className={`sticky-note ${item.font === "hand" ? "sticky-font-hand" : "sticky-font-type"}`} style={{ background: item.color || "#f0dd9e" }}>
-                  <p>{item.text}</p>
-                </div>
-              ) : (
+              {item.type === "photo" ? (
                 <div className="pinned-polaroid">
                   {item.image ? (
                     <img className="pin-photo pin-photo-image" src={item.image} alt={item.caption || "Pinned memory"} />
@@ -386,6 +333,15 @@ export default function PinBoard({
                     <span className="pin-photo" style={{ background: item.color }} />
                   )}
                   <small>{item.caption}</small>
+                </div>
+              ) : (
+                <div
+                  className={`sticky-note sticky-${item.type} ${item.font === "hand" ? "sticky-font-hand" : "sticky-font-type"}`}
+                  style={{ background: item.color || "#f0dd9e" }}
+                >
+                  {item.icon && <span className="pin-paper-icon">{item.icon}</span>}
+                  <p>{item.text}</p>
+                  {item.source && item.source !== "pinboard" && <small className="pin-source-label">from {item.source}</small>}
                 </div>
               )}
 
@@ -441,7 +397,7 @@ export default function PinBoard({
             />
           </label>
         </div>
-        <small>{noteCount} note{noteCount === 1 ? "" : "s"} · positions + songs saved locally</small>
+        <small>{paperCount} paper item{paperCount === 1 ? "" : "s"} · positions + songs saved locally</small>
       </div>
 
       {viewingItem && (
@@ -461,7 +417,11 @@ export default function PinBoard({
                   <h3>{viewingItem.caption || "untitled memory"}</h3>
                 </>
               ) : (
-                <p className={viewingItem.font === "hand" ? "memory-note-hand" : "memory-note-type"}>{viewingItem.text}</p>
+                <>
+                  {viewingItem.icon && <div className="memory-viewer-icon">{viewingItem.icon}</div>}
+                  <p className={viewingItem.font === "hand" ? "memory-note-hand" : "memory-note-type"}>{viewingItem.text}</p>
+                  {viewingItem.source && <small className="memory-viewer-source">pinned from {viewingItem.source}</small>}
+                </>
               )}
             </div>
 
@@ -497,15 +457,15 @@ export default function PinBoard({
           <section className="pin-editor pin-editor-v10" onClick={(event) => event.stopPropagation()}>
             <div className="pin-editor-heading">
               <div>
-                <p>{editingItem.type === "note" ? "EDIT NOTE" : "EDIT MEMORY"}</p>
-                <h3>{editingItem.type === "note" ? "rewrite the paper" : "change the caption"}</h3>
+                <p>{editingItem.type === "photo" ? "EDIT MEMORY" : `EDIT ${editingItem.type.toUpperCase()}`}</p>
+                <h3>{editingItem.type === "photo" ? "change the caption" : "rewrite the paper"}</h3>
               </div>
               <button type="button" onClick={() => setEditingId(null)} aria-label="Close editor">×</button>
             </div>
 
             <textarea
               value={editingText}
-              onChange={(event) => setEditingText(event.target.value.slice(0, editingItem.type === "note" ? 220 : 90))}
+              onChange={(event) => setEditingText(event.target.value.slice(0, editingItem.type === "photo" ? 90 : 420))}
               autoFocus
             />
 
