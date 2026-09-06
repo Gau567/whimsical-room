@@ -5561,3 +5561,216 @@ button {
     transition: none;
   }
 }
+
+/* =========================================================
+   V17 — ROOM STEREO
+   A physical in-room controller for the persistent player.
+   ========================================================= */
+.room-speaker-console {
+  position: relative;
+  z-index: 18;
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  width: min(430px, 92%);
+  margin: 14px auto 0;
+  padding: 12px;
+  border: 1px solid rgba(231, 205, 188, .14);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(89, 58, 45, .96), rgba(58, 38, 32, .98));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06),
+    0 14px 30px rgba(8,5,8,.26);
+}
+
+.speaker-cabinet {
+  position: relative;
+  width: 112px;
+  height: 112px;
+  border-radius: 10px;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.04), transparent 38%),
+    #231b19;
+  border: 4px solid #6a4937;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+}
+
+.speaker-grille {
+  position: absolute;
+  inset: 5px;
+  opacity: .42;
+  background-image:
+    radial-gradient(circle, rgba(219,204,190,.22) 1px, transparent 1.4px);
+  background-size: 5px 5px;
+}
+
+.speaker-cone {
+  position: absolute;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  background:
+    radial-gradient(circle at center,
+      #8f8477 0 11%,
+      #282321 12% 27%,
+      #151313 28% 52%,
+      #4d4540 53% 61%,
+      #171414 62% 100%);
+  box-shadow: inset 0 0 10px rgba(0,0,0,.7);
+}
+
+.speaker-cone i {
+  width: 28%;
+  height: 28%;
+  border-radius: 50%;
+  background: #918373;
+  box-shadow: inset 0 -2px 4px rgba(0,0,0,.35);
+}
+
+.speaker-cone-top {
+  top: 12px;
+  width: 42px;
+  height: 42px;
+}
+
+.speaker-cone-bottom {
+  bottom: 8px;
+  width: 58px;
+  height: 58px;
+}
+
+.speaker-led {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #5b463e;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.35);
+}
+
+.speaker-is-playing .speaker-led {
+  background: #d6c18d;
+  box-shadow: 0 0 8px rgba(214,193,141,.65);
+}
+
+.speaker-is-playing .speaker-cone {
+  animation: room-speaker-pulse .46s ease-in-out infinite alternate;
+}
+
+.speaker-is-playing .speaker-cone-bottom {
+  animation-duration: .62s;
+}
+
+@keyframes room-speaker-pulse {
+  from { transform: translateX(-50%) scale(.985); }
+  to { transform: translateX(-50%) scale(1.025); }
+}
+
+.speaker-controls {
+  min-width: 0;
+}
+
+.speaker-display {
+  min-width: 0;
+  margin-bottom: 10px;
+  padding: 9px 11px;
+  border-radius: 7px;
+  background: #aeb99f;
+  color: #2f342c;
+  box-shadow: inset 0 0 0 1px rgba(34,39,31,.38);
+  font-family: var(--font-mono);
+}
+
+.speaker-display small,
+.speaker-display strong,
+.speaker-display span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.speaker-display small {
+  margin-bottom: 4px;
+  font-size: 9px;
+  letter-spacing: .2em;
+}
+
+.speaker-display strong {
+  font-size: 12px;
+  letter-spacing: .04em;
+}
+
+.speaker-display span {
+  margin-top: 2px;
+  font-size: 10px;
+  opacity: .72;
+}
+
+.speaker-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.speaker-buttons button {
+  min-width: 46px;
+  min-height: 34px;
+  padding: 6px 10px;
+  border: 1px solid rgba(20,13,12,.65);
+  border-radius: 7px;
+  background: #372923;
+  color: #dfd3c9;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  cursor: pointer;
+  transition: transform .14s ease, background .14s ease;
+}
+
+.speaker-buttons button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: #49352c;
+}
+
+.speaker-buttons button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.speaker-buttons button:disabled {
+  cursor: not-allowed;
+  opacity: .38;
+}
+
+@media (max-width: 620px) {
+  .room-speaker-console {
+    grid-template-columns: 86px minmax(0, 1fr);
+  }
+
+  .speaker-cabinet {
+    width: 86px;
+    height: 96px;
+  }
+
+  .speaker-cone-top {
+    width: 34px;
+    height: 34px;
+  }
+
+  .speaker-cone-bottom {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .speaker-is-playing .speaker-cone {
+    animation: none;
+  }
+}

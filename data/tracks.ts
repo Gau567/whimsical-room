@@ -85,6 +85,22 @@ export const vinyls: Track[] = [
     format: "vinyl",
     color: "#72867e",
   },
+  {
+    id: "v11",
+    title: "Broken Melodies",
+    artist: "NCT DREAM",
+    youtubeId: "2R_S5TgDWMY",
+    format: "vinyl",
+    color: "#8aa0ad",
+  },
+  {
+    id: "v12",
+    title: "Trigger the Fever",
+    artist: "NCT DREAM",
+    youtubeId: "BrFyTUakTL8",
+    format: "vinyl",
+    color: "#a76f63",
+  },
 ];
 
 /* =========================================================
@@ -140,6 +156,14 @@ export const cassettes: Track[] = [
     format: "cassette",
     color: "#8b6c67",
   },
+  {
+    id: "c7",
+    title: "DREAM TEAM",
+    artist: "NCT DREAM",
+    youtubeId: "gDVBHUyh7pA",
+    format: "cassette",
+    color: "#6f8f88",
+  },
 ];
 
 /* =========================================================
@@ -194,5 +218,13 @@ export const cds: Track[] = [
     youtubeId: "f1Cly7TQ3M0",
     format: "cd",
     color: "#5f7b84",
+  },
+  {
+    id: "d7",
+    title: "Beatbox",
+    artist: "NCT DREAM",
+    youtubeId: "o6DFMVfnBxY",
+    format: "cd",
+    color: "#8ca1a6",
   },
 ];
