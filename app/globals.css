@@ -5335,3 +5335,229 @@ button {
   .retro-file-app { min-height: 190px; }
   .computer-boot-screen, .computer-off-screen { min-height: 330px; }
 }
+
+/* =========================================================
+   V16 — PERSISTENT GLOBAL MUSIC PLAYER
+   The YouTube engine now stays mounted while room views change.
+========================================================= */
+
+.persistent-music-player {
+  position: fixed;
+  z-index: 9998;
+  left: 50%;
+  bottom: 18px;
+  width: min(760px, calc(100vw - 28px));
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 250px) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 12px;
+  border: 1px solid rgba(30, 19, 22, 0.72);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(83, 54, 42, 0.97), rgba(55, 34, 31, 0.98));
+  box-shadow:
+    0 12px 32px rgba(10, 5, 12, 0.34),
+    inset 0 1px 0 rgba(255, 242, 218, 0.11),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.16);
+  color: #efe2cf;
+  backdrop-filter: blur(8px);
+}
+
+.persistent-media-button {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  padding: 2px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.persistent-media-icon {
+  --track-accent: #9ba88d;
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(15, 9, 13, 0.65);
+  border-radius: 8px;
+  background: var(--track-accent);
+  color: rgba(24, 16, 20, 0.85);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.22),
+    0 3px 8px rgba(0,0,0,0.18);
+  font-family: var(--font-mono), monospace;
+  font-size: 18px;
+}
+
+.persistent-media-vinyl {
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, var(--track-accent) 0 23%, #171316 25% 33%, #242024 35% 100%);
+  color: transparent;
+}
+
+.persistent-media-cd {
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, #342a32 0 10%, transparent 11%),
+    conic-gradient(#dde3e6, var(--track-accent), #ece6db, #cfd9df, var(--track-accent), #eef1f2);
+}
+
+.persistent-media-cassette {
+  border-radius: 6px;
+  background:
+    radial-gradient(circle at 30% 50%, #2c2126 0 4px, transparent 5px),
+    radial-gradient(circle at 70% 50%, #2c2126 0 4px, transparent 5px),
+    var(--track-accent);
+}
+
+.persistent-track-copy {
+  min-width: 0;
+  display: block;
+}
+
+.persistent-track-copy strong,
+.persistent-track-copy small {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.persistent-track-copy strong {
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  line-height: 1.35;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.persistent-track-copy small {
+  margin-top: 2px;
+  color: rgba(239, 226, 207, 0.62);
+  font-family: var(--font-hand), cursive;
+  font-size: 14px;
+}
+
+.persistent-progress-block {
+  min-width: 0;
+}
+
+.persistent-time-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 5px;
+  color: rgba(239, 226, 207, 0.55);
+  font-family: var(--font-mono), monospace;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+}
+
+.persistent-progress {
+  height: 5px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(17, 11, 15, 0.52);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.32);
+}
+
+.persistent-progress > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #b9c2a5;
+  transition: width 220ms linear;
+}
+
+.persistent-player-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.persistent-player-actions button {
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(24, 15, 18, 0.75);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    0 2px 5px rgba(0,0,0,0.18);
+  cursor: pointer;
+  transition: transform 120ms ease, filter 120ms ease;
+}
+
+.persistent-player-actions button:active {
+  transform: translateY(1px);
+}
+
+.persistent-player-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.persistent-play-button {
+  width: 44px;
+  height: 38px;
+  border-radius: 8px;
+  background: #d89a38;
+  color: #2d1d1e;
+  font-size: 14px;
+}
+
+.persistent-stop-button {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: rgba(41, 27, 29, 0.8);
+  color: rgba(239, 226, 207, 0.78);
+  font-family: var(--font-mono), monospace;
+  font-size: 18px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .persistent-media-button:hover .persistent-track-copy strong {
+    color: #fff3dc;
+  }
+
+  .persistent-player-actions button:not(:disabled):hover {
+    filter: brightness(1.08);
+  }
+}
+
+@media (max-width: 640px) {
+  .persistent-music-player {
+    bottom: 10px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 9px;
+    padding: 9px 10px;
+  }
+
+  .persistent-progress-block {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .persistent-media-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .persistent-track-copy small {
+    font-size: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .persistent-progress > span,
+  .persistent-player-actions button {
+    transition: none;
+  }
+}

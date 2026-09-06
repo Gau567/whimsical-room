@@ -185,6 +185,19 @@ export function useYouTubePlayer(elementId: string) {
     playerRef.current?.pauseVideo?.();
   }, []);
 
+  const seek = useCallback((seconds: number) => {
+    if (!Number.isFinite(seconds)) return;
+    playerRef.current?.seekTo?.(Math.max(0, seconds), true);
+    setCurrentTime(Math.max(0, seconds));
+  }, []);
+
+  const stop = useCallback(() => {
+    playerRef.current?.stopVideo?.();
+    setStatus("empty");
+    setCurrentTime(0);
+    setDuration(0);
+  }, []);
+
   const toggle = useCallback(() => {
     if (status === "playing") {
       pause();
@@ -193,7 +206,7 @@ export function useYouTubePlayer(elementId: string) {
     }
   }, [status, play, pause]);
 
-  return { status, currentTime, duration, load, play, pause, toggle };
+  return { status, currentTime, duration, load, play, pause, seek, stop, toggle };
 }
 
 export function formatTime(seconds: number): string {

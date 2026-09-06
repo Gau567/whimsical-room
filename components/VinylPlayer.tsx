@@ -1,9 +1,10 @@
 "use client";
 
 import { useDndMonitor, useDroppable } from "@dnd-kit/core";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Track } from "@/lib/types";
-import { formatTime, useYouTubePlayer } from "@/lib/useYouTubePlayer";
+import { formatTime } from "@/lib/useYouTubePlayer";
+import { useMusicPlayer } from "@/lib/MusicPlayerContext";
 import { useSpin } from "@/lib/motion";
 
 export default function VinylPlayer({ initialTrack }: { initialTrack?: Track | null }) {
@@ -11,42 +12,40 @@ export default function VinylPlayer({ initialTrack }: { initialTrack?: Track | n
     id: "vinyl-slot",
     data: { format: "vinyl" },
   });
-  const [track, setTrack] = useState<Track | null>(initialTrack ?? null);
 
-  const { status, currentTime, duration, load, play, pause } =
-    useYouTubePlayer("vinyl-yt-engine");
+  const {
+    currentTrack,
+    status,
+    currentTime,
+    duration,
+    isPlaying,
+    loadTrack,
+    play,
+    pause,
+    eject,
+  } = useMusicPlayer();
+
+  const track = currentTrack?.format === "vinyl" ? currentTrack : null;
 
   useEffect(() => {
-    if (initialTrack?.format && initialTrack.format === "vinyl" && initialTrack.id !== track?.id) {
-      setTrack(initialTrack);
-    }
-  }, [initialTrack, track?.id]);
+    if (!initialTrack || initialTrack.format !== "vinyl") return;
+    if (currentTrack?.id === initialTrack.id) return;
+    loadTrack(initialTrack);
+  }, [initialTrack, currentTrack?.id, loadTrack]);
 
   useDndMonitor({
     onDragEnd(event) {
       if (event.over?.id !== "vinyl-slot") return;
       const dropped = event.active.data.current?.track as Track | undefined;
-      if (dropped?.format === "vinyl") setTrack(dropped);
+      if (dropped?.format === "vinyl") loadTrack(dropped);
     },
   });
 
-  useEffect(() => {
-    if (!track?.youtubeId) return;
-    load(track.youtubeId);
-  }, [track, load]);
-
-  const isPlaying = status === "playing";
   const isLoading = status === "loading";
   const hasError = status === "error";
 
   return (
     <div className="vinyl-player-wrap">
-      <div
-        id="vinyl-yt-engine"
-        aria-hidden="true"
-        className="pointer-events-none fixed -left-[9999px] top-0 h-[200px] w-[200px]"
-      />
-
       <div
         ref={setNodeRef}
         className={`vinyl-player ${isOver ? "vinyl-player-over" : ""}`}
@@ -54,7 +53,7 @@ export default function VinylPlayer({ initialTrack }: { initialTrack?: Track | n
         <p className="vinyl-player-brand">NOSTALGIA HI-FI</p>
 
         <div className="turntable-bed">
-          <Record track={track} spinning={isPlaying} />
+          <Record track={track} spinning={isPlaying && Boolean(track)} />
           <div className={`tonearm ${track ? "tonearm-on" : ""}`}>
             <span className="tonearm-pivot" />
             <span className="tonearm-arm" />
@@ -82,14 +81,7 @@ export default function VinylPlayer({ initialTrack }: { initialTrack?: Track | n
           >
             {isPlaying ? "❙❙" : "▶"}
           </button>
-          <button
-            type="button"
-            onClick={() => {
-              pause();
-              setTrack(null);
-            }}
-            disabled={!track}
-          >
+          <button type="button" onClick={eject} disabled={!track}>
             LIFT
           </button>
         </div>

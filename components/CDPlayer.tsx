@@ -3,18 +3,30 @@
 import { useDndMonitor, useDroppable } from "@dnd-kit/core";
 import { useEffect, useRef, useState } from "react";
 import { Track } from "@/lib/types";
-import { formatTime, useYouTubePlayer } from "@/lib/useYouTubePlayer";
+import { formatTime } from "@/lib/useYouTubePlayer";
+import { useMusicPlayer } from "@/lib/MusicPlayerContext";
 import gsap from "gsap";
 import { playInsertBounce, useLid, useSpin } from "@/lib/motion";
 
 export default function CDPlayer({ initialTrack }: { initialTrack?: Track | null }) {
   const { isOver, setNodeRef } = useDroppable({ id: "cd-slot", data: { format: "cd" } });
-  const [track, setTrack] = useState<Track | null>(initialTrack ?? null);
   const [lidOpen, setLidOpen] = useState(false);
   const lidRef = useRef<HTMLDivElement>(null);
   const discRef = useRef<HTMLDivElement>(null);
 
-  const { status, currentTime, duration, load, play, pause } = useYouTubePlayer("cd-yt-engine");
+  const {
+    currentTrack,
+    status,
+    currentTime,
+    duration,
+    isPlaying,
+    loadTrack,
+    play,
+    pause,
+    eject,
+  } = useMusicPlayer();
+
+  const track = currentTrack?.format === "cd" ? currentTrack : null;
 
   useLid(lidRef as React.RefObject<HTMLElement>, lidOpen);
 
@@ -29,10 +41,10 @@ export default function CDPlayer({ initialTrack }: { initialTrack?: Track | null
   }, [lidOpen]);
 
   useEffect(() => {
-    if (initialTrack?.format && initialTrack.format === "cd" && initialTrack.id !== track?.id) {
-      setTrack(initialTrack);
-    }
-  }, [initialTrack, track?.id]);
+    if (!initialTrack || initialTrack.format !== "cd") return;
+    if (currentTrack?.id === initialTrack.id) return;
+    loadTrack(initialTrack);
+  }, [initialTrack, currentTrack?.id, loadTrack]);
 
   useDndMonitor({
     onDragStart() {
@@ -42,7 +54,8 @@ export default function CDPlayer({ initialTrack }: { initialTrack?: Track | null
       if (event.over?.id === "cd-slot") {
         const droppedTrack = event.active.data.current?.track as Track | undefined;
         if (droppedTrack?.format === "cd") {
-          setTrack(droppedTrack);
+          loadTrack(droppedTrack);
+          playInsertBounce(discRef.current);
         }
       }
       window.setTimeout(() => setLidOpen(false), 350);
@@ -52,38 +65,17 @@ export default function CDPlayer({ initialTrack }: { initialTrack?: Track | null
     },
   });
 
-  useEffect(() => {
-    if (!track?.youtubeId) return;
-    load(track.youtubeId);
-    playInsertBounce(discRef.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [track, load]);
-
-  const isPlaying = status === "playing";
   const isLoading = status === "loading";
   const hasError = status === "error";
 
-  const handlePlayPause = () => {
-    if (!track || isLoading || hasError) return;
-    if (isPlaying) pause();
-    else play();
-  };
-
   const handleEject = () => {
-    pause();
-    setTrack(null);
+    eject();
     setLidOpen(true);
     window.setTimeout(() => setLidOpen(false), 350);
   };
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div
-        id="cd-yt-engine"
-        aria-hidden="true"
-        className="pointer-events-none fixed -left-[9999px] top-0 h-[200px] w-[200px]"
-      />
-
       <div
         ref={setNodeRef}
         className={`relative w-72 rounded-xl border-2 p-4 shadow-deck transition-colors ${
@@ -104,10 +96,9 @@ export default function CDPlayer({ initialTrack }: { initialTrack?: Track | null
                 : "#241a13",
             }}
           >
-            <Disc spinning={isPlaying} />
+            <Disc spinning={isPlaying && Boolean(track)} />
           </div>
 
-          {/* lid, animated open/closed with GSAP */}
           <div
             ref={lidRef}
             className="absolute inset-0 flex items-start justify-center border-b border-black/40 bg-walnut-900/95"
@@ -136,7 +127,7 @@ export default function CDPlayer({ initialTrack }: { initialTrack?: Track | null
         <div className="mt-3 flex items-center justify-center gap-3">
           <button
             type="button"
-            onClick={handlePlayPause}
+            onClick={() => (isPlaying ? pause() : play())}
             disabled={!track || isLoading || hasError}
             aria-label={isPlaying ? "Pause CD" : "Play CD"}
             className="flex h-10 w-16 items-center justify-center rounded-md border border-black/40 bg-amber-500 font-mono text-sm font-bold text-walnut-950 shadow-inset transition active:translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-30 disabled:active:translate-y-0"
