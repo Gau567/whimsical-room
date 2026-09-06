@@ -13,6 +13,7 @@ type PinItem = {
   x?: number;
   y?: number;
   rotation?: number;
+  font?: "type" | "hand";
 };
 
 const STORAGE_KEY = "nostalgia-pinboard-items";
@@ -336,7 +337,7 @@ export default function PinBoard({ onOpenTypewriter }: { onOpenTypewriter: () =>
           >
             <span className="push-pin" />
             {item.type === "note" ? (
-              <div className="sticky-note" style={{ background: item.color || "#f0dd9e" }}>
+              <div className={`sticky-note ${item.font === "hand" ? "sticky-font-hand" : "sticky-font-type"}`} style={{ background: item.color || "#f0dd9e" }}>
                 <p>{item.text}</p>
               </div>
             ) : (
