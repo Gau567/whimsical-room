@@ -6494,3 +6494,206 @@ button {
     transition: none !important;
   }
 }
+
+/* =========================================================
+   V20 — MUSIC VIEW LAYOUT FIX
+   Keep only the persistent long player; make all three
+   physical collections fit cleanly beside their player.
+========================================================= */
+
+/* The old generic focus shell was only ~1080px wide, while V19's
+   station tried to be 1500px wide. That mismatch pushed the player
+   off-screen. Media views now get their own wider, bounded shell. */
+.retro-focus-shell.media-focus-shell {
+  width: min(1360px, calc(100vw - 32px));
+  min-height: 720px;
+  padding: clamp(20px, 2vw, 28px);
+  overflow: visible;
+}
+
+.station-v19 {
+  width: 100%;
+  max-width: 1304px;
+  min-width: 0;
+  margin: 0 auto;
+}
+
+.station-grid-v19 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(330px, 380px);
+  gap: clamp(24px, 3vw, 42px);
+  align-items: start;
+}
+
+.station-collection-v19,
+.station-player-v19 {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.station-player-v19 {
+  width: 100%;
+  position: sticky;
+  top: 24px;
+  justify-self: end;
+  overflow: visible;
+}
+
+.station-player-v19 > * {
+  max-width: 100%;
+}
+
+.station-player-label {
+  width: 100%;
+  max-width: 380px;
+}
+
+/* Give every collection enough breathing room without letting it
+   monopolise the page. */
+.physical-collection {
+  width: 100%;
+  min-width: 0;
+}
+
+.physical-collection-heading {
+  gap: 14px;
+}
+
+.physical-collection-action {
+  flex: 0 0 auto;
+}
+
+/* Vinyl: slightly smaller sleeves so the crate and turntable both fit. */
+.vinyl-crate-shell {
+  min-height: 500px;
+  padding: 32px 24px 98px;
+}
+
+.physical-vinyl {
+  grid-template-columns: repeat(3, minmax(118px, 1fr));
+  gap: 12px;
+  padding-inline: 6px;
+}
+
+.physical-track-vinyl {
+  height: 190px;
+}
+
+.crate-record-wrap {
+  width: min(166px, 94%);
+}
+
+/* Cassette drawer: keep the physical drawer idea but avoid the huge
+   full-width slab shown in the screenshot. */
+.cassette-drawer-shell {
+  padding: 52px 22px 54px;
+}
+
+.physical-cassette {
+  gap: 7px;
+  padding: 10px;
+}
+
+.physical-track-cassette {
+  height: 52px;
+}
+
+.tape-drawer-item {
+  grid-template-columns: 12px minmax(0, 1fr) 72px 28px;
+  gap: 8px;
+}
+
+/* CD rack: compact jewel cases so the rack doesn't force the player
+   beyond the viewport. */
+.cd-rack-shell {
+  padding: 32px 20px 60px;
+}
+
+.physical-cd {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 11px;
+}
+
+.physical-track-cd {
+  height: 116px;
+}
+
+/* The long persistent player is now the only room-wide music control.
+   RoomSpeaker is intentionally no longer rendered in app/page.tsx. */
+.persistent-music-player {
+  z-index: 9998;
+}
+
+/* Medium laptops: stack collection + player before anything clips. */
+@media (max-width: 1180px) {
+  .retro-focus-shell.media-focus-shell {
+    width: min(1040px, calc(100vw - 28px));
+  }
+
+  .station-grid-v19 {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .station-player-v19 {
+    position: static;
+    width: min(430px, 100%);
+    justify-self: center;
+    order: -1;
+  }
+
+  .station-player-label {
+    max-width: 430px;
+  }
+
+  .vinyl-crate-shell,
+  .cassette-drawer-shell,
+  .cd-rack-shell {
+    width: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  .retro-focus-shell.media-focus-shell {
+    width: calc(100vw - 18px);
+    padding: 18px 12px 110px;
+  }
+
+  .station-header-v19 {
+    margin-bottom: 22px;
+  }
+
+  .physical-collection-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .physical-collection-action {
+    text-align: left;
+  }
+
+  .physical-vinyl {
+    grid-template-columns: repeat(2, minmax(110px, 1fr));
+  }
+
+  .physical-track-vinyl {
+    height: 165px;
+  }
+
+  .crate-record-wrap {
+    width: min(145px, 94%);
+  }
+
+  .physical-cd {
+    grid-template-columns: 1fr;
+  }
+
+  .tape-drawer-item {
+    grid-template-columns: 10px minmax(0, 1fr) 58px;
+  }
+
+  .tape-pull-word {
+    display: none;
+  }
+}

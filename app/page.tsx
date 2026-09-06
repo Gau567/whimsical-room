@@ -11,7 +11,6 @@ import MiniTypewriter from "@/components/room/MiniTypewriter";
 import PinBoard from "@/components/room/PinBoard";
 import MediaStation from "@/components/stations/MediaStation";
 import PersistentMusicPlayer from "@/components/PersistentMusicPlayer";
-import RoomSpeaker from "@/components/RoomSpeaker";
 import { MusicPlayerProvider, useMusicPlayer } from "@/lib/MusicPlayerContext";
 import { cassettes, cds, vinyls } from "@/data/tracks";
 import { MediaFormat, Track } from "@/lib/types";
@@ -78,12 +77,11 @@ function RoomApp() {
               onOpenDrawer={setOpenDrawer}
             />
 
-            <RoomSpeaker onOpenTrack={openNowPlaying} />
           </>
         )}
 
         {mediaOpen && (
-          <div className="retro-focus-shell">
+          <div className="retro-focus-shell media-focus-shell">
             <MediaStation
               format={view}
               tracks={tracks}
