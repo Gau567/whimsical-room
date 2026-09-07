@@ -8,6 +8,17 @@ const DEFAULT_LEFT =
 const DEFAULT_RIGHT =
   "play this when the room feels a little too quiet.";
 
+const JOURNAL_PROMPTS = [
+  "Write about an ordinary moment you would replay exactly as it happened.",
+  "What song instantly takes you somewhere else? Where does it take you?",
+  "Describe a room you remember only in fragments.",
+  "Write down five tiny details from today before your brain edits them out.",
+  "What is something you kept for no practical reason at all?",
+  "If tonight had a soundtrack, what would track one be?",
+  "Write a note to yourself one year from now. Keep it specific.",
+  "What place would you revisit for exactly one afternoon?",
+];
+
 export default function TypableJournal({
   onOpenBooks,
   onOpenBoard,
@@ -20,6 +31,7 @@ export default function TypableJournal({
   const [rightText, setRightText] = useState(DEFAULT_RIGHT);
   const [saved, setSaved] = useState(false);
   const [tearing, setTearing] = useState<"left" | "right" | null>(null);
+  const [promptIndex, setPromptIndex] = useState(0);
 
   useEffect(() => {
     try {
@@ -46,6 +58,15 @@ export default function TypableJournal({
     setRightText("");
   }
 
+  function nextPrompt() {
+    setPromptIndex((value) => (value + 1) % JOURNAL_PROMPTS.length);
+  }
+
+  function usePrompt() {
+    if (!leftText.trim()) setLeftText(`${JOURNAL_PROMPTS[promptIndex]}\n\n`);
+    else setRightText(JOURNAL_PROMPTS[promptIndex]);
+  }
+
   function tearToBoard(side: "left" | "right") {
     const text = side === "left" ? leftText.trim() : rightText.trim();
     if (!text) return;
@@ -65,7 +86,7 @@ export default function TypableJournal({
   }
 
   return (
-    <div className="journal-workspace journal-workspace-v11">
+    <div className="journal-workspace journal-workspace-v23">
       <div className="journal-toolbar">
         <span>MY JOURNAL</span>
         <div>
@@ -73,6 +94,12 @@ export default function TypableJournal({
           <button type="button" onClick={clearJournal}>CLEAR</button>
           <button type="button" className="journal-save" onClick={saveJournal}>{saved ? "SAVED ✓" : "SAVE"}</button>
         </div>
+      </div>
+
+      <div className="journal-prompt-strip">
+        <div><small>WRITING PROMPT</small><strong>{JOURNAL_PROMPTS[promptIndex]}</strong></div>
+        <button type="button" onClick={nextPrompt}>ANOTHER ↻</button>
+        <button type="button" onClick={usePrompt}>USE THIS</button>
       </div>
 
       <div className="journal-tear-tools">

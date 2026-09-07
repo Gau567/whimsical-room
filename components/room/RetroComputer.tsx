@@ -69,7 +69,56 @@ const BUILT_IN_MAIL: BuiltInMail[] = [
     preview: "Your high score has been described as 'technically a score'.",
     body: "HELLO PLAYER,\n\nYour latest PIXEL.EXE score has been reviewed by the extremely serious Arcade Committee.\n\nVERDICT: technically a score.\n\nRecommended training schedule:\n- 3 rounds of PIXEL.EXE\n- 1 round of MEMORY.EXE\n- unnecessary confidence\n- snacks\n\nReport back when your reflexes are less decorative.",
   },
-];
+  {
+    id: "photo",
+    subject: "RE: THE PHOTO YOU ALMOST DELETED",
+    from: "ARCHIVE@ROOM.LOCAL",
+    date: "SUN 16:22",
+    preview: "The blurry one. Keep it.",
+    body: "You know the photo.\n\nThe lighting is bad. Somebody moved. Half the frame is a sleeve and the horizon is not even pretending to be straight.\n\nKeep it anyway.\n\nPerfect photos remember what people looked like. Bad photos are surprisingly good at remembering what being there felt like.\n\n— ROOM ARCHIVE",
+  },
+  {
+    id: "recordshop",
+    subject: "YOUR ORDER IS READY (probably)",
+    from: "CORNERRECORDS@BBS.NET",
+    date: "SAT 13:07",
+    preview: "We found the record you asked about under a box labelled miscellaneous.",
+    body: "Hi,\n\nWe found the record you asked about. Technically it found us: it was under a box marked MISCELLANEOUS / DO NOT SORT.\n\nWe are holding it behind the counter until Tuesday. If you forget the title, just say ‘the one with the blue sleeve’. This is not a good inventory system but it has worked so far.\n\n— Corner Records",
+  },
+  {
+    id: "312am",
+    subject: "3:12 AM / NO SUBJECT",
+    from: "ME@ROOM.LOCAL",
+    date: "03:12 AM",
+    preview: "Remember this exact version of the room.",
+    body: "Remember this exact version of the room.\n\nThe lamp is on. There is a glass you forgot to take back to the kitchen. The computer fan is louder than the music between songs. Something is charging on the floor.\n\nNone of this feels important right now.\n\nThat is usually how it works.",
+  },
+  {
+    id: "systemclock",
+    subject: "SYSTEM NOTICE: CLOCK DRIFT",
+    from: "CLOCK.EXE@ROOM.LOCAL",
+    date: "09/07/95",
+    preview: "The room clock is 4 minutes slow. We have decided this is a feature.",
+    body: "NOSTALGIA OS CLOCK SERVICE\n\nDetected drift: -00:04:13\nRecommended action: none.\n\nThe room has been running four minutes behind for long enough that correcting it would now be historically inaccurate.\n\nSTATUS: charmingly incorrect.",
+  },
+  {
+    id: "dontopen",
+    subject: "DO NOT OPEN THIS EMAIL",
+    from: "TOTALLY_NORMAL@ROOM.LOCAL",
+    date: "???",
+    preview: "Seriously. There is nothing in here.",
+    body: "You opened it.\n\nThere is no virus. No secret password. No haunted attachment.\n\nThere is, however, a tiny achievement:\n\n[ CURIOUS PERSON DETECTED ]\n\nYou may now continue clicking things you were specifically told not to click.",
+  },
+ ];
+
+const SECRET_MAIL: BuiltInMail = {
+  id: "attic",
+  subject: "[1 NEW MESSAGE] YOU FOUND THE ATTIC",
+  from: "UNKNOWN@UPSTAIRS.LOCAL",
+  date: "00:00",
+  preview: "This message was not here before.",
+  body: "You read enough old messages that the computer got curious back.\n\nThere is no attic in the room. There is no upstairs.local server. There should not be a mailbox with this address.\n\nStill, somebody left you this:\n\nKEEP LOOKING IN DRAWERS.\nTURN THINGS OVER.\nOPEN FILES WITH BAD NAMES.\nTHE ROOM LIKES CURIOUS PEOPLE.\n\n— ?",
+};
 
 const SCRAMBLE_WORDS = ["cassette", "polaroid", "mixtape", "arcade", "journal", "vinyl", "typewriter", "nostalgia"];
 
@@ -126,6 +175,7 @@ export default function RetroComputer({
   const [moves, setMoves] = useState(0);
   const [memoryLocked, setMemoryLocked] = useState(false);
   const [selectedMail, setSelectedMail] = useState<{ subject: string; from: string; date: string; body: string } | null>(null);
+  const [readBuiltInMail, setReadBuiltInMail] = useState<string[]>([]);
   const [insertedMedia, setInsertedMedia] = useState<RetroMediaDisk | null>(null);
   const [selectedMediaFile, setSelectedMediaFile] = useState<RetroMediaFile | null>(null);
 
@@ -177,6 +227,15 @@ export default function RetroComputer({
   }, []);
 
   useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem("nostalgia-read-mail-v1");
+      if (raw) setReadBuiltInMail(JSON.parse(raw));
+    } catch {
+      // Ignore malformed read-mail state.
+    }
+  }, []);
+
+  useEffect(() => {
     const refreshMedia = () => {
       const disk = readInsertedMedia();
       setInsertedMedia(disk);
@@ -193,6 +252,11 @@ export default function RetroComputer({
   const mail = useMemo(
     () => roomItems.filter((item) => item.type === "letter" || item.type === "journal" || item.type === "note"),
     [roomItems],
+  );
+
+  const visibleBuiltInMail = useMemo(
+    () => readBuiltInMail.length >= 5 ? [...BUILT_IN_MAIL, SECRET_MAIL] : BUILT_IN_MAIL,
+    [readBuiltInMail.length],
   );
 
   const linkedTracks = useMemo(() => {
@@ -293,7 +357,15 @@ export default function RetroComputer({
     setLightMoves((value) => value + 1);
   }
 
-  function openMail(message: { subject: string; from: string; date: string; body: string }) {
+  function openMail(message: { subject: string; from: string; date: string; body: string; id?: string }) {
+    if (message.id && (BUILT_IN_MAIL.some((item) => item.id === message.id) || message.id === SECRET_MAIL.id)) {
+      setReadBuiltInMail((current) => {
+        if (current.includes(message.id!)) return current;
+        const next = [...current, message.id!];
+        window.localStorage.setItem("nostalgia-read-mail-v1", JSON.stringify(next));
+        return next;
+      });
+    }
     setSelectedMail(message);
     setApp("mailread");
   }
@@ -402,7 +474,7 @@ export default function RetroComputer({
 
             <div className="desktop-icons desktop-icons-v12">
               <button type="button" onClick={() => openApp("mixes")}><i>♫</i><span>mixes</span><small>{linkedTracks.length || ALL_TRACKS.length}</small></button>
-              <button type="button" onClick={() => openApp("mail")}><i>✉</i><span>mail</span><small>{BUILT_IN_MAIL.length + mail.length}</small></button>
+              <button type="button" onClick={() => openApp("mail")}><i>✉</i><span>mail</span><small>{visibleBuiltInMail.length + mail.length}</small></button>
               <button type="button" onClick={() => openApp("games")}><i>☻</i><span>games</span><small>{insertedMedia?.id === "pixelquest-cart" ? 7 : 6}</small></button>
               <button type="button" onClick={() => openApp("photos")}><i>▣</i><span>photos</span><small>{photos.length}</small></button>
               {insertedMedia && <button type="button" className="desktop-drive-icon" onClick={() => openApp("drive")}><i>{insertedMedia.icon}</i><span>{insertedMedia.label.toLowerCase()}</span><small>DRIVE A:</small></button>}
@@ -445,16 +517,18 @@ export default function RetroComputer({
           <div className="computer-app-panel computer-library-app">
             <div className="folder-topline"><p className="computer-prompt">C:\ROOM\MAIL&gt; dir</p><button type="button" className="retro-small-button" onClick={() => setApp("home")}>← DESKTOP</button></div>
             <h3>MAIL</h3>
-            <div className="mail-section-label">INBOX · {BUILT_IN_MAIL.length} messages</div>
+            <div className="mail-section-label">INBOX · {visibleBuiltInMail.length} messages</div>
             <div className="computer-mail-list">
-              {BUILT_IN_MAIL.map((message) => (
-                <button type="button" key={message.id} onClick={() => openMail(message)}>
-                  <i>✉</i>
+              {visibleBuiltInMail.map((message) => (
+                <button type="button" key={message.id} className={!readBuiltInMail.includes(message.id) ? "mail-unread" : ""} onClick={() => openMail(message)}>
+                  <i>{readBuiltInMail.includes(message.id) ? "✉" : "●"}</i>
                   <span><strong>{message.subject}</strong><small>{message.from} · {message.preview}</small></span>
                   <b>›</b>
                 </button>
               ))}
             </div>
+            {readBuiltInMail.length < 5 && <p className="mail-secret-hint">read {5 - readBuiltInMail.length} more old message{5 - readBuiltInMail.length === 1 ? "" : "s"} · the mailbox seems deeper than it looks</p>}
+            {readBuiltInMail.length >= 5 && <p className="mail-secret-hint mail-secret-found">✦ hidden mailbox route discovered</p>}
             <div className="mail-section-label">ROOM NOTES · {mail.length}</div>
             {mail.length === 0 ? (
               <div className="computer-empty-state compact"><span>No room notes yet. Tear a journal page or type a note.</span><button type="button" onClick={onOpenBoard}>OPEN PINBOARD</button></div>

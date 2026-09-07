@@ -7350,3 +7350,214 @@ button {
     animation: none !important;
   }
 }
+
+/* =========================================================
+   V23 — CONTENT POLISH / DRAWER INSPECTION / JOURNAL PROMPTS
+========================================================= */
+
+.drawer-items-v23 .drawer-item {
+  min-height: 132px;
+}
+
+.drawer-items-v23 .drawer-item-actions {
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.drawer-items-v23 .drawer-item-actions button {
+  min-height: 30px;
+}
+
+.drawer-inspect-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 210;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(16, 10, 18, 0.68);
+  backdrop-filter: blur(4px);
+}
+
+.drawer-inspect-card {
+  position: relative;
+  width: min(520px, 92vw);
+  padding: 28px;
+  border: 1px solid rgba(221, 181, 132, 0.32);
+  border-radius: 14px;
+  background: linear-gradient(155deg, #efe2c7, #d8c4a8);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.36);
+  color: #3b2a29;
+  transform: rotate(-0.35deg);
+}
+
+.drawer-inspect-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(59, 42, 41, 0.22);
+  background: rgba(255, 255, 255, 0.28);
+  color: inherit;
+  cursor: pointer;
+}
+
+.drawer-inspect-icon {
+  font-size: 42px;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+
+.drawer-inspect-kicker {
+  margin: 0 0 5px;
+  font: 700 10px/1.2 var(--font-mono), monospace;
+  letter-spacing: 0.18em;
+  opacity: 0.58;
+}
+
+.drawer-inspect-card h3 {
+  margin: 0 0 16px;
+  font-family: var(--font-hand), cursive;
+  font-size: 31px;
+  font-weight: 700;
+}
+
+.drawer-inspect-card pre {
+  margin: 0;
+  white-space: pre-wrap;
+  font: 500 14px/1.72 var(--font-mono), monospace;
+  color: #4c3834;
+}
+
+.drawer-easter-egg {
+  margin-top: 18px;
+  padding: 12px 14px;
+  border: 1px dashed rgba(89, 61, 56, 0.32);
+  background: rgba(255, 248, 219, 0.42);
+  font: 600 12px/1.55 var(--font-mono), monospace;
+}
+
+.drawer-inspect-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.drawer-inspect-actions button {
+  padding: 9px 12px;
+  border: 1px solid rgba(59, 42, 41, 0.28);
+  border-radius: 6px;
+  background: rgba(75, 51, 47, 0.88);
+  color: #f5ead8;
+  font: 700 10px/1 var(--font-mono), monospace;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.journal-prompt-strip {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 10px;
+  margin: 0 auto 12px;
+  width: min(920px, 96%);
+  padding: 11px 12px 11px 16px;
+  border: 1px solid rgba(192, 150, 116, 0.26);
+  border-radius: 10px;
+  background: rgba(80, 49, 57, 0.32);
+}
+
+.journal-prompt-strip div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.journal-prompt-strip small {
+  font: 700 9px/1 var(--font-mono), monospace;
+  letter-spacing: 0.18em;
+  opacity: 0.56;
+}
+
+.journal-prompt-strip strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-hand), cursive;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.journal-prompt-strip button {
+  padding: 8px 10px;
+  border: 1px solid rgba(224, 195, 160, 0.2);
+  border-radius: 5px;
+  background: rgba(33, 22, 31, 0.5);
+  color: inherit;
+  font: 700 9px/1 var(--font-mono), monospace;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.books-library-v23 .library-book-cards em {
+  display: block;
+  margin-top: 4px;
+  font: 700 8px/1 var(--font-mono), monospace;
+  letter-spacing: 0.12em;
+  opacity: 0.48;
+  text-transform: uppercase;
+}
+
+.computer-mail-list button.mail-unread {
+  background: rgba(180, 194, 159, 0.12);
+  box-shadow: inset 3px 0 0 rgba(188, 205, 163, 0.72);
+}
+
+.computer-mail-list button.mail-unread > i {
+  font-size: 8px;
+  color: #c5d5aa;
+}
+
+.mail-secret-hint {
+  margin: 7px 0 18px;
+  padding: 8px 10px;
+  border: 1px dashed rgba(158, 175, 141, 0.2);
+  color: rgba(183, 201, 163, 0.6);
+  font: 700 8px/1.4 var(--font-mono), monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mail-secret-hint.mail-secret-found {
+  color: #c5d5aa;
+  border-style: solid;
+  background: rgba(160, 183, 139, 0.07);
+}
+
+@media (max-width: 720px) {
+  .journal-prompt-strip {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .journal-prompt-strip div {
+    grid-column: 1 / -1;
+  }
+
+  .journal-prompt-strip strong {
+    white-space: normal;
+  }
+
+  .drawer-inspect-card {
+    padding: 24px 20px 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawer-inspect-card {
+    transform: none;
+  }
+}
