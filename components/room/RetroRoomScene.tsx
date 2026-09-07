@@ -43,6 +43,7 @@ export default function RetroRoomScene({
           // The easter egg still works for the current visit.
         }
         setSecretFound(true);
+        setPosterClicks([]);
         window.setTimeout(() => setSecretOpen(true), 180);
       }
       return next;
@@ -95,9 +96,9 @@ export default function RetroRoomScene({
             <strong>GOING</strong>
             <i>★</i>
           </button>
-          {(secretProgress > 0 || secretFound) && (
+          {secretProgress > 0 && !secretFound && (
             <span className="room-secret-progress" aria-live="polite">
-              {secretFound ? "something shifted behind the posters..." : `${secretProgress}/3 corners checked`}
+              {`${secretProgress}/3 corners checked`}
             </span>
           )}
         </div>
