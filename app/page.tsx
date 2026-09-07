@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DndContext } from "@dnd-kit/core";
 import RetroRoomScene from "@/components/room/RetroRoomScene";
 import RetroComputer from "@/components/room/RetroComputer";
@@ -37,6 +37,35 @@ function RoomApp() {
   const { loadTrack, currentTrack, isPlaying } = useMusicPlayer();
 
   useRoomSoundEffects(view === "room");
+
+  useEffect(() => {
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key !== "Escape") return;
+
+      const active = document.activeElement;
+      if (
+        active instanceof HTMLInputElement ||
+        active instanceof HTMLTextAreaElement ||
+        active instanceof HTMLSelectElement ||
+        (active instanceof HTMLElement && active.isContentEditable)
+      ) {
+        return;
+      }
+
+      if (openDrawer !== null) {
+        setOpenDrawer(null);
+        return;
+      }
+
+      if (view !== "room") {
+        setPreloadedTrack(null);
+        setView("room");
+      }
+    }
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [openDrawer, view]);
 
   const tracks = view === "cassette" ? cassettes : view === "cd" ? cds : vinyls;
   const mediaOpen = view === "cassette" || view === "cd" || view === "vinyl";

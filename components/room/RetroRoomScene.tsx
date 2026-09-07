@@ -1,8 +1,11 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import { MediaFormat } from "@/lib/types";
 
 type RoomChoice = MediaFormat | "journal" | "books" | "computer" | "typewriter" | "pinboard";
+
+const SECRET_KEY = "nostalgia-room-poster-secret-v1";
 
 export default function RetroRoomScene({
   onSelect,
@@ -16,11 +19,40 @@ export default function RetroRoomScene({
   onOpenDrawer: (drawer: number) => void;
 }) {
   const shelfBooks = ["MOON", "SIDE A", "SMALL", "AFTER", "PHOTO", "NOTES", "DREAM", "PLACES"];
+  const [posterClicks, setPosterClicks] = useState<number[]>([]);
+  const [secretOpen, setSecretOpen] = useState(false);
+  const [secretFound, setSecretFound] = useState(false);
+
+  useEffect(() => {
+    try {
+      setSecretFound(window.localStorage.getItem(SECRET_KEY) === "found");
+    } catch {
+      // localStorage can be unavailable in strict/private browser contexts.
+    }
+  }, []);
+
+  const secretProgress = useMemo(() => new Set(posterClicks).size, [posterClicks]);
+
+  function inspectPoster(index: number) {
+    setPosterClicks((current) => {
+      const next = current.includes(index) ? current : [...current, index];
+      if (new Set(next).size === 3) {
+        try {
+          window.localStorage.setItem(SECRET_KEY, "found");
+        } catch {
+          // The easter egg still works for the current visit.
+        }
+        setSecretFound(true);
+        window.setTimeout(() => setSecretOpen(true), 180);
+      }
+      return next;
+    });
+  }
 
   return (
     <section className="retro-scene retro-scene-v6" aria-label="Interactive retro nostalgia room">
-      <div className="retro-wall retro-wall-v6" aria-hidden="true">
-        <div className="retro-window retro-window-v6">
+      <div className="retro-wall retro-wall-v6">
+        <div className="retro-window retro-window-v6" aria-hidden="true">
           <div className="retro-sky">
             <span className="sky-cloud sky-cloud-a" />
             <span className="sky-cloud sky-cloud-b" />
@@ -32,22 +64,42 @@ export default function RetroRoomScene({
           <span className="window-vine vine-b" />
         </div>
 
-        <div className="poster-cluster-v6">
-          <div className="poster poster-one poster-one-v6">
+        <div className="poster-cluster-v6" aria-label="Three old posters">
+          <button
+            type="button"
+            className={`poster poster-one poster-one-v6 room-secret-poster ${posterClicks.includes(0) ? "is-inspected" : ""}`}
+            onClick={() => inspectPoster(0)}
+            aria-label="Inspect A Brighter Tomorrow poster"
+          >
             <span>A BRIGHTER</span>
             <strong>TOMORROW</strong>
             <i>✦</i>
-          </div>
-          <div className="poster poster-two poster-two-v6">
+          </button>
+          <button
+            type="button"
+            className={`poster poster-two poster-two-v6 room-secret-poster ${posterClicks.includes(1) ? "is-inspected" : ""}`}
+            onClick={() => inspectPoster(1)}
+            aria-label="Inspect Same Kid Different Universe poster"
+          >
             <span>SAME KID</span>
             <strong>DIFFERENT UNIVERSE</strong>
             <i>◎</i>
-          </div>
-          <div className="poster poster-three poster-three-v6">
+          </button>
+          <button
+            type="button"
+            className={`poster poster-three poster-three-v6 room-secret-poster ${posterClicks.includes(2) ? "is-inspected" : ""}`}
+            onClick={() => inspectPoster(2)}
+            aria-label="Inspect Keep Going poster"
+          >
             <span>KEEP</span>
             <strong>GOING</strong>
             <i>★</i>
-          </div>
+          </button>
+          {(secretProgress > 0 || secretFound) && (
+            <span className="room-secret-progress" aria-live="polite">
+              {secretFound ? "something shifted behind the posters..." : `${secretProgress}/3 corners checked`}
+            </span>
+          )}
         </div>
 
         <button
@@ -64,7 +116,7 @@ export default function RetroRoomScene({
           <span className="object-tip">pin board</span>
         </button>
 
-        <div className="neon-sign neon-sign-v6">
+        <div className="neon-sign neon-sign-v6" aria-hidden="true">
           <span>There&apos;s</span>
           <strong>More Out There</strong>
         </div>
@@ -127,8 +179,8 @@ export default function RetroRoomScene({
       </div>
 
       <div className="retro-shelf retro-shelf-v7" aria-label="Media cabinet">
-        <div className="shelf-top-decor" aria-hidden="true">
-          <div className="shelf-top-books">
+        <div className="shelf-top-decor">
+          <div className="shelf-top-books" aria-hidden="true">
             <span>SPACE</span>
             <span>DREAMS</span>
             <span>MUSIC</span>
@@ -137,7 +189,8 @@ export default function RetroRoomScene({
             type="button"
             className={`shelf-lamp-v7 hotspot ${lampOn ? "lamp-on-v7" : ""}`}
             onClick={onToggleLamp}
-            aria-label="Toggle shelf lamp"
+            aria-label={`Turn mood lamp ${lampOn ? "off" : "on"}`}
+            aria-pressed={lampOn}
           >
             <span className="object-tip">mood lamp</span>
           </button>
@@ -237,6 +290,37 @@ export default function RetroRoomScene({
       </div>
 
       <p className="room-instruction room-instruction-v6">hover, click, explore</p>
+
+      {secretOpen && (
+        <div className="room-secret-backdrop" role="presentation" onMouseDown={() => setSecretOpen(false)}>
+          <section
+            className="room-secret-note"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="room-secret-title"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="room-secret-close"
+              onClick={() => setSecretOpen(false)}
+              aria-label="Close hidden note"
+            >
+              ×
+            </button>
+            <small>FOUND BEHIND THE POSTERS</small>
+            <h2 id="room-secret-title">for whoever looks closely</h2>
+            <p>
+              Rooms remember strange things: the song you replayed too much, the receipt you kept for no reason,
+              the sentence you meant to write down and almost forgot.
+            </p>
+            <p>
+              If you found this, you are doing the room correctly. Keep opening the unimportant things.
+            </p>
+            <span>— previous occupant, probably</span>
+          </section>
+        </div>
+      )}
     </section>
   );
 }
