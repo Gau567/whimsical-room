@@ -1,79 +1,170 @@
-# the room — cassette / CD player prototype
+# The Nostalgia Room
 
-A working slice of the bigger "nostalgic desk" concept: drag a tape onto the
-walkman or a disc onto the discman, hit ▶, it plays.
+An interactive retro bedroom built as a small digital place to explore rather than a traditional website.
 
-## Run it
+The room is full of music, writing, memories, old media, games, drawers, hidden files, and small details that reward clicking around.
+
+## Highlights
+
+- **Physical music collections** — browse vinyl records, cassette tapes, and CD jewel cases, then click or drag them into their matching players.
+- **Persistent playback** — music keeps playing while moving between the room, journal, computer, pinboard, books, and media views.
+- **Connected memories** — pinboard memories can be linked to songs and reopened through the appropriate player.
+- **Interactive writing** — a journal and tactile typewriter save writing locally; typewriter pages and journal notes can be pinned to the board.
+- **Living pinboard** — create notes, upload photos, move and rotate memories, and keep everything between visits with localStorage.
+- **Retro computer** — browse mail, photos, mixes, removable media, system files, and a collection of mini-games.
+- **Removable media** — drawer floppies, a CD-R, and a game cartridge can be inserted into the computer and browsed like old drives.
+- **Readable room content** — books, letters, tickets, receipts, journal prompts, drawer objects, and old emails all contain original text.
+- **Hidden details** — poster secrets, unlockable mail, game cartridge content, and other small easter eggs reward exploration.
+- **Accessibility details** — keyboard focus states, Escape navigation, reduced-motion support, and click alternatives to drag interactions.
+
+## Built with
+
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- GSAP
+- `@dnd-kit/core`
+- YouTube IFrame Player API for the current development music engine
+- Browser `localStorage` / `sessionStorage` for lightweight persistence
+- Web Audio API for generated interface sounds
+
+## Run locally
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open http://localhost:3000.
+Then open:
 
-## How it works
-
-- **`lib/useYouTubePlayer.ts`** — a small hook around the YouTube IFrame
-  Player API. Each physical player (cassette, CD) gets its own hidden,
-  1×1px YouTube player instance as its "audio engine." This is the piece
-  you'd swap out later if you move to uploaded audio files (Howler.js
-  would slot in here instead, same hook shape: `load / play / pause /
-  toggle / currentTime / duration`).
-- **`components/DraggableTrack.tsx`** — the shelf item (tape shell or CD),
-  built with `@dnd-kit/core`'s `useDraggable`.
-- **`components/CassettePlayer.tsx`** / **`CDPlayer.tsx`** — droppable
-  zones (`useDroppable`) that only accept their matching format
-  (`track.format === "cassette" | "cd"`). Reels/disc spin via a CSS
-  `animate-spin` tied to playback state; the CD player's lid slides open
-  on drag-start for a little tactility.
-- **`data/tracks.ts`** — sample playlist using well-known YouTube IDs as
-  placeholders so it's testable immediately.
-
-## Swapping in your real playlist
-
-Edit `data/tracks.ts`. Each track needs:
-
-```ts
-{ id, title, artist, youtubeId, format: "cassette" | "cd", color }
+```text
+http://localhost:3000
 ```
 
-`youtubeId` is just the `v=` param from a YouTube URL. `color` is a hex
-value used for the tape shell / CD label tint.
+For a production check:
 
-## Known limits of this slice (by design — it's step one)
+```bash
+npm run build
+npm run start
+```
 
-- No persistence yet — reload and the players are empty again. Wiring up
-  Supabase (per your stack) for "rooms" and saved playlists is the
-  natural next step, not part of this prototype.
-- Only one track can be "in" each player at a time — no queue yet.
-- Autoplay policies: some browsers block audio until the user has
-  interacted with the page at least once; since ▶ is a real click, this
-  should be fine in practice.
-- Styling is intentionally room-agnostic for now — this is meant to sit
-  inside the bigger desk scene (bookshelf, plant, window, polaroid wall)
-  from your original brief, not replace it.
+## Project structure
 
-## GSAP polish (added)
+```text
+app/
+  layout.tsx
+  page.tsx
+  globals.css
+  icon.svg
+  manifest.ts
 
-`lib/motion.ts` holds the shared animation logic, kept separate from
-the player components so both use the same physical feel:
+components/
+  CassettePlayer.tsx
+  CDPlayer.tsx
+  VinylPlayer.tsx
+  PersistentMusicPlayer.tsx
+  DraggableTrack.tsx
+  TrackShelf.tsx
 
-- **`useSpin(ref, spinning)`** — reels and the CD don't just toggle a
-  CSS spin class. They ramp `timeScale` from 0 → 1 over ~0.5s when
-  playback starts (`power2.out`) and back down to 0 over ~0.7s when it
-  stops (`power2.in`), so they read as having motor inertia rather
-  than snapping on/off.
-- **`playInsertBounce(el)`** — the tape/disc drops in with a
-  `back.out` overshoot instead of a linear slide.
-- **`playEjectOut(el, onComplete)`** — cassette eject now animates the
-  tape sliding up and fading *before* the state clears (`onComplete`
-  callback), instead of the DOM node just vanishing.
-- **`useLid(ref, open)`** — the CD lid opens fast (`power3.out`) and
-  closes with a small `back.in` overshoot, like a real hinge with a
-  catch, plus the disc itself nudges down 6px and scales to 0.96 while
-  the lid is open so it reads as "sitting in the tray."
+  room/
+    RetroRoomScene.tsx
+    RetroComputer.tsx
+    RetroFileViewer.tsx
+    StarMazeGame.tsx
+    DeskDrawer.tsx
+    PinBoard.tsx
+    MiniTypewriter.tsx
+    TypableJournal.tsx
+    ReadableBooks.tsx
 
-Framer Motion is still the right tool for page/route-level transitions
-later — GSAP owns anything physical inside the players so the two
-don't fight over the same element.
+  stations/
+    MediaStation.tsx
+
+data/
+  tracks.ts
+
+lib/
+  MusicPlayerContext.tsx
+  useYouTubePlayer.ts
+  useRoomSoundEffects.ts
+  retroMedia.ts
+  pinboard.ts
+  motion.ts
+  types.ts
+```
+
+## Music system
+
+The site uses one persistent music context rather than mounting a new player for every view.
+
+```text
+MusicPlayerProvider
+        │
+        ├── vinyl player
+        ├── cassette player
+        ├── CD player
+        ├── pinboard memories
+        ├── computer playlists
+        └── persistent bottom controls
+```
+
+That allows a song to continue playing when the visitor leaves a media screen and explores another part of the room.
+
+After a browser refresh, the current track and approximate position can be restored in a paused state so the visitor can resume intentionally.
+
+### Development audio note
+
+The current prototype uses YouTube's IFrame Player API as its playback source. Video UI is kept out of the room interface; the website only exposes its own physical-player and now-playing controls.
+
+For a public portfolio deployment, music availability can vary because individual YouTube uploads may be removed, restricted, or disallow embedding. Only use audio you have permission to present, and consider replacing the development playback layer with licensed/self-hosted audio before treating the site as a long-term public music experience.
+
+## Local persistence
+
+The project intentionally does not require a backend. Browser storage is used for things such as:
+
+- journal drafts
+- typewriter drafts
+- pinboard positions and notes
+- uploaded pinboard photos
+- attached memory soundtracks
+- removable computer media state
+- read-mail progress
+- discovered easter eggs
+- music restoration information
+
+Because this is browser-local data, clearing site storage will reset those saved details.
+
+## Interaction tips
+
+- Hover around the room; most recognizable objects are interactive.
+- Music items can be clicked or dragged into their player.
+- The long bottom player controls whichever track is currently active.
+- Press **Escape** to return to the room from most focused views.
+- Look through drawers instead of assuming every object is decorative.
+- Read old mail and suspicious files.
+- Some discoveries only appear after interacting with several related objects.
+
+## Deployment on Vercel
+
+1. Push the latest version to GitHub.
+2. In Vercel, choose **Add New → Project**.
+3. Import the GitHub repository.
+4. Vercel should detect **Next.js** automatically.
+5. Keep the default build command:
+
+```text
+next build
+```
+
+6. Deploy.
+
+No environment variables are currently required for the core project.
+
+After deployment, test music playback, browser refresh restoration, photo uploads, localStorage features, responsive layout, and all three physical media collections in the production URL.
+
+## Portfolio summary
+
+**The Nostalgia Room** is a front-end interaction project exploring how familiar physical objects can become navigation. Instead of using a conventional menu, the room itself is the interface: records lead to music, a CRT opens the computer, drawers contain removable media, a typewriter produces notes, and memories connect otherwise separate parts of the experience.
+
+The project focuses on interaction design, state sharing between components, persistent client-side data, playful micro-interactions, and building a cohesive visual world with React rather than a collection of disconnected UI cards.
