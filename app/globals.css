@@ -6956,3 +6956,397 @@ button {
     animation: none;
   }
 }
+
+/* =========================================================
+   V22 — ROOM COHESION + INTERACTION POLISH
+   Quiet motion, stronger hotspots, active media cues, a tiny
+   room now-playing indicator, generated click sounds, and
+   safer spacing around the persistent player.
+========================================================= */
+
+/* ---------- Room title / tiny now-playing ---------- */
+
+.retro-room-title {
+  position: relative;
+  z-index: 12;
+}
+
+.room-now-playing {
+  --room-now-accent: rgba(229, 187, 116, 0.92);
+  display: inline-grid;
+  grid-template-columns: 8px minmax(0, auto) 26px;
+  align-items: center;
+  gap: 9px;
+  margin-top: 10px;
+  padding: 6px 10px;
+  max-width: min(390px, calc(100vw - 40px));
+  border: 1px solid rgba(235, 214, 190, 0.16);
+  border-radius: 999px;
+  background: rgba(31, 20, 34, 0.62);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.04);
+  color: rgba(244, 233, 218, 0.92);
+  text-align: left;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.room-now-playing:hover,
+.room-now-playing:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(231, 190, 118, 0.48);
+  background: rgba(42, 27, 44, 0.78);
+}
+
+.room-now-playing-led {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(181, 191, 166, 0.74);
+  box-shadow: 0 0 0 3px rgba(181, 191, 166, 0.08);
+}
+
+.room-now-playing.is-playing .room-now-playing-led {
+  background: #c9d5b7;
+  box-shadow:
+    0 0 0 3px rgba(201, 213, 183, 0.09),
+    0 0 8px rgba(201, 213, 183, 0.36);
+}
+
+.room-now-playing-copy {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 7px;
+  align-items: baseline;
+}
+
+.room-now-playing-copy small {
+  grid-column: 1 / -1;
+  margin-bottom: 1px;
+  font: 600 7px/1 var(--font-mono), monospace;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: rgba(223, 186, 128, 0.68);
+}
+
+.room-now-playing-copy strong,
+.room-now-playing-copy em {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.room-now-playing-copy strong {
+  max-width: 190px;
+  font: 700 9px/1.2 var(--font-mono), monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.room-now-playing-copy em {
+  max-width: 100px;
+  font: 400 12px/1 var(--font-hand), cursive;
+  color: rgba(235, 216, 196, 0.76);
+}
+
+.room-now-playing-bars {
+  height: 15px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+}
+
+.room-now-playing-bars i {
+  width: 2px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(224, 189, 129, 0.72);
+  transform-origin: bottom;
+}
+
+.room-now-playing.is-playing .room-now-playing-bars i:nth-child(1) {
+  animation: v22-eq 0.72s ease-in-out infinite alternate;
+}
+.room-now-playing.is-playing .room-now-playing-bars i:nth-child(2) {
+  animation: v22-eq 0.54s 0.1s ease-in-out infinite alternate;
+}
+.room-now-playing.is-playing .room-now-playing-bars i:nth-child(3) {
+  animation: v22-eq 0.66s 0.18s ease-in-out infinite alternate;
+}
+.room-now-playing.is-playing .room-now-playing-bars i:nth-child(4) {
+  animation: v22-eq 0.48s 0.05s ease-in-out infinite alternate;
+}
+
+@keyframes v22-eq {
+  from { height: 3px; opacity: 0.55; }
+  to { height: 14px; opacity: 1; }
+}
+
+/* ---------- Hotspots feel like physical objects ---------- */
+
+.room-view-room .hotspot,
+.room-view-room .desk-drawer-button {
+  transition:
+    transform 150ms ease,
+    filter 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.room-view-room .hotspot:hover,
+.room-view-room .hotspot:focus-visible {
+  filter: brightness(1.055) saturate(1.04);
+}
+
+.room-view-room .hotspot:active,
+.room-view-room .desk-drawer-button:active {
+  transform: translateY(1px) scale(0.992);
+}
+
+.room-view-room .object-tip,
+.room-view-room .drawer-hover-label {
+  transition:
+    opacity 130ms ease,
+    transform 130ms ease;
+}
+
+.room-view-room .hotspot:hover .object-tip,
+.room-view-room .hotspot:focus-visible .object-tip,
+.room-view-room .desk-drawer-button:hover .drawer-hover-label,
+.room-view-room .desk-drawer-button:focus-visible .drawer-hover-label {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+/* ---------- Small physical responses ---------- */
+
+.room-view-room .desk-drawer-button:hover .drawer-handle-mini,
+.room-view-room .desk-drawer-button:focus-visible .drawer-handle-mini {
+  transform: translateY(2px);
+}
+
+.room-view-room .desk-typewriter-mini:hover .mini-tw-carriage,
+.room-view-room .desk-typewriter-mini:focus-visible .mini-tw-carriage {
+  transform: translateX(4px);
+}
+
+.room-view-room .desk-typewriter-mini:hover .mini-tw-paper,
+.room-view-room .desk-typewriter-mini:focus-visible .mini-tw-paper {
+  transform: translateY(-2px) rotate(-0.6deg);
+}
+
+.room-view-room .room-pinboard:hover .mini-board-note,
+.room-view-room .room-pinboard:focus-visible .mini-board-note {
+  animation: v22-paper-flutter 0.65s ease-in-out;
+}
+
+.room-view-room .room-pinboard:hover .mini-board-photo,
+.room-view-room .room-pinboard:focus-visible .mini-board-photo {
+  transform: rotate(2deg) translateY(-2px);
+}
+
+@keyframes v22-paper-flutter {
+  0%, 100% { transform: rotate(0deg); }
+  35% { transform: rotate(-1.8deg) translateY(-1px); }
+  68% { transform: rotate(1deg); }
+}
+
+/* ---------- Ambient room life ---------- */
+
+.room-view-room .sky-cloud-a {
+  animation: v22-cloud-drift-a 18s ease-in-out infinite alternate;
+}
+
+.room-view-room .sky-cloud-b {
+  animation: v22-cloud-drift-b 22s ease-in-out infinite alternate;
+}
+
+@keyframes v22-cloud-drift-a {
+  from { transform: translateX(-3px); }
+  to { transform: translateX(12px); }
+}
+
+@keyframes v22-cloud-drift-b {
+  from { transform: translateX(5px); }
+  to { transform: translateX(-10px); }
+}
+
+.room-view-room .window-vine {
+  transform-origin: top center;
+  animation: v22-vine-sway 6.5s ease-in-out infinite alternate;
+}
+
+.room-view-room .vine-b {
+  animation-delay: -2.4s;
+}
+
+@keyframes v22-vine-sway {
+  from { transform: rotate(-0.55deg); }
+  to { transform: rotate(0.75deg); }
+}
+
+.room-view-room.room-lit .shelf-lamp-v7 {
+  animation: v22-lamp-breathe 4.8s ease-in-out infinite;
+}
+
+@keyframes v22-lamp-breathe {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.08); }
+}
+
+/* CRT gets a restrained scan rather than a large cyberpunk glow. */
+.room-view-room .crt-screen {
+  overflow: hidden;
+}
+
+.room-view-room .crt-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.08;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 2px,
+    rgba(255, 255, 255, 0.18) 3px,
+    transparent 4px
+  );
+  animation: v22-crt-flicker 5.4s steps(1, end) infinite;
+}
+
+@keyframes v22-crt-flicker {
+  0%, 94%, 100% { opacity: 0.07; }
+  95% { opacity: 0.12; }
+  97% { opacity: 0.055; }
+}
+
+/* ---------- The shelf reacts to the active format ---------- */
+
+.room-view-room.room-active-vinyl .room-turntable,
+.room-view-room.room-active-cassette .room-cassette-deck,
+.room-view-room.room-active-cd .room-cd-deck {
+  box-shadow:
+    0 0 0 1px rgba(226, 187, 118, 0.42),
+    0 7px 16px rgba(0, 0, 0, 0.2);
+}
+
+.room-view-room.room-active-vinyl .room-turntable::after,
+.room-view-room.room-active-cassette .room-cassette-deck::after,
+.room-view-room.room-active-cd .room-cd-deck::after {
+  content: "playing";
+  position: absolute;
+  top: 5px;
+  right: 6px;
+  z-index: 5;
+  padding: 2px 4px;
+  border-radius: 3px;
+  background: rgba(37, 24, 29, 0.78);
+  color: rgba(231, 193, 129, 0.9);
+  font: 600 5px/1 var(--font-mono), monospace;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.room-view-room.room-music-playing.room-active-vinyl .turntable-platter {
+  animation: v22-room-record-spin 4.2s linear infinite;
+}
+
+@keyframes v22-room-record-spin {
+  to { transform: rotate(360deg); }
+}
+
+.room-view-room.room-music-playing.room-active-cassette .deck-window i {
+  animation: v22-room-reel-spin 1.6s linear infinite;
+}
+
+.room-view-room.room-music-playing.room-active-cassette .deck-window i:last-child {
+  animation-direction: reverse;
+}
+
+@keyframes v22-room-reel-spin {
+  to { transform: rotate(360deg); }
+}
+
+.room-view-room.room-music-playing.room-active-cd .cd-knob {
+  animation: v22-room-cd-spin 2.6s linear infinite;
+}
+
+@keyframes v22-room-cd-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---------- Persistent player feels attached, not pasted on ---------- */
+
+.persistent-music-player {
+  border-color: rgba(191, 139, 102, 0.32);
+  box-shadow:
+    0 12px 34px rgba(10, 6, 12, 0.34),
+    inset 0 1px rgba(255, 255, 255, 0.055);
+  backdrop-filter: blur(9px);
+}
+
+.room-view-room.has-persistent-music {
+  padding-bottom: 98px;
+}
+
+/* ---------- Laptop / mobile safety ---------- */
+
+@media (max-width: 960px) {
+  .room-now-playing {
+    margin-top: 8px;
+    grid-template-columns: 7px minmax(0, auto) 22px;
+  }
+
+  .room-now-playing-copy strong {
+    max-width: 150px;
+  }
+
+  .room-now-playing-copy em {
+    max-width: 84px;
+  }
+
+  .room-view-room .object-tip {
+    font-size: 8px;
+  }
+}
+
+@media (max-width: 680px) {
+  .room-now-playing {
+    max-width: calc(100vw - 24px);
+  }
+
+  .room-now-playing-copy {
+    grid-template-columns: 1fr;
+  }
+
+  .room-now-playing-copy em {
+    display: none;
+  }
+
+  .room-view-room.has-persistent-music {
+    padding-bottom: 124px;
+  }
+
+  .room-view-room .object-tip {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .room-now-playing-bars i,
+  .room-view-room .sky-cloud,
+  .room-view-room .window-vine,
+  .room-view-room.room-lit .shelf-lamp-v7,
+  .room-view-room .crt-screen::after,
+  .room-view-room.room-music-playing .turntable-platter,
+  .room-view-room.room-music-playing .deck-window i,
+  .room-view-room.room-music-playing .cd-knob {
+    animation: none !important;
+  }
+}

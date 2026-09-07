@@ -11,9 +11,11 @@ import MiniTypewriter from "@/components/room/MiniTypewriter";
 import PinBoard from "@/components/room/PinBoard";
 import MediaStation from "@/components/stations/MediaStation";
 import PersistentMusicPlayer from "@/components/PersistentMusicPlayer";
+import RoomNowPlaying from "@/components/RoomNowPlaying";
 import { MusicPlayerProvider, useMusicPlayer } from "@/lib/MusicPlayerContext";
 import { cassettes, cds, vinyls } from "@/data/tracks";
 import { MediaFormat, Track } from "@/lib/types";
+import { useRoomSoundEffects } from "@/lib/useRoomSoundEffects";
 
 type RoomView = "room" | MediaFormat | "journal" | "books" | "computer" | "typewriter" | "pinboard";
 
@@ -32,7 +34,9 @@ function RoomApp() {
   const [lampOn, setLampOn] = useState(true);
   const [openDrawer, setOpenDrawer] = useState<number | null>(null);
   const [preloadedTrack, setPreloadedTrack] = useState<Track | null>(null);
-  const { loadTrack, currentTrack } = useMusicPlayer();
+  const { loadTrack, currentTrack, isPlaying } = useMusicPlayer();
+
+  useRoomSoundEffects(view === "room");
 
   const tracks = view === "cassette" ? cassettes : view === "cd" ? cds : vinyls;
   const mediaOpen = view === "cassette" || view === "cd" || view === "vinyl";
@@ -59,7 +63,9 @@ function RoomApp() {
 
   return (
     <>
-      <main className={`nostalgia-room retro-room-page room-view-${view} ${lampOn ? "room-lit" : "room-dim"} ${currentTrack ? "has-persistent-music" : ""}`}>
+      <main
+        className={`nostalgia-room retro-room-page room-view-${view} ${lampOn ? "room-lit" : "room-dim"} ${currentTrack ? "has-persistent-music" : ""} ${currentTrack ? `room-active-${currentTrack.format}` : ""} ${isPlaying ? "room-music-playing" : "room-music-paused"}`}
+      >
         <div className="ambient-grain" />
 
         {view === "room" && (
@@ -68,6 +74,7 @@ function RoomApp() {
               <p>welcome to</p>
               <h1>The Nostalgia Room</h1>
               <span>click around — almost everything has a story</span>
+              <RoomNowPlaying onOpenTrack={openNowPlaying} />
             </header>
 
             <RetroRoomScene
