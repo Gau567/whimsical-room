@@ -15,6 +15,7 @@ import PersistentMusicPlayer from "@/components/PersistentMusicPlayer";
 import RoomNowPlaying from "@/components/RoomNowPlaying";
 
 import WorldHub from "@/components/world/WorldHub";
+import WorldHUD from "@/components/world/WorldHUD";
 import MidnightStudy from "@/components/rooms/study/MidnightStudy";
 
 import {
@@ -55,33 +56,74 @@ export default function Home() {
  * The existing Nostalgia Room remains its own complete mini-app.
  */
 function WorldApp() {
-  const { currentRoom, returnToHub, unlockRoom } = useWorld();
+  const {
+    currentRoom,
+    returnToHub,
+  } = useWorld();
 
-  if (currentRoom === "hub") {
-    return <WorldHub />;
-  }
+  return (
+    <>
+      <WorldHUD />
 
-  if (currentRoom === "nostalgia") {
-    return <NostalgiaRoomApp onReturnToHub={returnToHub} />;
-  }
+      {/* HALLWAY */}
 
-  if (currentRoom === "study") {
-    return (
-      <MidnightStudy
-        onBack={returnToHub}
-        onUnlockRoom={(roomId) => unlockRoom(roomId)}
-      />
-    );
-  }
+      {currentRoom === "hub" && (
+        <WorldHub />
+      )}
 
-  // These rooms exist in the world model, but have not been built yet.
+
+      {/* ROOM 01 — NOSTALGIA */}
+
+      {currentRoom === "nostalgia" && (
+        <NostalgiaRoomApp
+          onReturnToHub={returnToHub}
+        />
+      )}
+
+
+      {/* ROOM 02 — MIDNIGHT STUDY */}
+
+      {currentRoom === "study" && (
+        <MidnightStudy />
+      )}
+
+
+      {/* FUTURE ROOMS */}
+
+      {currentRoom !== "hub" &&
+        currentRoom !== "nostalgia" &&
+        currentRoom !== "study" && (
+          <FutureRoomPlaceholder
+            roomName={currentRoom}
+            onBack={returnToHub}
+          />
+        )}
+    </>
+  );
+}
+
+function FutureRoomPlaceholder({
+  roomName,
+  onBack,
+}: {
+  roomName: string;
+  onBack: () => void;
+}) {
+  const formattedName =
+    roomName === "train"
+      ? "Train Compartment"
+      : roomName.charAt(0).toUpperCase() + roomName.slice(1);
+
   return (
     <main className="future-room-placeholder">
       <div className="future-room-card">
         <p>ROOM UNDER CONSTRUCTION</p>
-        <h1>{currentRoom.toUpperCase()}</h1>
+
+        <h1>{formattedName}</h1>
+
         <span>something is waiting behind this door.</span>
-        <button type="button" onClick={returnToHub}>
+
+        <button type="button" onClick={onBack}>
           ← RETURN TO HALLWAY
         </button>
       </div>

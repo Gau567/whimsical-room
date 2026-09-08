@@ -8,29 +8,35 @@ export type RoomId =
   | "train"
   | "greenhouse";
 
-
 export type RoomInfo = {
   id: RoomId;
   number: string;
   name: string;
   subtitle: string;
-  locked?: boolean;
 };
-
 
 export type InventoryItem = {
   id: string;
   name: string;
-
   icon: string;
-
   description: string;
-
-  sourceRoom: RoomId;
-
-  useIn?: RoomId;
+  sourceRoom: Exclude<RoomId, "hub">;
+  useIn?: Exclude<RoomId, "hub">;
 };
 
+export type WorldClueId =
+  | "study-clock"
+  | "study-date"
+  | "study-radio"
+  | "train-platform-seven"
+  | "observatory-lens-found"
+  | "greenhouse-key-found";
+
+export type QuestId =
+  | "study-locked-drawer"
+  | "observatory-missing-lens"
+  | "train-eleven-forty-seven"
+  | "greenhouse-small-key";
 
 export const WORLD_ROOMS: RoomInfo[] = [
   {
@@ -39,42 +45,36 @@ export const WORLD_ROOMS: RoomInfo[] = [
     name: "The Nostalgia Room",
     subtitle: "music can be heard inside",
   },
-
   {
     id: "study",
     number: "02",
     name: "Midnight Study",
     subtitle: "the lamp is still on",
   },
-
   {
     id: "arcade",
     number: "03",
     name: "Arcade Room",
     subtitle: "something is still running",
   },
-
   {
     id: "observatory",
     number: "04",
     name: "Observatory",
     subtitle: "there is something in the sky",
   },
-
   {
     id: "dream",
     number: "05",
     name: "Dream Room",
     subtitle: "the door was not here before",
   },
-
   {
     id: "train",
     number: "06",
     name: "Train Compartment",
     subtitle: "departure unknown",
   },
-
   {
     id: "greenhouse",
     number: "07",

@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Backpack from "@/components/world/Backpack";
 import { useWorld } from "@/lib/world/WorldContext";
 
 const DRAWER_CODE = "0417";
@@ -56,7 +55,14 @@ const BOOKS = [
 type ClueId = "date" | "radio" | "clock" | "train";
 
 export default function MidnightStudy() {
-  const { returnToHub, addItem, hasItem, unlockRoom } = useWorld();
+  const {
+    returnToHub,
+    addItem,
+    hasItem,
+    unlockRoom,
+    discoverClue,
+    completeQuest,
+  } = useWorld();
 
   const [lampOn, setLampOn] = useState(true);
   const [rainQuiet, setRainQuiet] = useState(false);
@@ -84,6 +90,11 @@ export default function MidnightStudy() {
 
   function discover(clue: ClueId) {
     setClues((current) => (current.includes(clue) ? current : [...current, clue]));
+
+    if (clue === "clock") discoverClue("study-clock");
+    if (clue === "date") discoverClue("study-date");
+    if (clue === "radio") discoverClue("study-radio");
+    if (clue === "train") discoverClue("train-platform-seven");
   }
 
   function openNotebook() {
@@ -96,6 +107,7 @@ export default function MidnightStudy() {
       setDrawerOpen(true);
       setDrawerCode("");
       setDrawerError(false);
+      completeQuest("study-locked-drawer");
       return;
     }
     setDrawerError(true);
@@ -112,6 +124,7 @@ export default function MidnightStudy() {
       sourceRoom: "study",
       useIn: "observatory",
     });
+    discoverClue("observatory-lens-found");
     unlockRoom("observatory");
   }
 
@@ -125,6 +138,7 @@ export default function MidnightStudy() {
       sourceRoom: "study",
       useIn: "greenhouse",
     });
+    discoverClue("greenhouse-key-found");
     unlockRoom("greenhouse");
   }
 
@@ -159,7 +173,6 @@ export default function MidnightStudy() {
         </button>
       </header>
 
-      <Backpack />
 
       <section className="study-v3-room" aria-label="Interactive midnight study">
         <section className="study-v3-wall">

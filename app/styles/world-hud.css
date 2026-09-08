@@ -1,0 +1,513 @@
+/* =========================================================
+   WORLD HUD — BACKPACK / QUEST LOG / GLOBAL MUSIC CONTROL
+   Replace app/styles/world-hud.css with this whole file.
+========================================================= */
+
+.world-hud {
+  position: fixed;
+  left: 50%;
+  right: auto;
+  bottom: 16px;
+  transform: translateX(-50%);
+
+  z-index: 190;
+
+  width: min(calc(100vw - 32px), 1080px);
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+
+  pointer-events: none;
+}
+
+/* Whatever order WorldHUD.tsx renders its children in,
+   keep them inside the HUD flow instead of allowing old
+   fixed/absolute rules to pull them out of position. */
+.world-hud > * {
+  min-width: 0;
+  pointer-events: auto;
+}
+
+.world-hud-left {
+  position: static !important;
+  inset: auto !important;
+
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  justify-content: flex-start;
+
+  pointer-events: auto;
+}
+
+.world-hud-music {
+  position: static !important;
+  inset: auto !important;
+
+  min-width: 0;
+  max-width: 520px;
+
+  pointer-events: auto;
+}
+
+/* =========================================================
+   BACKPACK / QUEST BUTTONS
+========================================================= */
+
+.world-backpack-button,
+.world-quest-button {
+  position: relative !important;
+  inset: auto !important;
+  transform: none !important;
+
+  min-height: 54px;
+  min-width: 132px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  padding: 9px 13px;
+
+  border: 1px solid rgba(229, 205, 169, .18);
+  border-radius: 11px;
+
+  background: rgba(28, 20, 30, .94);
+  color: #efe2d2;
+
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 26px rgba(0,0,0,.26);
+
+  cursor: pointer;
+
+  transition:
+    transform .15s ease,
+    background .15s ease,
+    border-color .15s ease;
+}
+
+.world-backpack-button:hover,
+.world-quest-button:hover {
+  transform: translateY(-2px) !important;
+  background: rgba(47, 31, 45, .97);
+  border-color: rgba(229, 205, 169, .28);
+}
+
+.world-backpack-button strong,
+.world-quest-button strong {
+  font: 700 8px/1 var(--font-mono), monospace;
+  letter-spacing: .08em;
+}
+
+.world-backpack-button small,
+.world-quest-button small {
+  min-width: 19px;
+  height: 19px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0 4px;
+
+  border-radius: 999px;
+  background: rgba(229, 189, 112, .14);
+
+  font: 700 8px/1 var(--font-mono), monospace;
+  color: #e0b567;
+}
+
+/* =========================================================
+   COMPACT GLOBAL MUSIC PLAYER
+========================================================= */
+
+.world-music-mini {
+  position: relative !important;
+  inset: auto !important;
+  transform: none !important;
+
+  width: min(500px, 48vw);
+  min-width: 340px;
+  min-height: 62px;
+
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 10px;
+
+  padding: 9px 10px;
+
+  border: 1px solid rgba(224, 193, 158, .18);
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(69, 43, 38, .96),
+      rgba(49, 31, 30, .97)
+    );
+
+  color: #efe3d4;
+
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 28px rgba(0,0,0,.28);
+}
+
+.world-music-mini.is-idle {
+  grid-template-columns: 34px minmax(0,1fr);
+  opacity: .72;
+}
+
+.world-music-disc {
+  width: 31px;
+  height: 31px;
+
+  display: grid;
+  place-items: center;
+
+  border: 5px solid #18151a;
+  border-radius: 50%;
+
+  background: #8d657c;
+  color: #191519;
+
+  font-size: 9px;
+}
+
+.world-music-mini.is-playing .world-music-disc {
+  animation: world-hud-disc-spin 3.2s linear infinite;
+}
+
+.world-music-copy {
+  min-width: 0;
+}
+
+.world-music-mini small,
+.world-music-mini strong,
+.world-music-mini span {
+  display: block;
+}
+
+.world-music-mini small {
+  margin-bottom: 3px;
+
+  font: 700 7px/1 var(--font-mono), monospace;
+  letter-spacing: .12em;
+
+  color: rgba(238, 219, 197, .52);
+}
+
+.world-music-mini strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  font: 700 10px/1.2 var(--font-mono), monospace;
+}
+
+.world-music-mini .world-music-copy > span {
+  margin-top: 3px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  font-family: var(--font-hand), cursive;
+  font-size: 13px;
+
+  color: rgba(239, 224, 210, .7);
+}
+
+.world-music-mini > button {
+  width: 42px;
+  height: 42px;
+
+  border: 1px solid rgba(39, 24, 25, .55);
+  border-radius: 9px;
+
+  background: #d79a3e;
+  color: #241819;
+
+  font: 800 13px/1 var(--font-mono), monospace;
+
+  cursor: pointer;
+
+  transition:
+    transform .15s ease,
+    filter .15s ease;
+}
+
+.world-music-mini > button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.07);
+}
+
+/* =========================================================
+   BACKPACK / QUEST MODAL BACKDROPS
+========================================================= */
+
+.world-backpack-backdrop,
+.world-quest-backdrop {
+  position: fixed;
+  inset: 0;
+
+  z-index: 240;
+
+  display: grid;
+  place-items: center;
+
+  padding: 20px;
+
+  background: rgba(14, 10, 17, .68);
+  backdrop-filter: blur(5px);
+}
+
+.world-backpack-panel,
+.world-quest-panel {
+  position: relative;
+
+  width: min(680px, 94vw);
+  max-height: min(720px, 86vh);
+
+  overflow: auto;
+
+  padding: 28px;
+
+  border: 1px solid rgba(230, 202, 167, .2);
+  border-radius: 14px;
+
+  background: linear-gradient(155deg, #271b2b, #1b151f);
+  color: #eee1d1;
+
+  box-shadow: 0 25px 70px rgba(0,0,0,.4);
+}
+
+.world-backpack-panel header small,
+.world-quest-panel header small {
+  font: 700 8px/1 var(--font-mono), monospace;
+  letter-spacing: .16em;
+  color: #c69d6a;
+}
+
+.world-backpack-panel header h2,
+.world-quest-panel header h2 {
+  margin: 7px 0 2px;
+  font-family: var(--font-hand), cursive;
+  font-size: 31px;
+}
+
+.world-backpack-panel header p,
+.world-quest-panel header p {
+  margin: 0;
+  font-family: var(--font-serif), serif;
+  color: rgba(238,225,209,.54);
+}
+
+.world-backpack-close,
+.world-quest-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+
+  width: 35px;
+  height: 35px;
+
+  border: 1px solid rgba(229, 205, 175, .16);
+  border-radius: 50%;
+
+  background: rgba(255,255,255,.04);
+  color: inherit;
+
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* =========================================================
+   BACKPACK / QUEST CONTENT
+========================================================= */
+
+.world-backpack-grid,
+.world-quest-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.world-backpack-item,
+.world-quest-card {
+  display: grid;
+  grid-template-columns: 45px minmax(0,1fr);
+  gap: 12px;
+
+  padding: 14px;
+
+  border: 1px solid rgba(231, 205, 172, .12);
+  border-radius: 9px;
+
+  background: rgba(255,255,255,.035);
+}
+
+.world-backpack-item-icon,
+.world-quest-status {
+  width: 43px;
+  height: 43px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 9px;
+  background: rgba(206, 169, 105, .1);
+
+  font-size: 20px;
+}
+
+.world-backpack-item small,
+.world-quest-card small {
+  font: 700 7px/1 var(--font-mono), monospace;
+  letter-spacing: .12em;
+  opacity: .48;
+}
+
+.world-backpack-item h3,
+.world-quest-card h3 {
+  margin: 5px 0;
+  font: 700 11px/1.2 var(--font-mono), monospace;
+}
+
+.world-backpack-item p,
+.world-quest-card p {
+  margin: 0;
+
+  font-family: var(--font-serif), serif;
+  font-size: 12px;
+  line-height: 1.55;
+
+  color: rgba(239,225,209,.7);
+}
+
+.world-backpack-item em,
+.world-quest-card em {
+  display: block;
+  margin-top: 7px;
+
+  font: 600 7px/1.2 var(--font-mono), monospace;
+  color: #c6aa78;
+}
+
+.world-quest-card.is-complete {
+  opacity: .55;
+}
+
+.world-quest-card.is-complete .world-quest-status {
+  color: #9fbe91;
+}
+
+.world-backpack-empty {
+  margin-top: 28px;
+  padding: 28px;
+
+  text-align: center;
+
+  border: 1px dashed rgba(226,200,167,.13);
+  border-radius: 10px;
+}
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+@keyframes world-hud-disc-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+  .world-hud {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+
+    transform: none;
+
+    width: auto;
+
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .world-hud-left {
+    width: 100%;
+    order: 2;
+  }
+
+  .world-hud-music {
+    width: 100%;
+    max-width: none;
+    order: 1;
+  }
+
+  .world-music-mini {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .world-backpack-button,
+  .world-quest-button {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .world-hud {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+  }
+
+  .world-hud-left {
+    gap: 6px;
+  }
+
+  .world-backpack-button,
+  .world-quest-button {
+    min-height: 48px;
+    padding: 7px 9px;
+  }
+
+  .world-music-mini {
+    min-height: 56px;
+    grid-template-columns: 30px minmax(0,1fr) 40px;
+    gap: 8px;
+  }
+
+  .world-music-disc {
+    width: 28px;
+    height: 28px;
+    border-width: 4px;
+  }
+
+  .world-music-mini > button {
+    width: 38px;
+    height: 38px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-music-mini.is-playing .world-music-disc {
+    animation: none;
+  }
+
+  .world-backpack-button,
+  .world-quest-button,
+  .world-music-mini > button {
+    transition: none;
+  }
+}
