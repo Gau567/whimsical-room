@@ -2,139 +2,125 @@
 
 import {
   createContext,
-  useCallback,
+  ReactNode,
   useContext,
   useEffect,
   useMemo,
   useState,
-  type ReactNode,
 } from "react";
-import type { RoomId, WorldRoomId } from "./worldTypes";
+import { InventoryItem, RoomId } from "./worldTypes";
 
 type WorldContextValue = {
   currentRoom: RoomId;
-  unlockedRooms: WorldRoomId[];
-  enterRoom: (room: WorldRoomId) => void;
+  unlockedRooms: RoomId[];
+  inventory: InventoryItem[];
+  enterRoom: (room: RoomId) => void;
   returnToHub: () => void;
-  unlockRoom: (room: WorldRoomId) => void;
-  lockRoom: (room: WorldRoomId) => void;
-  isRoomUnlocked: (room: WorldRoomId) => boolean;
-  resetWorld: () => void;
+  unlockRoom: (room: RoomId) => void;
+  isRoomUnlocked: (room: RoomId) => boolean;
+  addItem: (item: InventoryItem) => void;
+  removeItem: (itemId: string) => void;
+  hasItem: (itemId: string) => boolean;
+  getItem: (itemId: string) => InventoryItem | undefined;
 };
 
-const STORAGE_KEY = "whimsical-world-progress-v1";
-
-// While building Room 02, keep Nostalgia + Midnight Study open.
-// Later you can remove "study" and unlock it through a quest instead.
-const DEFAULT_UNLOCKED_ROOMS: WorldRoomId[] = ["nostalgia", "study"];
-
-const WorldContext = createContext<WorldContextValue | undefined>(undefined);
+const STORAGE_KEY = "whimsical-world-state-v1";
+const WorldContext = createContext<WorldContextValue | null>(null);
 
 export function WorldProvider({ children }: { children: ReactNode }) {
   const [currentRoom, setCurrentRoom] = useState<RoomId>("hub");
-  const [unlockedRooms, setUnlockedRooms] = useState<WorldRoomId[]>(
-    DEFAULT_UNLOCKED_ROOMS,
-  );
+  const [unlockedRooms, setUnlockedRooms] = useState<RoomId[]>([
+    "hub",
+    "nostalgia",
+    "study",
+  ]);
+  const [inventory, setInventory] = useState<InventoryItem[]>([]);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     try {
-      const saved = window.localStorage.getItem(STORAGE_KEY);
-      if (!saved) return;
-
-      const parsed = JSON.parse(saved) as {
-        unlockedRooms?: WorldRoomId[];
-      };
-
-      const savedRooms: WorldRoomId[] = Array.isArray(parsed.unlockedRooms)
-        ? parsed.unlockedRooms
-        : [];
-
-      setUnlockedRooms(
-        Array.from(
-          new Set<WorldRoomId>([
-            ...DEFAULT_UNLOCKED_ROOMS,
-            ...savedRooms,
-          ]),
-        ),
-      );
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw) as {
+          unlockedRooms?: RoomId[];
+          inventory?: InventoryItem[];
+        };
+        if (saved.unlockedRooms?.length) setUnlockedRooms(saved.unlockedRooms);
+        if (Array.isArray(saved.inventory)) setInventory(saved.inventory);
+      }
     } catch {
-      // Keep the default rooms unlocked if saved world data is invalid.
+      // Local persistence is optional.
+    } finally {
+      setLoaded(true);
     }
   }, []);
 
   useEffect(() => {
+    if (!loaded) return;
     try {
       window.localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({ unlockedRooms }),
+        JSON.stringify({ unlockedRooms, inventory }),
       );
     } catch {
-      // The world still works if localStorage is unavailable.
+      // Local persistence is optional.
     }
-  }, [unlockedRooms]);
+  }, [loaded, unlockedRooms, inventory]);
 
-  const isRoomUnlocked = useCallback(
-    (room: WorldRoomId) => unlockedRooms.includes(room),
-    [unlockedRooms],
-  );
+  function enterRoom(room: RoomId) {
+    if (!unlockedRooms.includes(room)) return;
+    setCurrentRoom(room);
+  }
 
-  const enterRoom = useCallback(
-    (room: WorldRoomId) => {
-      if (!isRoomUnlocked(room)) return;
-      setCurrentRoom(room);
-    },
-    [isRoomUnlocked],
-  );
-
-  const returnToHub = useCallback(() => {
+  function returnToHub() {
     setCurrentRoom("hub");
-  }, []);
+  }
 
-  const unlockRoom = useCallback((room: WorldRoomId) => {
+  function unlockRoom(room: RoomId) {
     setUnlockedRooms((current) =>
       current.includes(room) ? current : [...current, room],
     );
-  }, []);
+  }
 
-  const lockRoom = useCallback((room: WorldRoomId) => {
-    if (room === "nostalgia") return;
+  function isRoomUnlocked(room: RoomId) {
+    return unlockedRooms.includes(room);
+  }
 
-    setUnlockedRooms((current) => current.filter((item) => item !== room));
-    setCurrentRoom((current) => (current === room ? "hub" : current));
-  }, []);
+  function addItem(item: InventoryItem) {
+    setInventory((current) =>
+      current.some((existing) => existing.id === item.id)
+        ? current
+        : [...current, item],
+    );
+  }
 
-  const resetWorld = useCallback(() => {
-    setCurrentRoom("hub");
-    setUnlockedRooms(DEFAULT_UNLOCKED_ROOMS);
+  function removeItem(itemId: string) {
+    setInventory((current) => current.filter((item) => item.id !== itemId));
+  }
 
-    try {
-      window.localStorage.removeItem(STORAGE_KEY);
-    } catch {
-      // Ignore storage failures.
-    }
-  }, []);
+  function hasItem(itemId: string) {
+    return inventory.some((item) => item.id === itemId);
+  }
+
+  function getItem(itemId: string) {
+    return inventory.find((item) => item.id === itemId);
+  }
 
   const value = useMemo<WorldContextValue>(
     () => ({
       currentRoom,
       unlockedRooms,
+      inventory,
       enterRoom,
       returnToHub,
       unlockRoom,
-      lockRoom,
       isRoomUnlocked,
-      resetWorld,
+      addItem,
+      removeItem,
+      hasItem,
+      getItem,
     }),
-    [
-      currentRoom,
-      unlockedRooms,
-      enterRoom,
-      returnToHub,
-      unlockRoom,
-      lockRoom,
-      isRoomUnlocked,
-      resetWorld,
-    ],
+    [currentRoom, unlockedRooms, inventory],
   );
 
   return <WorldContext.Provider value={value}>{children}</WorldContext.Provider>;
@@ -142,10 +128,8 @@ export function WorldProvider({ children }: { children: ReactNode }) {
 
 export function useWorld() {
   const context = useContext(WorldContext);
-
   if (!context) {
-    throw new Error("useWorld must be used inside <WorldProvider>.");
+    throw new Error("useWorld must be used inside WorldProvider");
   }
-
   return context;
 }

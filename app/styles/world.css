@@ -1,0 +1,44 @@
+/* =========================================================
+   SHARED WORLD UI
+========================================================= */
+
+.world-backpack-button {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 120;
+  display: grid;
+  grid-template-columns: 30px auto 24px;
+  align-items: center;
+  gap: 8px;
+  min-width: 152px;
+  padding: 9px 11px;
+  border: 1px solid rgba(231, 211, 181, .2);
+  border-radius: 10px;
+  background: rgba(27, 22, 29, .88);
+  color: #eee1d1;
+  box-shadow: 0 12px 28px rgba(0,0,0,.3);
+  backdrop-filter: blur(9px);
+  cursor: pointer;
+}
+.world-backpack-button > span { font-size: 22px; }
+.world-backpack-button strong { font: 700 8px/1 var(--font-mono), monospace; letter-spacing: .12em; }
+.world-backpack-button small { display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#d4ad68;color:#251c1d;font:700 8px var(--font-mono),monospace; }
+
+.world-backpack-backdrop { position:fixed;inset:0;z-index:250;display:grid;place-items:center;padding:22px;background:rgba(12,10,15,.7);backdrop-filter:blur(5px); }
+.world-backpack-panel { position:relative;width:min(720px,94vw);max-height:82vh;overflow:auto;padding:30px;border:1px solid rgba(226,197,157,.2);border-radius:16px;background:linear-gradient(160deg,#282129,#1c181f);color:#eee1d1;box-shadow:0 28px 80px rgba(0,0,0,.42); }
+.world-backpack-panel header small { font:700 8px var(--font-mono),monospace;letter-spacing:.17em;color:#c8a469; }
+.world-backpack-panel header h2 { margin:5px 0 3px;font-family:var(--font-hand),cursive;font-size:32px; }
+.world-backpack-panel header p { margin:0;color:rgba(238,225,209,.53);font-family:var(--font-serif),serif; }
+.world-backpack-close { position:absolute;right:13px;top:12px;width:34px;height:34px;border:1px solid rgba(238,225,209,.25);border-radius:50%;background:transparent;color:inherit;font-size:20px;cursor:pointer; }
+.world-backpack-empty { display:grid;place-items:center;min-height:250px;text-align:center;color:rgba(238,225,209,.55); }
+.world-backpack-empty span { font-size:42px; }
+.world-backpack-empty p { margin:8px 0 3px;font-family:var(--font-hand),cursive;font-size:24px;color:#eee1d1; }
+.world-backpack-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:24px; }
+.world-backpack-item { display:grid;grid-template-columns:52px 1fr;gap:14px;padding:16px;border:1px solid rgba(230,206,176,.12);border-radius:10px;background:rgba(255,255,255,.025); }
+.world-backpack-item-icon { display:grid;place-items:center;width:48px;height:48px;border-radius:9px;background:#342b32;font-size:25px; }
+.world-backpack-item small { font:700 7px var(--font-mono),monospace;letter-spacing:.14em;color:#c5a36b; }
+.world-backpack-item h3 { margin:4px 0 6px;font:700 11px var(--font-mono),monospace;text-transform:uppercase; }
+.world-backpack-item p { margin:0;font:400 11px/1.5 var(--font-serif),serif;color:rgba(238,225,209,.7); }
+.world-backpack-item em { display:block;margin-top:8px;font:600 8px var(--font-mono),monospace;color:#a8b89d;font-style:normal;text-transform:uppercase; }
+@media(max-width:620px){.world-backpack-grid{grid-template-columns:1fr}.world-backpack-button{right:10px;bottom:10px}}

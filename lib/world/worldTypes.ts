@@ -8,56 +8,77 @@ export type RoomId =
   | "train"
   | "greenhouse";
 
-export type WorldRoomId = Exclude<RoomId, "hub">;
 
-export type RoomDefinition = {
-  id: WorldRoomId;
+export type RoomInfo = {
+  id: RoomId;
   number: string;
-  title: string;
+  name: string;
   subtitle: string;
+  locked?: boolean;
 };
 
-export const WORLD_ROOMS: RoomDefinition[] = [
+
+export type InventoryItem = {
+  id: string;
+  name: string;
+
+  icon: string;
+
+  description: string;
+
+  sourceRoom: RoomId;
+
+  useIn?: RoomId;
+};
+
+
+export const WORLD_ROOMS: RoomInfo[] = [
   {
     id: "nostalgia",
     number: "01",
-    title: "The Nostalgia Room",
+    name: "The Nostalgia Room",
     subtitle: "music can be heard inside",
   },
+
   {
     id: "study",
     number: "02",
-    title: "Midnight Study",
+    name: "Midnight Study",
     subtitle: "the lamp is still on",
   },
+
   {
     id: "arcade",
     number: "03",
-    title: "Arcade Room",
+    name: "Arcade Room",
     subtitle: "something is still running",
   },
+
   {
     id: "observatory",
     number: "04",
-    title: "Observatory",
+    name: "Observatory",
     subtitle: "there is something in the sky",
   },
+
   {
     id: "dream",
     number: "05",
-    title: "Dream Room",
+    name: "Dream Room",
     subtitle: "the door was not here before",
   },
+
   {
     id: "train",
     number: "06",
-    title: "Train Compartment",
+    name: "Train Compartment",
     subtitle: "departure unknown",
   },
+
   {
     id: "greenhouse",
     number: "07",
-    title: "Greenhouse",
+    name: "Greenhouse",
     subtitle: "rain against the glass",
   },
 ];
