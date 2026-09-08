@@ -23,7 +23,10 @@ type WorldContextValue = {
 };
 
 const STORAGE_KEY = "whimsical-world-progress-v1";
-const DEFAULT_UNLOCKED_ROOMS: WorldRoomId[] = ["nostalgia"];
+
+// While building Room 02, keep Nostalgia + Midnight Study open.
+// Later you can remove "study" and unlock it through a quest instead.
+const DEFAULT_UNLOCKED_ROOMS: WorldRoomId[] = ["nostalgia", "study"];
 
 const WorldContext = createContext<WorldContextValue | undefined>(undefined);
 
@@ -34,33 +37,30 @@ export function WorldProvider({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
-  try {
-    const saved = window.localStorage.getItem(STORAGE_KEY);
+    try {
+      const saved = window.localStorage.getItem(STORAGE_KEY);
+      if (!saved) return;
 
-    if (!saved) return;
+      const parsed = JSON.parse(saved) as {
+        unlockedRooms?: WorldRoomId[];
+      };
 
-    const parsed = JSON.parse(saved) as {
-      unlockedRooms?: WorldRoomId[];
-    };
-
-    const savedRooms: WorldRoomId[] =
-      Array.isArray(parsed.unlockedRooms)
+      const savedRooms: WorldRoomId[] = Array.isArray(parsed.unlockedRooms)
         ? parsed.unlockedRooms
         : [];
 
-    setUnlockedRooms(() => {
-      const merged = new Set<WorldRoomId>([
-        ...DEFAULT_UNLOCKED_ROOMS,
-        ...savedRooms,
-      ]);
-
-      return Array.from(merged);
-    });
-  } catch {
-    // If saved world data is invalid,
-    // just keep the default unlocked rooms.
-  }
-}, []);
+      setUnlockedRooms(
+        Array.from(
+          new Set<WorldRoomId>([
+            ...DEFAULT_UNLOCKED_ROOMS,
+            ...savedRooms,
+          ]),
+        ),
+      );
+    } catch {
+      // Keep the default rooms unlocked if saved world data is invalid.
+    }
+  }, []);
 
   useEffect(() => {
     try {
@@ -69,7 +69,7 @@ export function WorldProvider({ children }: { children: ReactNode }) {
         JSON.stringify({ unlockedRooms }),
       );
     } catch {
-      // The world still works even if localStorage is unavailable.
+      // The world still works if localStorage is unavailable.
     }
   }, [unlockedRooms]);
 

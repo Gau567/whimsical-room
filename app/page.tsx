@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { DndContext } from "@dnd-kit/core";
+
 import RetroRoomScene from "@/components/room/RetroRoomScene";
 import RetroComputer from "@/components/room/RetroComputer";
 import DeskDrawer from "@/components/room/DeskDrawer";
@@ -12,24 +13,89 @@ import PinBoard from "@/components/room/PinBoard";
 import MediaStation from "@/components/stations/MediaStation";
 import PersistentMusicPlayer from "@/components/PersistentMusicPlayer";
 import RoomNowPlaying from "@/components/RoomNowPlaying";
-import { MusicPlayerProvider, useMusicPlayer } from "@/lib/MusicPlayerContext";
+
+import WorldHub from "@/components/world/WorldHub";
+import MidnightStudy from "@/components/rooms/study/MidnightStudy";
+
+import {
+  MusicPlayerProvider,
+  useMusicPlayer,
+} from "@/lib/MusicPlayerContext";
+import { WorldProvider, useWorld } from "@/lib/world/WorldContext";
+
 import { cassettes, cds, vinyls } from "@/data/tracks";
 import { MediaFormat, Track } from "@/lib/types";
 import { useRoomSoundEffects } from "@/lib/useRoomSoundEffects";
 
-type RoomView = "room" | MediaFormat | "journal" | "books" | "computer" | "typewriter" | "pinboard";
+type RoomView =
+  | "room"
+  | MediaFormat
+  | "journal"
+  | "books"
+  | "computer"
+  | "typewriter"
+  | "pinboard";
 
 export default function Home() {
   return (
     <MusicPlayerProvider>
       <DndContext>
-        <RoomApp />
+        <WorldProvider>
+          <WorldApp />
+        </WorldProvider>
       </DndContext>
     </MusicPlayerProvider>
   );
 }
 
-function RoomApp() {
+/**
+ * WORLD LEVEL
+ *
+ * This decides which physical room is currently visible.
+ * The existing Nostalgia Room remains its own complete mini-app.
+ */
+function WorldApp() {
+  const { currentRoom, returnToHub, unlockRoom } = useWorld();
+
+  if (currentRoom === "hub") {
+    return <WorldHub />;
+  }
+
+  if (currentRoom === "nostalgia") {
+    return <NostalgiaRoomApp onReturnToHub={returnToHub} />;
+  }
+
+  if (currentRoom === "study") {
+    return (
+      <MidnightStudy
+        onBack={returnToHub}
+        onUnlockRoom={(roomId) => unlockRoom(roomId)}
+      />
+    );
+  }
+
+  // These rooms exist in the world model, but have not been built yet.
+  return (
+    <main className="future-room-placeholder">
+      <div className="future-room-card">
+        <p>ROOM UNDER CONSTRUCTION</p>
+        <h1>{currentRoom.toUpperCase()}</h1>
+        <span>something is waiting behind this door.</span>
+        <button type="button" onClick={returnToHub}>
+          ← RETURN TO HALLWAY
+        </button>
+      </div>
+    </main>
+  );
+}
+
+/**
+ * ROOM 01 — THE NOSTALGIA ROOM
+ *
+ * This is your existing page logic, preserved almost exactly as-is.
+ * The only world-level addition is the return-to-hallway control.
+ */
+function NostalgiaRoomApp({ onReturnToHub }: { onReturnToHub: () => void }) {
   const [view, setView] = useState<RoomView>("room");
   const [lampOn, setLampOn] = useState(true);
   const [openDrawer, setOpenDrawer] = useState<number | null>(null);
@@ -60,28 +126,38 @@ function RoomApp() {
       if (view !== "room") {
         setPreloadedTrack(null);
         setView("room");
+        return;
       }
+
+      // If we are already standing in the room, Escape returns to the hallway.
+      onReturnToHub();
     }
 
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
-  }, [openDrawer, view]);
+  }, [openDrawer, view, onReturnToHub]);
 
-  const tracks = view === "cassette" ? cassettes : view === "cd" ? cds : vinyls;
-  const mediaOpen = view === "cassette" || view === "cd" || view === "vinyl";
+  const tracks =
+    view === "cassette" ? cassettes : view === "cd" ? cds : vinyls;
+
+  const mediaOpen =
+    view === "cassette" || view === "cd" || view === "vinyl";
 
   function openMemorySong(track: Track) {
-    // Computer playlists and pinboard memories now feed the SAME player used
-    // everywhere else. We cue the song and then open its physical player.
     loadTrack(track);
     setPreloadedTrack(track);
     setView(track.format);
   }
 
   function openView(nextView: RoomView) {
-    if (nextView !== "cassette" && nextView !== "cd" && nextView !== "vinyl") {
+    if (
+      nextView !== "cassette" &&
+      nextView !== "cd" &&
+      nextView !== "vinyl"
+    ) {
       setPreloadedTrack(null);
     }
+
     setView(nextView);
   }
 
@@ -93,12 +169,24 @@ function RoomApp() {
   return (
     <>
       <main
-        className={`nostalgia-room retro-room-page room-view-${view} ${lampOn ? "room-lit" : "room-dim"} ${currentTrack ? "has-persistent-music" : ""} ${currentTrack ? `room-active-${currentTrack.format}` : ""} ${isPlaying ? "room-music-playing" : "room-music-paused"}`}
+        className={`nostalgia-room retro-room-page room-view-${view} ${
+          lampOn ? "room-lit" : "room-dim"
+        } ${currentTrack ? "has-persistent-music" : ""} ${
+          currentTrack ? `room-active-${currentTrack.format}` : ""
+        } ${isPlaying ? "room-music-playing" : "room-music-paused"}`}
       >
         <div className="ambient-grain" />
 
         {view === "room" && (
           <>
+            <button
+              type="button"
+              className="world-return-button"
+              onClick={onReturnToHub}
+            >
+              ← hallway
+            </button>
+
             <header className="retro-room-title">
               <p>welcome to</p>
               <h1>The Nostalgia Room</h1>
@@ -112,7 +200,6 @@ function RoomApp() {
               onToggleLamp={() => setLampOn((value) => !value)}
               onOpenDrawer={setOpenDrawer}
             />
-
           </>
         )}
 
@@ -121,7 +208,9 @@ function RoomApp() {
             <MediaStation
               format={view}
               tracks={tracks}
-              initialTrack={preloadedTrack?.format === view ? preloadedTrack : null}
+              initialTrack={
+                preloadedTrack?.format === view ? preloadedTrack : null
+              }
               onBack={() => {
                 setPreloadedTrack(null);
                 setView("room");
@@ -132,16 +221,27 @@ function RoomApp() {
 
         {view === "journal" && (
           <section className="retro-modal-shell">
-            <button type="button" className="station-back" onClick={() => setView("room")}>
+            <button
+              type="button"
+              className="station-back"
+              onClick={() => setView("room")}
+            >
               ← back to room
             </button>
-            <TypableJournal onOpenBooks={() => setView("books")} onOpenBoard={() => setView("pinboard")} />
+            <TypableJournal
+              onOpenBooks={() => setView("books")}
+              onOpenBoard={() => setView("pinboard")}
+            />
           </section>
         )}
 
         {view === "books" && (
           <section className="retro-modal-shell">
-            <button type="button" className="station-back" onClick={() => setView("room")}>
+            <button
+              type="button"
+              className="station-back"
+              onClick={() => setView("room")}
+            >
               ← back to room
             </button>
             <ReadableBooks onBackToJournal={() => setView("journal")} />
@@ -150,7 +250,11 @@ function RoomApp() {
 
         {openDrawer !== null && view === "room" && (
           <section className="retro-modal-shell drawer-shell">
-            <button type="button" className="station-back" onClick={() => setOpenDrawer(null)}>
+            <button
+              type="button"
+              className="station-back"
+              onClick={() => setOpenDrawer(null)}
+            >
               ← close drawer
             </button>
             <DeskDrawer
@@ -164,7 +268,11 @@ function RoomApp() {
 
         {view === "computer" && (
           <section className="retro-modal-shell computer-modal-shell">
-            <button type="button" className="station-back" onClick={() => setView("room")}>
+            <button
+              type="button"
+              className="station-back"
+              onClick={() => setView("room")}
+            >
               ← back to room
             </button>
             <RetroComputer
@@ -177,7 +285,11 @@ function RoomApp() {
 
         {view === "typewriter" && (
           <section className="retro-modal-shell typewriter-modal-shell">
-            <button type="button" className="station-back" onClick={() => setView("room")}>
+            <button
+              type="button"
+              className="station-back"
+              onClick={() => setView("room")}
+            >
               ← back to room
             </button>
             <MiniTypewriter onOpenBoard={() => setView("pinboard")} />
@@ -186,7 +298,11 @@ function RoomApp() {
 
         {view === "pinboard" && (
           <section className="retro-modal-shell pinboard-modal-shell">
-            <button type="button" className="station-back" onClick={() => setView("room")}>
+            <button
+              type="button"
+              className="station-back"
+              onClick={() => setView("room")}
+            >
               ← back to room
             </button>
             <PinBoard

@@ -8374,3 +8374,98 @@ body {
 @media(max-width:1050px){.study-room{min-height:1030px}.study-window{left:5%;width:42%;height:31%}.study-star-map{left:50%;width:20%;height:24%}.study-wall-clock{left:auto;right:5%}.study-bookshelf{right:5%;top:37%;width:35%;height:31%}.study-desk-zone{left:5%;right:5%;bottom:4%;height:48%}.study-radio{right:2%;top:8%;}.study-notebook{left:22%;width:34%}}
 @media(max-width:760px){.midnight-study{padding-inline:10px}.study-topbar{grid-template-columns:1fr auto;gap:8px}.study-topbar>div{grid-column:1/-1;grid-row:1;text-align:center}.study-back{grid-column:1;grid-row:2}.study-rain-button{grid-column:2;grid-row:2}.study-room{min-height:1280px}.study-window{left:4%;top:5%;width:57%;height:25%}.study-star-map{left:auto;right:4%;top:5%;width:31%;height:25%;padding:10px}.study-map-stars{font-size:18px;letter-spacing:3px}.study-wall-clock{display:none}.study-bookshelf{left:4%;right:4%;top:32%;width:auto;height:24%}.study-desk-zone{left:3%;right:3%;bottom:4%;height:39%}.study-desk-surface{height:53%}.banker-lamp{transform:scale(.78);transform-origin:left bottom;top:-29%}.study-notebook{left:18%;top:19%;width:43%;height:54%}.study-phone{right:21%;transform:scale(.76)}.study-radio{right:1%;top:49%;transform:scale(.78);transform-origin:right top}.study-pencil-cup,.study-mug{display:none}.study-desk-front{top:49%}.study-lock-drawer{left:24%;right:24%;padding:12px}.study-drawer-panel{width:19%}.study-book-modal{grid-template-columns:1fr;max-height:86vh;overflow:auto}.study-book-cover{min-height:190px}.study-book-cover h2{margin:26px 0 8px}.study-book-page{padding:35px 24px}.study-book-page p{margin:32px 0;font-size:16px}.study-clue-strip{padding-inline:8px}}
 @media(prefers-reduced-motion:reduce){.study-rain i{animation:none}.study-hotspot,.study-object-tip{transition:none}}
+
+
+/* =========================================================
+   WORLD CONNECTION — small shared controls
+========================================================= */
+
+.world-return-button {
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  z-index: 120;
+  padding: 9px 13px;
+  border: 1px solid rgba(236, 214, 194, 0.18);
+  border-radius: 999px;
+  background: rgba(31, 20, 30, 0.72);
+  color: rgba(244, 232, 217, 0.86);
+  font-family: var(--font-mono), monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.world-return-button:hover,
+.world-return-button:focus-visible {
+  transform: translateY(-1px);
+  background: rgba(49, 30, 43, 0.9);
+  border-color: rgba(229, 188, 122, 0.4);
+}
+
+.future-room-placeholder {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 30px;
+  background: radial-gradient(circle at top, #49324f 0%, #281a2d 45%, #151017 100%);
+  color: #efe4d9;
+}
+
+.future-room-card {
+  width: min(520px, 94vw);
+  padding: 42px 34px;
+  border: 1px solid rgba(236, 214, 194, 0.14);
+  border-radius: 14px;
+  background: rgba(34, 23, 35, 0.8);
+  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.future-room-card p,
+.future-room-card span {
+  font-family: var(--font-mono), monospace;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.future-room-card p {
+  margin: 0 0 10px;
+  font-size: 9px;
+  color: #c69caf;
+}
+
+.future-room-card h1 {
+  margin: 0 0 12px;
+  font-family: var(--font-hand), cursive;
+  font-size: clamp(34px, 7vw, 58px);
+}
+
+.future-room-card span {
+  display: block;
+  margin-bottom: 26px;
+  font-size: 8px;
+  opacity: 0.52;
+}
+
+.future-room-card button {
+  padding: 10px 14px;
+  border: 1px solid rgba(236, 214, 194, 0.18);
+  border-radius: 7px;
+  background: #533b42;
+  color: #efe4d9;
+  font-family: var(--font-mono), monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+@media (max-width: 680px) {
+  .world-return-button {
+    top: 10px;
+    left: 10px;
+  }
+}
