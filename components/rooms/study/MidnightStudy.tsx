@@ -1,78 +1,80 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-type StudyItem = {
-  id: string;
+type StudyInventoryItem = {
+  id: "telescope-lens" | "small-brass-key";
   name: string;
   icon: string;
   description: string;
+  useIn: string;
 };
 
 type MidnightStudyProps = {
   onBack?: () => void;
-  onCollectItem?: (item: StudyItem) => void;
-  onUnlockRoom?: (roomId: "arcade" | "observatory" | "train" | "greenhouse" | "dream") => void;
+  onUnlockRoom?: (room: "observatory" | "greenhouse" | "train") => void;
+  onCollectItem?: (item: StudyInventoryItem) => void;
 };
+
+const INVENTORY_KEY = "whimsical-study-backpack-v2";
+const DRAWER_CODE = "0417";
 
 const BOOKS = [
   {
-    id: "astronomy",
-    title: "A Pocket Atlas of Night Skies",
+    id: "sky",
     spine: "NIGHT SKIES",
-    accent: "#4f6481",
+    title: "A Pocket Atlas of Night Skies",
+    accent: "#566d86",
     pages: [
-      "Most people look for the brightest star first. Old navigators did something smarter: they looked for relationships between stars.",
-      "A pencilled note sits in the margin: 'Three points make a path. Four numbers make a lock.'",
-      "The last page has a tiny drawing of a telescope beside: 04 · 17.",
+      "Old navigators did not search for a single bright star. They searched for relationships between stars.",
+      "A note in the margin reads: three points make a path. Four numbers make a lock.",
+      "The last page has a telescope doodle beside: 04 · 17.",
     ],
   },
   {
     id: "margins",
-    title: "Notes Written in the Margins",
     spine: "MARGINS",
-    accent: "#7c5a61",
+    title: "Notes Written in the Margins",
+    accent: "#7f5c67",
     pages: [
-      "Page 12: Remember that a clock can be wrong and still be useful.",
+      "Page 12: a clock can be wrong and still be useful.",
       "Page 44: 11:47 is not a time. It is a departure.",
-      "Page 71: If the phone rings after midnight, answer only once.",
+      "Page 71: if the phone rings after midnight, answer only once.",
     ],
   },
   {
-    id: "botany",
-    title: "Night-Blooming Things",
+    id: "plants",
     spine: "NIGHT BLOOMS",
-    accent: "#596d5b",
+    title: "Night-Blooming Things",
+    accent: "#60745f",
     pages: [
-      "Moonflower opens after dusk and closes by morning. It looks dead all day and dramatic all night.",
-      "A pressed leaf is taped between pages. Someone wrote: 'Greenhouse key was never kept in the greenhouse.'",
-      "The final paragraph is circled twice: 'Some doors are unlocked by carrying the right thing, not entering the right number.'",
+      "Moonflower opens after dusk and closes by morning.",
+      "A pressed leaf is taped inside. Someone wrote: Greenhouse key was never kept in the greenhouse.",
+      "The final line is circled: some doors are unlocked by carrying the right thing.",
     ],
   },
   {
     id: "signals",
-    title: "Signals, Static & Small Machines",
     spine: "SIGNALS",
-    accent: "#8c7047",
+    title: "Signals, Static & Small Machines",
+    accent: "#92744a",
     pages: [
-      "AM radios behave strangely at night. Distant stations can travel farther than they do in daylight.",
-      "In the margin: 'Tune until the static breaks. Listen for the station that should not exist.'",
-      "A frequency is underlined: 104.7.",
+      "AM and FM behave strangely after midnight. Distant stations can feel much closer.",
+      "A handwritten note says: listen for the station that should not exist.",
+      "104.7 is underlined twice.",
     ],
   },
 ];
 
-const DRAWER_CODE = "0417";
-const STORAGE_KEY = "whimsical-midnight-study-v1";
+const CLUE_CARDS = [
+  { title: "CLOCK", body: "stopped at 11:47", mark: "11:47" },
+  { title: "DATE", body: "atlas keeps repeating it", mark: "04 / 17" },
+  { title: "RADIO", body: "manual lies about one station", mark: "104.7" },
+];
 
-export default function MidnightStudy({
-  onBack,
-  onCollectItem,
-  onUnlockRoom,
-}: MidnightStudyProps) {
+export default function MidnightStudy({ onBack, onUnlockRoom, onCollectItem }: MidnightStudyProps) {
   const [lampOn, setLampOn] = useState(true);
-  const [radioOn, setRadioOn] = useState(false);
-  const [radioFrequency, setRadioFrequency] = useState(92.3);
+  const [rainQuiet, setRainQuiet] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerCode, setDrawerCode] = useState("");
   const [drawerError, setDrawerError] = useState(false);
@@ -81,266 +83,123 @@ export default function MidnightStudy({
   const [noteOpen, setNoteOpen] = useState(false);
   const [phoneOpen, setPhoneOpen] = useState(false);
   const [starMapOpen, setStarMapOpen] = useState(false);
-  const [lensCollected, setLensCollected] = useState(false);
-  const [keyCollected, setKeyCollected] = useState(false);
-  const [secretFrequencyFound, setSecretFrequencyFound] = useState(false);
-  const [rainMuted, setRainMuted] = useState(false);
+  const [backpackOpen, setBackpackOpen] = useState(false);
+  const [boardOpen, setBoardOpen] = useState(false);
+  const [radioOn, setRadioOn] = useState(false);
+  const [radioFrequency, setRadioFrequency] = useState(92.3);
+  const [inventory, setInventory] = useState<StudyInventoryItem[]>([]);
 
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const radioNoiseRef = useRef<{ source: AudioBufferSourceNode; gain: GainNode } | null>(null);
-
-  const currentBook = useMemo(
-    () => BOOKS.find((book) => book.id === bookId) ?? null,
-    [bookId],
-  );
-
+  // IMPORTANT: drawerOpen + drawerCode intentionally do NOT persist.
+  // Reloading the page re-locks the puzzle and clears the password field.
   useEffect(() => {
     try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
-      const saved = JSON.parse(raw) as {
-        drawerOpen?: boolean;
-        lensCollected?: boolean;
-        keyCollected?: boolean;
-        secretFrequencyFound?: boolean;
-      };
-      setDrawerOpen(Boolean(saved.drawerOpen));
-      setLensCollected(Boolean(saved.lensCollected));
-      setKeyCollected(Boolean(saved.keyCollected));
-      setSecretFrequencyFound(Boolean(saved.secretFrequencyFound));
+      const raw = window.localStorage.getItem(INVENTORY_KEY);
+      if (raw) setInventory(JSON.parse(raw));
     } catch {
-      // Keep default room state when local storage is unavailable or malformed.
+      // Local persistence is optional.
     }
   }, []);
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ drawerOpen, lensCollected, keyCollected, secretFrequencyFound }),
-      );
+      window.localStorage.setItem(INVENTORY_KEY, JSON.stringify(inventory));
     } catch {
-      // Persistence is optional for the prototype.
+      // Local persistence is optional.
     }
-  }, [drawerOpen, lensCollected, keyCollected, secretFrequencyFound]);
+  }, [inventory]);
 
-  useEffect(() => {
-    if (!radioOn) {
-      stopRadioNoise();
-      return;
-    }
+  const currentBook = useMemo(() => BOOKS.find((book) => book.id === bookId) ?? null, [bookId]);
+  const hasLens = inventory.some((item) => item.id === "telescope-lens");
+  const hasKey = inventory.some((item) => item.id === "small-brass-key");
+  const stationFound = radioOn && Math.abs(radioFrequency - 104.7) <= 0.11;
 
-    startRadioNoise();
-    return () => stopRadioNoise();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [radioOn]);
-
-  useEffect(() => {
-    if (!radioOn) return;
-    if (Math.abs(radioFrequency - 104.7) <= 0.11) {
-      setSecretFrequencyFound(true);
-    }
-  }, [radioFrequency, radioOn]);
-
-  function getAudioContext() {
-    const AudioContextClass =
-      window.AudioContext ||
-      (window as typeof window & { webkitAudioContext?: typeof AudioContext })
-        .webkitAudioContext;
-
-    if (!AudioContextClass) return null;
-
-    if (!audioContextRef.current) {
-      audioContextRef.current = new AudioContextClass();
-    }
-
-    if (audioContextRef.current.state === "suspended") {
-      void audioContextRef.current.resume();
-    }
-
-    return audioContextRef.current;
-  }
-
-  function softClick(frequency = 190) {
-    const context = getAudioContext();
-    if (!context) return;
-
-    const oscillator = context.createOscillator();
-    const gain = context.createGain();
-    const now = context.currentTime;
-
-    oscillator.type = "triangle";
-    oscillator.frequency.setValueAtTime(frequency, now);
-    oscillator.frequency.exponentialRampToValueAtTime(85, now + 0.055);
-    gain.gain.setValueAtTime(0.027, now);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.06);
-
-    oscillator.connect(gain);
-    gain.connect(context.destination);
-    oscillator.start(now);
-    oscillator.stop(now + 0.06);
-  }
-
-  function startRadioNoise() {
-    if (radioNoiseRef.current) return;
-    const context = getAudioContext();
-    if (!context) return;
-
-    const buffer = context.createBuffer(1, context.sampleRate * 2, context.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let index = 0; index < data.length; index += 1) {
-      data[index] = Math.random() * 2 - 1;
-    }
-
-    const source = context.createBufferSource();
-    const gain = context.createGain();
-    const filter = context.createBiquadFilter();
-
-    source.buffer = buffer;
-    source.loop = true;
-    filter.type = "bandpass";
-    filter.frequency.value = 1500;
-    filter.Q.value = 0.7;
-    gain.gain.value = secretFrequencyFound ? 0.006 : 0.012;
-
-    source.connect(filter);
-    filter.connect(gain);
-    gain.connect(context.destination);
-    source.start();
-
-    radioNoiseRef.current = { source, gain };
-  }
-
-  function stopRadioNoise() {
-    if (!radioNoiseRef.current) return;
-    try {
-      radioNoiseRef.current.source.stop();
-    } catch {
-      // Already stopped.
-    }
-    radioNoiseRef.current = null;
-  }
-
-  function submitDrawerCode() {
-    softClick(120);
-    if (drawerCode.trim() === DRAWER_CODE) {
+  function unlockDrawer() {
+    if (drawerCode === DRAWER_CODE) {
       setDrawerOpen(true);
-      setDrawerError(false);
       setDrawerCode("");
+      setDrawerError(false);
       return;
     }
-
     setDrawerError(true);
-    window.setTimeout(() => setDrawerError(false), 700);
+    window.setTimeout(() => setDrawerError(false), 550);
   }
 
-  function collectLens() {
-    if (lensCollected) return;
-    setLensCollected(true);
-    onCollectItem?.({
-      id: "telescope-lens",
-      name: "Telescope Lens",
-      icon: "◉",
-      description: "A brass-edged telescope lens wrapped in old lens paper.",
+  function collect(item: StudyInventoryItem) {
+    setInventory((current) => {
+      if (current.some((existing) => existing.id === item.id)) return current;
+      return [...current, item];
     });
-    onUnlockRoom?.("observatory");
-  }
+    onCollectItem?.(item);
 
-  function collectKey() {
-    if (keyCollected) return;
-    setKeyCollected(true);
-    onCollectItem?.({
-      id: "greenhouse-key",
-      name: "Small Brass Key",
-      icon: "⚿",
-      description: "A small brass key with a pressed-leaf tag tied to it.",
-    });
-  }
-
-  function openBook(id: string) {
-    softClick(235);
-    setBookId(id);
-    setBookPage(0);
+    if (item.id === "telescope-lens") onUnlockRoom?.("observatory");
+    if (item.id === "small-brass-key") onUnlockRoom?.("greenhouse");
   }
 
   return (
-    <main
-      className={`midnight-study ${lampOn ? "study-lamp-on" : "study-lamp-off"} ${rainMuted ? "study-rain-muted" : ""}`}
-    >
+    <main className={`midnight-study midnight-study-v2 ${lampOn ? "study-lamp-on" : "study-lamp-off"} ${rainQuiet ? "study-rain-muted" : ""}`}>
       <div className="study-rain" aria-hidden="true">
-        {Array.from({ length: 28 }, (_, index) => (
-          <i key={index} style={{ "--rain-index": index } as React.CSSProperties} />
-        ))}
+        {Array.from({ length: 32 }, (_, i) => <i key={i} style={{ "--rain-index": i } as React.CSSProperties} />)}
       </div>
 
       <header className="study-topbar">
-        <button type="button" className="study-back" onClick={onBack}>
-          ← hallway
-        </button>
+        <button type="button" className="study-back" onClick={onBack}>← hallway</button>
         <div>
           <small>ROOM 02 · 12:43 AM</small>
           <h1>Midnight Study</h1>
           <p>the lamp was already on when you arrived</p>
         </div>
-        <button
-          type="button"
-          className="study-rain-button"
-          onClick={() => setRainMuted((value) => !value)}
-          aria-pressed={rainMuted}
-        >
-          {rainMuted ? "rain: quiet" : "rain: window"}
+        <button type="button" className="study-rain-button" onClick={() => setRainQuiet((v) => !v)}>
+          {rainQuiet ? "rain: quiet" : "rain: window"}
         </button>
       </header>
 
-      <section className="study-room" aria-label="Interactive midnight study">
+      <button type="button" className="study-backpack-button" onClick={() => setBackpackOpen(true)} aria-label="Open backpack">
+        <span>🎒</span>
+        <strong>BACKPACK</strong>
+        <small>{inventory.length}/2</small>
+      </button>
+
+      <section className="study-room">
+        <div className="study-wall-glow" aria-hidden="true" />
+        <div className="study-dust" aria-hidden="true"><i/><i/><i/><i/><i/><i/></div>
+
         <div className="study-wall">
-          <button
-            type="button"
-            className="study-window study-hotspot"
-            onClick={() => setStarMapOpen(true)}
-            aria-label="Inspect the rainy window and star chart"
-          >
-            <span className="study-window-sky"><i /><i /><i /><i /></span>
+          <button type="button" className="study-window study-hotspot" onClick={() => setStarMapOpen(true)}>
+            <span className="study-window-sky"><i/><i/><i/><i/></span>
             <span className="study-window-frame study-window-frame-a" />
             <span className="study-window-frame study-window-frame-b" />
             <span className="study-window-glow" />
             <span className="study-object-tip">rain + constellations</span>
           </button>
 
-          <button
-            type="button"
-            className="study-star-map study-hotspot"
-            onClick={() => setStarMapOpen(true)}
-            aria-label="Inspect star map"
-          >
+          <button type="button" className="study-star-map study-hotspot" onClick={() => setStarMapOpen(true)}>
             <span className="study-map-stars">✦ · ˚ ✧ · ✦ ˚ · ✧</span>
             <strong>WINTER SKY</strong>
             <small>04 / 17</small>
             <span className="study-object-tip">star map</span>
           </button>
 
-          <div className="study-wall-clock" aria-label="Wall clock stopped at 11:47">
-            <span>11:47</span>
-            <small>stopped</small>
-          </div>
+          <button type="button" className="study-clue-board study-hotspot" onClick={() => setBoardOpen(true)}>
+            <strong>THINGS THAT DON'T FIT</strong>
+            <div className="study-clue-board-grid">
+              {CLUE_CARDS.map((clue) => <span key={clue.title}><b>{clue.title}</b><i>{clue.mark}</i></span>)}
+            </div>
+            <em>connect them later</em>
+            <span className="study-object-tip">clue board</span>
+          </button>
+
+          <div className="study-wall-clock"><span>11:47</span><small>stopped</small></div>
 
           <div className="study-bookshelf">
-            <div className="study-shelf-top"><span>REFERENCE</span></div>
+            <div className="study-shelf-top"><span>REFERENCE · PRIVATE COLLECTION</span></div>
             <div className="study-book-row">
               {BOOKS.map((book, index) => (
-                <button
-                  key={book.id}
-                  type="button"
-                  className={`study-book study-book-${index + 1}`}
-                  style={{ backgroundColor: book.accent }}
-                  onClick={() => openBook(book.id)}
-                  aria-label={`Read ${book.title}`}
-                >
+                <button key={book.id} type="button" className={`study-book study-book-${index + 1}`} style={{ backgroundColor: book.accent }} onClick={() => { setBookId(book.id); setBookPage(0); }}>
                   <span>{book.spine}</span>
                 </button>
               ))}
             </div>
-            <div className="study-shelf-objects" aria-hidden="true">
+            <div className="study-shelf-objects">
               <span className="study-globe">◌</span>
               <span className="study-plant">♧</span>
               <span className="study-candle">●</span>
@@ -350,237 +209,127 @@ export default function MidnightStudy({
 
         <div className="study-desk-zone">
           <div className="study-desk-surface">
-            <button
-              type="button"
-              className={`banker-lamp study-hotspot ${lampOn ? "is-on" : ""}`}
-              onClick={() => {
-                softClick(320);
-                setLampOn((value) => !value);
-              }}
-              aria-pressed={lampOn}
-              aria-label={`Turn desk lamp ${lampOn ? "off" : "on"}`}
-            >
-              <span className="lamp-shade" />
-              <span className="lamp-neck" />
-              <span className="lamp-base" />
+            <button type="button" className={`banker-lamp study-hotspot ${lampOn ? "is-on" : ""}`} onClick={() => setLampOn((v) => !v)}>
+              <span className="lamp-shade"/><span className="lamp-neck"/><span className="lamp-base"/>
               <span className="study-object-tip">desk lamp</span>
             </button>
 
-            <button
-              type="button"
-              className="study-notebook study-hotspot"
-              onClick={() => setNoteOpen(true)}
-              aria-label="Read the open notebook"
-            >
-              <span className="notebook-page notebook-left">
-                <small>APRIL 17</small>
-                <i>four numbers</i>
-                <i>one drawer</i>
-                <i>wrong clock?</i>
-              </span>
-              <span className="notebook-page notebook-right">
-                <b>if the sky map is right,</b>
-                <em>start with zero.</em>
-                <span>✦ 04 / 17</span>
-              </span>
+            <button type="button" className="study-notebook study-hotspot" onClick={() => setNoteOpen(true)}>
+              <span className="notebook-page notebook-left"><small>APRIL 17</small><i>four numbers</i><i>one drawer</i><i>wrong clock?</i></span>
+              <span className="notebook-page notebook-right"><b>if the sky map is right,</b><em>start with zero.</em><span>✦ 04 / 17</span></span>
               <span className="study-object-tip">open notebook</span>
             </button>
 
-            <button
-              type="button"
-              className="study-phone study-hotspot"
-              onClick={() => {
-                softClick(145);
-                setPhoneOpen(true);
-              }}
-              aria-label="Answer the rotary phone"
-            >
-              <span className="phone-handset" />
-              <span className="phone-body"><i /><i /><i /><i /><i /><i /></span>
+            {/* Phone moved safely inside the desk surface; no viewport clipping. */}
+            <button type="button" className="study-phone study-phone-v2 study-hotspot" onClick={() => setPhoneOpen(true)}>
+              <span className="phone-handset"/>
+              <span className="phone-body"><i/><i/><i/><i/><i/><i/></span>
               <span className="study-object-tip">rotary phone</span>
             </button>
 
-            <div className={`study-radio ${radioOn ? "radio-on" : ""}`}>
-              <div className="radio-speaker" aria-hidden="true" />
-              <div className="radio-display">
-                <span>{radioFrequency.toFixed(1)}</span>
-                <small>FM</small>
-              </div>
-              <input
-                aria-label="Radio frequency"
-                type="range"
-                min="88"
-                max="108"
-                step="0.1"
-                value={radioFrequency}
-                onChange={(event) => setRadioFrequency(Number(event.target.value))}
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  softClick(205);
-                  setRadioOn((value) => !value);
-                }}
-              >
-                {radioOn ? "OFF" : "ON"}
-              </button>
-              {secretFrequencyFound && radioOn && (
-                <div className="radio-secret-message">
-                  <small>UNLISTED STATION</small>
-                  <strong>...train leaves at 11:47...</strong>
-                  <span>...platform seven...</span>
-                </div>
-              )}
+            <div className={`study-radio study-radio-v2 ${radioOn ? "radio-on" : ""}`}>
+              <div className="radio-speaker"/>
+              <div className="radio-display"><span>{radioFrequency.toFixed(1)}</span><small> FM</small></div>
+              <input type="range" min="88" max="108" step="0.1" value={radioFrequency} onChange={(e) => setRadioFrequency(Number(e.target.value))} aria-label="Radio frequency" />
+              <button type="button" onClick={() => setRadioOn((v) => !v)}>{radioOn ? "OFF" : "ON"}</button>
+              {stationFound && <div className="radio-secret-message"><small>UNLISTED STATION</small><strong>...train leaves at 11:47...</strong><span>...platform seven...</span></div>}
             </div>
 
-            <div className="study-pencil-cup" aria-hidden="true"><i /><i /><i /></div>
-            <div className="study-mug" aria-hidden="true">☕</div>
+            <div className="study-pencil-cup"><i/><i/><i/></div>
+            <div className="study-mug">☕</div>
+            <div className="study-desk-photo" aria-hidden="true"><span /></div>
+            <div className="study-matchbox" aria-hidden="true">MATCHES</div>
           </div>
 
           <div className="study-desk-front">
-            <div className="study-drawer-panel study-drawer-left" aria-hidden="true"><span /></div>
-
+            <div className="study-drawer-panel study-drawer-left"><span/></div>
             <section className={`study-lock-drawer ${drawerOpen ? "is-open" : ""}`}>
               {!drawerOpen ? (
                 <>
-                  <div className="study-drawer-label">
-                    <span>PRIVATE</span>
-                    <small>4 DIGITS</small>
-                  </div>
+                  <div className="study-drawer-label"><span>PRIVATE</span><small>4 DIGITS</small></div>
                   <div className={`study-code-entry ${drawerError ? "is-error" : ""}`}>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={4}
-                      value={drawerCode}
-                      onChange={(event) => setDrawerCode(event.target.value.replace(/\D/g, ""))}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter") submitDrawerCode();
-                      }}
-                      placeholder="0000"
-                      aria-label="Four digit drawer code"
-                    />
-                    <button type="button" onClick={submitDrawerCode}>UNLOCK</button>
+                    <input type="text" inputMode="numeric" maxLength={4} value={drawerCode} onChange={(e) => setDrawerCode(e.target.value.replace(/\D/g, ""))} onKeyDown={(e) => e.key === "Enter" && unlockDrawer()} placeholder="0000" />
+                    <button type="button" onClick={unlockDrawer}>UNLOCK</button>
                   </div>
-                  <small className="study-code-hint">the notebook looks deliberately unhelpful</small>
+                  <small className="study-code-hint">reload = this drawer locks again</small>
                 </>
               ) : (
                 <div className="study-drawer-open-content">
                   <p>the lock gives a tired little click.</p>
                   <div className="study-drawer-treasure-row">
-                    <button
-                      type="button"
-                      className={`study-treasure ${lensCollected ? "is-collected" : ""}`}
-                      onClick={collectLens}
-                      disabled={lensCollected}
-                    >
-                      <span>◉</span>
-                      <strong>telescope lens</strong>
-                      <small>{lensCollected ? "collected" : "take it"}</small>
+                    <button type="button" className={`study-treasure ${hasLens ? "is-collected" : ""}`} disabled={hasLens} onClick={() => collect({ id: "telescope-lens", name: "Telescope Lens", icon: "◉", description: "A brass-edged telescope lens wrapped in old lens paper.", useIn: "Observatory · fit it into the empty telescope mount" })}>
+                      <span>◉</span><strong>telescope lens</strong><small>{hasLens ? "in backpack" : "put in backpack"}</small>
                     </button>
-                    <button
-                      type="button"
-                      className={`study-treasure ${keyCollected ? "is-collected" : ""}`}
-                      onClick={collectKey}
-                      disabled={keyCollected}
-                    >
-                      <span>⚿</span>
-                      <strong>small brass key</strong>
-                      <small>{keyCollected ? "collected" : "take it"}</small>
+                    <button type="button" className={`study-treasure ${hasKey ? "is-collected" : ""}`} disabled={hasKey} onClick={() => collect({ id: "small-brass-key", name: "Small Brass Key", icon: "⚿", description: "A tiny brass key with a pressed-leaf tag tied around its bow.", useIn: "Greenhouse · there should be a locked botanical cabinet" })}>
+                      <span>⚿</span><strong>small brass key</strong><small>{hasKey ? "in backpack" : "put in backpack"}</small>
                     </button>
                   </div>
-                  <div className="study-drawer-letter">
-                    <small>NOTE</small>
-                    <p>The lens belongs upstairs. The key belongs somewhere wet.</p>
-                  </div>
+                  <div className="study-drawer-letter"><small>NOTE</small><p>The lens belongs upstairs. The key belongs somewhere wet.</p></div>
                 </div>
               )}
             </section>
-
-            <div className="study-drawer-panel study-drawer-right" aria-hidden="true"><span /></div>
+            <div className="study-drawer-panel study-drawer-right"><span/></div>
           </div>
         </div>
 
-        <div className="study-floor" aria-hidden="true">
-          <div className="study-rug" />
-          <div className="study-floor-books"><i /><i /><i /></div>
-        </div>
+        <div className="study-floor"><div className="study-rug"/><div className="study-floor-books"><i/><i/><i/></div><div className="study-floor-paper">PLATFORM 7?</div></div>
       </section>
 
-      <aside className="study-clue-strip" aria-label="Study discoveries">
-        <span>{drawerOpen ? "✓ drawer opened" : "○ locked drawer"}</span>
-        <span>{secretFrequencyFound ? "✓ strange station" : "○ strange frequency"}</span>
-        <span>{lensCollected ? "✓ telescope lens" : "○ missing lens"}</span>
-        <span>{keyCollected ? "✓ brass key" : "○ unlabeled key"}</span>
+      <aside className="study-clue-strip">
+        <span>{drawerOpen ? "✓ drawer opened this visit" : "○ locked drawer"}</span>
+        <span>{stationFound ? "✓ strange station" : "○ strange frequency"}</span>
+        <span>{hasLens ? "✓ lens in backpack" : "○ telescope lens"}</span>
+        <span>{hasKey ? "✓ key in backpack" : "○ brass key"}</span>
       </aside>
+
+      {backpackOpen && (
+        <div className="study-modal-backdrop" onMouseDown={() => setBackpackOpen(false)}>
+          <section className="study-backpack-modal" onMouseDown={(e) => e.stopPropagation()}>
+            <button type="button" className="study-modal-close" onClick={() => setBackpackOpen(false)}>×</button>
+            <small>WORLD INVENTORY · TEMPORARY PROTOTYPE</small>
+            <h2>Your Backpack</h2>
+            <p className="study-backpack-intro">Quest objects stay here when you reload. The drawer itself does not.</p>
+            <div className="study-backpack-grid">
+              {inventory.length === 0 && <div className="study-backpack-empty">nothing yet.<br/>the desk drawer looks suspicious.</div>}
+              {inventory.map((item) => (
+                <article key={item.id}>
+                  <span>{item.icon}</span>
+                  <div><strong>{item.name}</strong><p>{item.description}</p><small>USE: {item.useIn}</small></div>
+                </article>
+              ))}
+            </div>
+          </section>
+        </div>
+      )}
 
       {currentBook && (
         <div className="study-modal-backdrop" onMouseDown={() => setBookId(null)}>
-          <section className="study-book-modal" onMouseDown={(event) => event.stopPropagation()} role="dialog" aria-modal="true">
+          <section className="study-book-modal" onMouseDown={(e) => e.stopPropagation()}>
             <button type="button" className="study-modal-close" onClick={() => setBookId(null)}>×</button>
-            <div className="study-book-cover" style={{ backgroundColor: currentBook.accent }}>
-              <small>ROOM LIBRARY</small>
-              <h2>{currentBook.title}</h2>
-              <span>{currentBook.spine}</span>
-            </div>
-            <article className="study-book-page">
-              <small>PAGE {bookPage + 1} / {currentBook.pages.length}</small>
-              <p>{currentBook.pages[bookPage]}</p>
-              <div>
-                <button type="button" disabled={bookPage === 0} onClick={() => setBookPage((value) => value - 1)}>← previous</button>
-                <button type="button" disabled={bookPage === currentBook.pages.length - 1} onClick={() => setBookPage((value) => value + 1)}>next →</button>
-              </div>
-            </article>
+            <div className="study-book-cover" style={{ backgroundColor: currentBook.accent }}><small>ROOM LIBRARY</small><h2>{currentBook.title}</h2><span>{currentBook.spine}</span></div>
+            <article className="study-book-page"><small>PAGE {bookPage + 1} / {currentBook.pages.length}</small><p>{currentBook.pages[bookPage]}</p><div><button disabled={bookPage === 0} onClick={() => setBookPage((v) => v - 1)}>← previous</button><button disabled={bookPage === currentBook.pages.length - 1} onClick={() => setBookPage((v) => v + 1)}>next →</button></div></article>
           </section>
         </div>
       )}
 
-      {noteOpen && (
-        <div className="study-modal-backdrop" onMouseDown={() => setNoteOpen(false)}>
-          <section className="study-paper-note" onMouseDown={(event) => event.stopPropagation()} role="dialog" aria-modal="true">
-            <button type="button" className="study-modal-close" onClick={() => setNoteOpen(false)}>×</button>
-            <small>APRIL 17 · 12:08 AM</small>
-            <h2>things to remember before I forget them again</h2>
-            <p>1. The wall clock stopped at 11:47 yesterday.</p>
-            <p>2. Atlas says the useful date is written month first.</p>
-            <p>3. Four-digit locks like leading zeroes. Annoying, but important.</p>
-            <p>4. Radio manual is probably lying about the frequency range.</p>
-            <span>04 / 17</span>
-          </section>
-        </div>
-      )}
+      {noteOpen && <SimpleModal onClose={() => setNoteOpen(false)} className="study-paper-note"><small>APRIL 17 · 12:08 AM</small><h2>things to remember before I forget them again</h2><p>1. The wall clock stopped at 11:47 yesterday.</p><p>2. Atlas says the useful date is written month first.</p><p>3. Four-digit locks like leading zeroes.</p><p>4. The radio manual is lying.</p><span>04 / 17</span></SimpleModal>}
 
-      {phoneOpen && (
-        <div className="study-modal-backdrop" onMouseDown={() => setPhoneOpen(false)}>
-          <section className="study-phone-message" onMouseDown={(event) => event.stopPropagation()} role="dialog" aria-modal="true">
-            <button type="button" className="study-modal-close" onClick={() => setPhoneOpen(false)}>×</button>
-            <div className="phone-message-wave">▂▃▅▂▆▃▂▅</div>
-            <small>LINE CONNECTED · NO CALLER ID</small>
-            <p>“If you're still in the study, don't wait for the clock. It stopped before the train did.”</p>
-            <p>“Eleven forty-seven. Platform seven.”</p>
-            <span>click.</span>
-          </section>
-        </div>
-      )}
+      {phoneOpen && <SimpleModal onClose={() => setPhoneOpen(false)} className="study-phone-message"><div className="phone-message-wave">▂▃▅▂▆▃▂▅</div><small>LINE CONNECTED · NO CALLER ID</small><p>“If you're still in the study, don't wait for the clock. It stopped before the train did.”</p><p>“Eleven forty-seven. Platform seven.”</p><span>click.</span></SimpleModal>}
 
-      {starMapOpen && (
-        <div className="study-modal-backdrop" onMouseDown={() => setStarMapOpen(false)}>
-          <section className="study-star-modal" onMouseDown={(event) => event.stopPropagation()} role="dialog" aria-modal="true">
-            <button type="button" className="study-modal-close" onClick={() => setStarMapOpen(false)}>×</button>
-            <small>OBSERVATION SHEET · WINTER SKY</small>
-            <div className="study-big-constellation" aria-hidden="true">
-              <i /><i /><i /><i /><i /><i />
-              <span className="constellation-line c-line-1" />
-              <span className="constellation-line c-line-2" />
-              <span className="constellation-line c-line-3" />
-              <span className="constellation-line c-line-4" />
-            </div>
-            <h2>something is missing from the telescope.</h2>
-            <p>Margin note: “Lens moved to lower desk drawer after the last storm.”</p>
-            <strong>04 · 17</strong>
-          </section>
-        </div>
-      )}
+      {starMapOpen && <SimpleModal onClose={() => setStarMapOpen(false)} className="study-star-modal"><small>OBSERVATION SHEET · WINTER SKY</small><div className="study-big-constellation"><i/><i/><i/><i/><i/><i/></div><h2>something is missing from the telescope.</h2><p>Margin note: “Lens moved to lower desk drawer after the last storm.”</p><strong>04 · 17</strong></SimpleModal>}
+
+      {boardOpen && <SimpleModal onClose={() => setBoardOpen(false)} className="study-board-modal"><small>PINNED CONNECTIONS</small><h2>Three facts that probably aren't separate.</h2>{CLUE_CARDS.map((clue) => <div className="study-board-line" key={clue.title}><span>{clue.mark}</span><p><b>{clue.title}</b> — {clue.body}</p></div>)}<em>Someone has drawn a line from 11:47 to the word TRAIN.</em></SimpleModal>}
     </main>
+  );
+}
+
+function SimpleModal({ children, onClose, className }: { children: React.ReactNode; onClose: () => void; className: string }) {
+  return (
+    <div className="study-modal-backdrop" onMouseDown={onClose}>
+      <section className={className} onMouseDown={(e) => e.stopPropagation()}>
+        <button type="button" className="study-modal-close" onClick={onClose}>×</button>
+        {children}
+      </section>
+    </div>
   );
 }

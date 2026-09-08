@@ -8133,6 +8133,7 @@ body {
     transition: none;
   }
 }
+
 /* =========================================================
    MIDNIGHT STUDY — ROOM 02
    Add this file to globals.css, or import it from a route/component.
@@ -8375,6 +8376,155 @@ body {
 @media(max-width:760px){.midnight-study{padding-inline:10px}.study-topbar{grid-template-columns:1fr auto;gap:8px}.study-topbar>div{grid-column:1/-1;grid-row:1;text-align:center}.study-back{grid-column:1;grid-row:2}.study-rain-button{grid-column:2;grid-row:2}.study-room{min-height:1280px}.study-window{left:4%;top:5%;width:57%;height:25%}.study-star-map{left:auto;right:4%;top:5%;width:31%;height:25%;padding:10px}.study-map-stars{font-size:18px;letter-spacing:3px}.study-wall-clock{display:none}.study-bookshelf{left:4%;right:4%;top:32%;width:auto;height:24%}.study-desk-zone{left:3%;right:3%;bottom:4%;height:39%}.study-desk-surface{height:53%}.banker-lamp{transform:scale(.78);transform-origin:left bottom;top:-29%}.study-notebook{left:18%;top:19%;width:43%;height:54%}.study-phone{right:21%;transform:scale(.76)}.study-radio{right:1%;top:49%;transform:scale(.78);transform-origin:right top}.study-pencil-cup,.study-mug{display:none}.study-desk-front{top:49%}.study-lock-drawer{left:24%;right:24%;padding:12px}.study-drawer-panel{width:19%}.study-book-modal{grid-template-columns:1fr;max-height:86vh;overflow:auto}.study-book-cover{min-height:190px}.study-book-cover h2{margin:26px 0 8px}.study-book-page{padding:35px 24px}.study-book-page p{margin:32px 0;font-size:16px}.study-clue-strip{padding-inline:8px}}
 @media(prefers-reduced-motion:reduce){.study-rain i{animation:none}.study-hotspot,.study-object-tip{transition:none}}
 
+/* =========================================================
+   MIDNIGHT STUDY V2 — backpack, resettable puzzle, richer set dressing
+========================================================= */
+
+.midnight-study-v2 .study-room {
+  min-height: 900px;
+  background:
+    radial-gradient(circle at 28% 52%, rgba(212, 177, 99, .08), transparent 22%),
+    linear-gradient(180deg, rgba(13, 25, 31, .99) 0 66%, #23191d 66% 100%);
+}
+
+.study-wall-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 18% 15%, rgba(80, 118, 153, .08), transparent 28%),
+    radial-gradient(circle at 52% 56%, rgba(211, 166, 91, .07), transparent 30%);
+}
+
+.study-dust { position:absolute; inset:0; pointer-events:none; z-index:4; }
+.study-dust i { position:absolute; width:3px; height:3px; border-radius:50%; background:rgba(238,213,163,.38); animation:study-dust-float 7s ease-in-out infinite alternate; }
+.study-dust i:nth-child(1){left:19%;top:47%}.study-dust i:nth-child(2){left:35%;top:35%;animation-delay:-2s}.study-dust i:nth-child(3){left:53%;top:44%;animation-delay:-4s}.study-dust i:nth-child(4){left:67%;top:28%;animation-delay:-1s}.study-dust i:nth-child(5){left:77%;top:51%;animation-delay:-5s}.study-dust i:nth-child(6){left:43%;top:23%;animation-delay:-3s}
+@keyframes study-dust-float { to { transform: translate(8px,-14px); opacity:.12; } }
+
+/* Move the star chart slightly left and create room for the clue board. */
+.midnight-study-v2 .study-star-map { left:38%; width:17%; height:25%; }
+
+.study-clue-board {
+  position:absolute;
+  left:57%;
+  top:8%;
+  width:17%;
+  height:27%;
+  padding:13px;
+  border:8px solid #3a2924;
+  background:#8a674b;
+  color:#3b2926;
+  box-shadow:0 10px 22px rgba(0,0,0,.24);
+  cursor:pointer;
+  transform:rotate(.6deg);
+}
+.study-clue-board > strong { display:block; font:700 7px var(--font-mono),monospace; letter-spacing:.13em; color:#efe0bd; margin-bottom:9px; }
+.study-clue-board-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px; }
+.study-clue-board-grid span { min-width:0; padding:6px 3px; background:#e7d7ab; box-shadow:0 2px 5px rgba(0,0,0,.15); transform:rotate(-2deg); }
+.study-clue-board-grid span:nth-child(2){transform:rotate(2deg);background:#c5d1c0}.study-clue-board-grid span:nth-child(3){transform:rotate(-1deg);background:#d4b7ae}
+.study-clue-board-grid b,.study-clue-board-grid i { display:block; font:600 5px var(--font-mono),monospace; font-style:normal; overflow:hidden; }
+.study-clue-board-grid i { margin-top:4px; font-size:7px; }
+.study-clue-board > em { display:block; margin-top:11px; color:#f0dfc6; font:600 10px var(--font-hand),cursive; }
+
+.midnight-study-v2 .study-wall-clock { left:76%; top:8%; width:78px; height:78px; }
+.midnight-study-v2 .study-bookshelf { right:3%; top:22%; width:22%; height:37%; }
+
+/* Desk balance: phone and radio are now intentionally contained. */
+.midnight-study-v2 .study-desk-zone { left:9%; right:9%; bottom:5%; height:50%; }
+.study-phone-v2 {
+  left:58% !important;
+  right:auto !important;
+  top:16% !important;
+  width:105px !important;
+  height:82px !important;
+  z-index:6;
+}
+.study-radio-v2 {
+  right:2% !important;
+  top:8% !important;
+  width:175px !important;
+  z-index:7;
+}
+
+.study-desk-photo { position:absolute; left:55%; bottom:8%; width:44px; height:57px; padding:5px; background:#e7dccb; transform:rotate(5deg); box-shadow:0 5px 8px rgba(0,0,0,.18); }
+.study-desk-photo span { display:block; width:100%; height:74%; background:linear-gradient(145deg,#677a9b,#c07686 60%,#dca06d); }
+.study-matchbox { position:absolute; left:49%; bottom:7%; padding:4px 6px; border:1px solid #51372d; background:#ba8258; color:#382823; font:700 5px var(--font-mono),monospace; transform:rotate(-4deg); }
+.study-floor-paper { position:absolute; left:22%; bottom:12%; padding:7px 14px; background:#d7c7a5; color:#4e3d38; font:700 7px var(--font-mono),monospace; transform:rotate(7deg); box-shadow:0 4px 8px rgba(0,0,0,.18); }
+
+/* Backpack */
+.study-backpack-button {
+  position:fixed;
+  right:22px;
+  bottom:22px;
+  z-index:80;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:8px;
+  padding:9px 12px;
+  border:1px solid rgba(218,191,147,.28);
+  border-radius:12px;
+  background:rgba(48,34,31,.93);
+  color:#eee0cd;
+  box-shadow:0 10px 25px rgba(0,0,0,.28);
+  cursor:pointer;
+  backdrop-filter:blur(6px);
+}
+.study-backpack-button span{font-size:21px}.study-backpack-button strong{font:700 8px var(--font-mono),monospace;letter-spacing:.12em}.study-backpack-button small{display:grid;place-items:center;min-width:28px;height:22px;border-radius:999px;background:#7a5c45;font:700 7px var(--font-mono),monospace}
+.study-backpack-modal { position:relative; width:min(650px,92vw); padding:34px; border:8px solid #3b2924; border-radius:12px; background:linear-gradient(#594139,#3d2d29); color:#ede0cf; box-shadow:0 28px 70px rgba(0,0,0,.45); }
+.study-backpack-modal > small { font:600 7px var(--font-mono),monospace; letter-spacing:.14em; color:#c9aa75; }
+.study-backpack-modal h2 { margin:6px 0; font:700 31px var(--font-hand),cursive; }
+.study-backpack-intro { margin:0 0 18px; color:rgba(237,224,207,.65); font:500 11px var(--font-serif),serif; }
+.study-backpack-grid { display:grid; gap:10px; }
+.study-backpack-grid article { display:grid; grid-template-columns:52px 1fr; gap:13px; padding:14px; border:1px solid rgba(223,193,148,.17); background:#2e2422; }
+.study-backpack-grid article > span { display:grid; place-items:center; width:50px; height:50px; border-radius:8px; background:#1e1918; font-size:27px; }
+.study-backpack-grid strong,.study-backpack-grid p,.study-backpack-grid small { display:block; }
+.study-backpack-grid strong { font:700 10px var(--font-mono),monospace; }
+.study-backpack-grid p { margin:5px 0; font:500 11px/1.45 var(--font-serif),serif; color:rgba(237,224,207,.74); }
+.study-backpack-grid small { color:#c6b078; font:700 7px/1.4 var(--font-mono),monospace; letter-spacing:.06em; }
+.study-backpack-empty { padding:34px; border:1px dashed rgba(222,194,150,.2); text-align:center; color:rgba(237,224,207,.5); font:600 9px/1.8 var(--font-mono),monospace; }
+
+/* Investigation board modal */
+.study-board-modal { position:relative; width:min(620px,92vw); padding:38px 34px; border:12px solid #3b2924; background:#98714f; color:#352826; box-shadow:0 25px 70px rgba(0,0,0,.42); }
+.study-board-modal > small { font:700 7px var(--font-mono),monospace; letter-spacing:.15em; color:#f0dfbc; }
+.study-board-modal h2 { margin:7px 0 22px; color:#f6ead4; font:700 26px var(--font-hand),cursive; }
+.study-board-line { display:grid; grid-template-columns:95px 1fr; gap:13px; align-items:center; margin:10px 0; }
+.study-board-line span { padding:10px; background:#e5d6ad; text-align:center; font:700 12px var(--font-mono),monospace; transform:rotate(-2deg); }
+.study-board-line p { margin:0; padding:9px 11px; background:rgba(242,225,190,.68); font:500 11px/1.45 var(--font-serif),serif; }
+.study-board-modal > em { display:block; margin-top:18px; color:#f2dfbd; font:600 15px var(--font-hand),cursive; }
+
+/* Better lamp pool */
+.midnight-study-v2 .banker-lamp.is-on::after { left:-90px; top:34px; width:390px; height:250px; background:radial-gradient(ellipse at 38% 12%,rgba(238,203,128,.31),rgba(219,179,93,.08) 45%,transparent 72%); }
+
+@media(max-width:1180px){
+  .study-clue-board{left:58%;width:18%}
+  .midnight-study-v2 .study-bookshelf{right:2%;width:20%}
+  .study-phone-v2{left:56%!important;transform:scale(.92);transform-origin:left top}
+  .study-radio-v2{width:160px!important}
+}
+
+@media(max-width:900px){
+  .midnight-study-v2 .study-room{min-height:1160px}
+  .study-clue-board{left:52%;top:7%;width:22%;height:22%}
+  .midnight-study-v2 .study-wall-clock{right:3%;left:auto}
+  .midnight-study-v2 .study-bookshelf{left:5%;right:5%;top:33%;width:auto;height:24%}
+  .midnight-study-v2 .study-desk-zone{left:4%;right:4%;bottom:4%;height:39%}
+  .study-phone-v2{left:55%!important;top:17%!important}
+  .study-radio-v2{right:1%!important;top:53%!important;transform:scale(.82);transform-origin:right top}
+}
+
+@media(max-width:650px){
+  .study-backpack-button{right:10px;bottom:10px}
+  .midnight-study-v2 .study-room{min-height:1320px}
+  .study-clue-board{display:none}
+  .midnight-study-v2 .study-star-map{right:4%;left:auto;width:30%}
+  .midnight-study-v2 .study-bookshelf{top:31%}
+  .study-phone-v2{left:55%!important;top:14%!important;transform:scale(.7)}
+  .study-radio-v2{right:0!important;top:54%!important;transform:scale(.7)}
+  .study-board-line{grid-template-columns:1fr}
+}
+
+@media(prefers-reduced-motion:reduce){.study-dust i{animation:none}}
 
 /* =========================================================
    WORLD CONNECTION — small shared controls
