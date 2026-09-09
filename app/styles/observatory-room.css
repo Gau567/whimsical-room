@@ -579,3 +579,148 @@
   stroke-width:.65!important;
   stroke-dasharray:1.4;
 }
+
+/* =========================================================
+   OBSERVATORY V8 — SECRETS / PROJECTOR / ORRERY / LUNAR LOG
+   ========================================================= */
+
+/* Magical building book */
+.obs3-modal-backdrop.magical{
+  background:
+    radial-gradient(circle at 50% 42%,rgba(87,72,143,.28),transparent 32%),
+    rgba(6,7,13,.84);
+}
+.obs3-secret-book{
+  position:relative;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  width:min(1080px,95vw);
+  min-height:610px;
+  border:13px solid #4d3428;
+  border-radius:10px;
+  background:#e8dcc1;
+  box-shadow:0 35px 100px rgba(0,0,0,.58);
+  overflow:hidden;
+  transform:perspective(1200px) rotateX(2deg);
+}
+.obs3-secret-book::after{
+  content:"";
+  position:absolute;
+  left:50%;top:0;bottom:0;width:18px;
+  transform:translateX(-50%);
+  background:linear-gradient(90deg,rgba(67,42,31,.14),rgba(255,255,255,.25),rgba(67,42,31,.18));
+  pointer-events:none;
+}
+.secret-book-page{
+  position:relative;
+  padding:46px 50px;
+  color:#4a382e;
+  background:
+    repeating-linear-gradient(0deg,transparent 0 30px,rgba(87,69,53,.08) 31px),
+    radial-gradient(circle at 40% 35%,#f4ead1,#dfcfad);
+}
+.secret-book-page small{font:800 12px var(--font-mono),monospace;letter-spacing:.15em;color:#866747}
+.secret-book-page h2{margin:12px 0 18px;font:700 clamp(34px,4vw,54px) var(--font-hand),cursive}
+.secret-book-page p{font:18px/1.7 var(--font-serif),serif}
+.obs3-secret-book.is-awake .secret-book-page{
+  animation:bookAwaken .9s ease both;
+}
+.obs3-secret-book.is-awake .right-page{
+  background:
+    radial-gradient(circle at 52% 45%,rgba(82,190,255,.13),transparent 24%),
+    radial-gradient(circle at 70% 30%,rgba(172,113,255,.13),transparent 22%),
+    linear-gradient(145deg,#091425,#101b34 58%,#0b1120);
+  color:#e9e3d9;
+}
+.arcane-wheel{position:relative;width:270px;height:270px;margin:18px auto;border:1px solid rgba(88,65,49,.28);border-radius:50%}
+.arcane-wheel::before,.arcane-wheel::after{content:"";position:absolute;inset:24px;border:1px solid rgba(88,65,49,.24);border-radius:50%}
+.arcane-wheel::after{inset:54px}
+.arcane-wheel span,.arcane-wheel i{position:absolute;left:50%;top:8%;bottom:8%;width:1px;background:rgba(88,65,49,.22)}
+.arcane-wheel i{transform:rotate(90deg)}
+.arcane-wheel b{position:absolute;inset:0;display:grid;place-items:center;font-size:48px;color:#a27341;text-shadow:0 0 18px rgba(222,177,92,.35)}
+.flicker-copy{animation:inkFlicker 3.4s ease-in-out infinite}
+.secret-book-page button{padding:10px 14px;border:1px solid rgba(72,51,39,.3);border-radius:8px;background:#c99c5b;color:#2d211c;font:800 13px var(--font-mono),monospace;cursor:pointer}
+.secret-room-map{display:grid;gap:10px;margin:28px 0}
+.secret-room-map span{padding:13px 15px;border:1px solid rgba(184,201,255,.18);border-radius:8px;background:rgba(255,255,255,.045);font:800 14px var(--font-mono),monospace;letter-spacing:.1em}
+.secret-room-map span.revealed{color:#f2d795;box-shadow:inset 3px 0 #cfa85a}
+.secret-room-map span.redacted{color:rgba(233,227,217,.24)}
+.building-secret{margin-top:24px;padding:18px;border:1px solid rgba(183,194,239,.16);background:rgba(255,255,255,.035)}
+.building-secret p{font-size:20px;color:#eee5d9}
+.sleeping-map{height:100%;display:grid;place-items:center;font-size:72px;letter-spacing:20px;color:#a48e6d}
+@keyframes bookAwaken{0%{filter:brightness(.7);opacity:.78}35%{filter:brightness(1.55) saturate(1.25)}55%{filter:brightness(.86)}100%{filter:none;opacity:1}}
+@keyframes inkFlicker{0%,100%{opacity:.88}48%{opacity:1}50%{opacity:.45}52%{opacity:1}}
+
+/* Projector */
+.obs3-projector-modal,.obs3-orrery-modal,.obs3-moon-log,.obs3-ladder-modal{
+  position:relative;
+  width:min(980px,94vw);
+  max-height:88vh;
+  overflow:auto;
+  padding:38px;
+  border:1px solid rgba(231,204,171,.18);
+  border-radius:18px;
+  background:#151826;
+  color:#efe4d7;
+  box-shadow:0 30px 90px rgba(0,0,0,.5);
+}
+.obs3-projector-modal>small,.obs3-orrery-modal>small,.obs3-moon-log>small,.obs3-ladder-modal>small{font:800 12px var(--font-mono),monospace;color:#d7a558;letter-spacing:.14em}
+.obs3-projector-modal h2,.obs3-orrery-modal h2,.obs3-moon-log h2,.obs3-ladder-modal h2{margin:8px 0 10px;font:700 40px var(--font-hand),cursive}
+.obs3-projector-modal>p,.obs3-orrery-modal>p,.obs3-ladder-modal>p{font:17px/1.6 var(--font-serif),serif;color:#cfc1b4}
+.projector-modes{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0}
+.projector-modes button,.orrery-controls button,.obs3-secondary{padding:11px 16px;border:1px solid rgba(227,203,177,.18);border-radius:9px;background:#292435;color:#eee2d2;font:800 13px var(--font-mono),monospace;cursor:pointer}
+.projector-modes button.active{background:#d6a14b;color:#2a1c17}
+.projector-preview{min-height:260px;display:grid;place-items:center;padding:28px;border:1px solid rgba(190,208,255,.14);border-radius:14px;background:radial-gradient(circle at center,#182a51,#070b17);font:700 22px/2 var(--font-mono),monospace;text-align:center;color:#d9e1ff;text-shadow:0 0 16px rgba(176,202,255,.4)}
+.projector-preview.mode-solar{color:#f2d38c}
+.projector-preview.mode-rooms{color:#cfa7ff}
+.obs3-primary.small{position:static!important;transform:none!important;margin:18px 8px 0 0!important;min-width:220px}
+
+/* Interactive solar system */
+.solar-system-stage{position:relative;width:min(680px,80vw);aspect-ratio:1;margin:24px auto;border-radius:50%;background:radial-gradient(circle,#121c34,#060812 72%);box-shadow:inset 0 0 70px rgba(0,0,0,.65);overflow:hidden}
+.solar-system-stage::before{content:"";position:absolute;inset:8%;border:1px solid rgba(255,255,255,.06);border-radius:50%;box-shadow:0 0 0 42px rgba(255,255,255,.022),0 0 0 84px rgba(255,255,255,.018),0 0 0 126px rgba(255,255,255,.014)}
+.solar-sun{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:grid;place-items:center;width:62px;height:62px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff3ad,#e6a845 58%,#9d6326);color:#6f4218;font-size:30px;box-shadow:0 0 32px rgba(237,183,75,.42)}
+.solar-planet{--orbit:30%;--angle:0deg;position:absolute;left:50%;top:50%;width:0;height:0;border:0;background:none;transform:rotate(var(--angle)) translateX(var(--orbit));transform-origin:0 0;cursor:pointer}
+.solar-planet span{display:grid;place-items:center;width:34px;height:34px;margin:-17px;border-radius:50%;background:#2a334c;border:1px solid rgba(255,255,255,.22);color:#f1e3ca;font-size:18px;transform:rotate(calc(var(--angle) * -1));box-shadow:0 0 12px rgba(150,178,255,.12)}
+.orrery-controls{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.planet-card{margin-top:18px;padding:18px;border:1px solid rgba(227,203,177,.13);border-radius:12px;background:#20253a}
+.planet-card h3{margin:0 0 6px;font-size:24px}
+.planet-card p{font:16px/1.5 var(--font-serif),serif}
+.planet-card label{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;font:800 12px var(--font-mono),monospace;color:#d7b36c}
+
+/* Lunar notebook */
+.obs3-moon-open{display:grid;place-items:center;padding:0;border:0;background:none;cursor:pointer}
+.obs3-log-moon{padding:6px 9px;border:1px solid rgba(245,222,187,.18);border-radius:7px;background:rgba(255,255,255,.04);color:#efe0cd;font:800 11px var(--font-mono),monospace;cursor:pointer}
+.moon-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:24px 0}
+.moon-grid button{padding:14px;border:1px solid rgba(227,203,177,.12);border-radius:12px;background:#202538;color:#e9dfd2;cursor:pointer}
+.moon-grid button.logged{border-color:#d4a34f;box-shadow:inset 0 0 0 1px rgba(212,163,79,.28)}
+.moon-grid svg{width:88px;height:88px}
+.moon-grid strong,.moon-grid span{display:block;margin-top:6px;text-transform:capitalize}
+.moon-grid strong{font-size:13px}.moon-grid span{font:11px var(--font-mono),monospace;color:#cdbda9}
+.moon-note{padding:18px;border-left:4px solid #d4a34f;background:#1b1d2b}.moon-note b{font:800 13px var(--font-mono),monospace;color:#d8a856}.moon-note p{font:17px/1.55 var(--font-serif),serif}
+
+/* Ladder / cat secret */
+.obs3-ladder{border:0;background:none;cursor:pointer;color:#d8a95a}
+.obs3-ladder span{position:absolute;left:50%;bottom:-24px;transform:translateX(-50%);font:800 11px var(--font-mono),monospace;opacity:.7}
+.ladder-window{margin:22px 0;padding:48px;border:1px solid rgba(190,210,255,.14);border-radius:14px;background:linear-gradient(#0f1e3b,#08101f);font-size:30px;letter-spacing:16px;text-align:center;color:#d9e3ff}
+.obs3-ladder-modal blockquote{padding:18px 22px;border-left:4px solid #d5a554;background:#211b25;font:800 18px/1.5 var(--font-mono),monospace;color:#f0d89f}
+
+/* Rare telescope sightings */
+.rare-sky-event{cursor:pointer;filter:url(#starGlow)}
+.rare-sky-event circle{fill:#f5d680;animation:rarePulse 1.2s ease-in-out infinite}
+.rare-sky-event path{stroke:#f5d680;stroke-width:.7;opacity:.75}
+.rare-sky-event text{fill:#f8e7a8;font-size:3px;font-weight:900}
+.obs3-rare-card{margin-bottom:12px;padding:18px;border:1px solid rgba(226,174,82,.35);border-radius:12px;background:linear-gradient(145deg,#2a263a,#1e1e2c);color:#efe5d8;box-shadow:0 0 28px rgba(213,166,79,.08)}
+.obs3-rare-card small{font:800 11px var(--font-mono),monospace;color:#e0b45e}.obs3-rare-card h2{font:700 28px var(--font-hand),cursive}.obs3-rare-card p{font:15px/1.55 var(--font-serif),serif}.obs3-rare-card button{padding:8px 11px;border:1px solid rgba(226,200,174,.18);border-radius:7px;background:#332a35;color:#eee;cursor:pointer}
+@keyframes rarePulse{50%{opacity:.4;transform:scale(1.8)}}
+
+/* Deeper room projection layers */
+.projector-on .obs3-room::after{content:"✦ Orion　✧ Cassiopeia　✦ Lyra　✧ Pegasus　✦ Taurus　✧ Gemini"!important;inset:11% 6% auto!important;white-space:normal;line-height:2.2;text-align:center;font-size:26px!important;letter-spacing:10px!important;color:rgba(184,205,255,.16)!important;text-shadow:0 0 20px rgba(170,198,255,.28)!important}
+
+/* Make magical book spine slightly suspicious, but not obvious */
+.obs3-shelf-books button:first-child{background:#6f594b!important;color:#d7c7ad!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
+.obs3-shelf-books button:first-child:hover{box-shadow:0 0 16px rgba(173,144,224,.24),inset 0 0 0 1px rgba(218,202,255,.18)}
+
+@media(max-width:760px){
+  .obs3-secret-book{grid-template-columns:1fr;max-height:90vh;overflow:auto}.obs3-secret-book::after{display:none}.secret-book-page{padding:32px 26px}.moon-grid{grid-template-columns:repeat(2,1fr)}.solar-system-stage{width:86vw}.projector-preview{font-size:16px}.obs3-projector-modal,.obs3-orrery-modal,.obs3-moon-log,.obs3-ladder-modal{padding:28px 20px}
+}
+.projector-on.projector-solar .obs3-room::after{content:"☉　·　☿　·　♀　·　⊕　·　♂　·　♃　·　♄"!important;color:rgba(244,207,126,.16)!important}
+.projector-on.projector-rooms .obs3-room::after{content:"01　NOSTALGIA　·　02　STUDY　·　04　OBSERVATORY　·　?　DREAM　·　06　TRAIN　·　07　GREENHOUSE"!important;color:rgba(212,166,255,.14)!important}

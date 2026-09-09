@@ -26,6 +26,30 @@ type BookInfo = {
   note: string;
 };
 
+type CountryEntry = {
+  country: string;
+  emoji: string;
+  capital: string;
+  facts: string[];
+  skyFacts: string[];
+};
+
+type OrreryPlanet = {
+  id: string;
+  name: string;
+  symbol: string;
+  orbit: number;
+  speed: number;
+  fact: string;
+};
+
+type RareEvent = {
+  id: string;
+  title: string;
+  description: string;
+  reward?: string;
+};
+
 type SkyPoint = { x: number; y: number };
 
 type Constellation = {
@@ -135,6 +159,35 @@ const CONSTELLATIONS: Constellation[] = [
     stars: [{x:151,y:103},{x:159,y:109},{x:169,y:112},{x:178,y:115},{x:188,y:121},{x:197,y:129},{x:189,y:135},{x:180,y:132}],
     lines: [[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,7]],
   },
+,
+  {
+    id: "lyra", name: "Lyra", nickname: "The Lyre", season: "northern summer",
+    fact: "Lyra is a small constellation anchored by brilliant Vega, one of the brightest stars in the northern sky.",
+    anchor: { x: 128, y: 96 },
+    stars: [{x:124,y:85},{x:132,y:92},{x:127,y:101},{x:137,y:105},{x:141,y:96}],
+    lines: [[0,1],[1,2],[2,3],[3,4],[4,1]],
+  },
+  {
+    id: "taurus", name: "Taurus", nickname: "The Bull", season: "northern winter",
+    fact: "Taurus contains orange Aldebaran and lies near the Pleiades. Its face is traced by the V-shaped Hyades.",
+    anchor: { x: 39, y: 46 },
+    stars: [{x:29,y:41},{x:36,y:47},{x:44,y:43},{x:48,y:51},{x:55,y:47},{x:60,y:39}],
+    lines: [[0,1],[1,2],[1,3],[3,4],[4,5]],
+  },
+  {
+    id: "gemini", name: "Gemini", nickname: "The Twins", season: "northern winter",
+    fact: "Gemini is marked by the bright twin stars Castor and Pollux, with two long chains of stars forming the twins' bodies.",
+    anchor: { x: 83, y: 25 },
+    stars: [{x:75,y:16},{x:86,y:15},{x:78,y:26},{x:88,y:28},{x:80,y:38},{x:90,y:40}],
+    lines: [[0,2],[2,4],[1,3],[3,5],[2,3]],
+  },
+  {
+    id: "pegasus", name: "Pegasus", nickname: "The Winged Horse", season: "northern autumn",
+    fact: "Pegasus is easy to begin with the Great Square: four bright stars forming a huge tilted box.",
+    anchor: { x: 181, y: 45 },
+    stars: [{x:169,y:36},{x:187,y:34},{x:190,y:52},{x:171,y:55},{x:202,y:43}],
+    lines: [[0,1],[1,2],[2,3],[3,0],[1,4]],
+  },
 ];
 
 const SKY_OBJECTS: SkyObject[] = [
@@ -145,9 +198,15 @@ const SKY_OBJECTS: SkyObject[] = [
   { id: "betelgeuse", name: "Betelgeuse", kind: "star", x: 49, y: 65, minZoom: 1.8, short: "Red supergiant in Orion", detail: "Betelgeuse is a huge evolved star whose warm colour is noticeably different from many nearby blue-white stars." },
   { id: "rigel", name: "Rigel", kind: "star", x: 69, y: 97, minZoom: 1.8, short: "Blue supergiant in Orion", detail: "Rigel is one of Orion's brightest stars and marks the Hunter's foot." },
   { id: "unknown", name: "Uncatalogued Object", kind: "mystery", x: 214, y: 126, minZoom: 2.25, short: "OBJECT NOT IN CATALOGUE", detail: "It shifts slightly between observations. The journal contains no matching entry." },
+  { id: "saturn", name: "Saturn", kind: "cluster", x: 152, y: 18, minZoom: 1.55, short: "Ringed gas giant", detail: "Saturn's rings are made mostly of countless icy particles. Even a modest telescope can reveal the planet's unmistakable flattened ring system." },
+  { id: "jupiter", name: "Jupiter", kind: "moon", x: 178, y: 102, minZoom: 1.4, short: "Largest planet in the Solar System", detail: "Jupiter's cloud bands and four bright Galilean moons make it one of the most rewarding telescope targets." },
+  { id: "mars", name: "Mars", kind: "star", x: 18, y: 72, minZoom: 1.35, short: "The Red Planet", detail: "Mars appears warm orange-red because iron minerals in its surface dust have oxidised." },
+  { id: "orion-nebula", name: "Orion Nebula", kind: "galaxy", x: 59, y: 83, minZoom: 1.75, short: "M42 · stellar nursery", detail: "The Orion Nebula is a vast cloud of glowing gas where new stars are forming, visible as a fuzzy patch beneath Orion's Belt." },
+  { id: "double-cluster", name: "Double Cluster", kind: "cluster", x: 149, y: 58, minZoom: 1.65, short: "NGC 869 + NGC 884", detail: "Two neighbouring open clusters in Perseus form a spectacular double spray of young stars." },
 ];
 
 const OBSERVATORY_BOOKS: BookInfo[] = [
+  { id: "between", title: "BETWEEN", subtitle: "The Rooms Between", description: "A plain brown volume with no author and no catalogue number. Most pages look empty until the observatory lights dim.", note: "The ink does not stay in the same place twice." },
   { id: "atlas", title: "ATLAS", subtitle: "A Pocket Atlas of the Northern Sky", description: "A compact field guide for locating seasonal constellations. The pages use simple landmark patterns rather than detailed star charts.", note: "Useful trick: find one unmistakable shape first, then hop from bright star to bright star." },
   { id: "orbits", title: "ORBITS", subtitle: "Clockwork Heavens", description: "Notes on how planets, moons and comets move under gravity. Several pages compare elliptical orbits with the brass orrery on the shelf.", note: "The farther an orbiting body is from its star, the longer one complete trip usually takes." },
   { id: "light", title: "LIGHT", subtitle: "What Starlight Can Tell Us", description: "An introduction to colour, spectra and brightness. It explains how astronomers can learn about temperature and composition without ever touching a star.", note: "Blue-white stars are generally hotter at their surfaces than orange-red stars." },
@@ -168,6 +227,52 @@ const JOURNAL_PAGES = [
 const CONSTELLATION_ORDER = ["north", "crown", "falling"] as const;
 type ConstellationNode = (typeof CONSTELLATION_ORDER)[number];
 const MOON_PHASES = ["new", "waxing crescent", "first quarter", "waxing gibbous", "full", "waning gibbous", "last quarter", "waning crescent"];
+
+const COUNTRY_DATABASE: CountryEntry[] = [
+  { country: "Singapore", emoji: "🇸🇬", capital: "Singapore", facts: ["Singapore is one of the world's few sovereign city-states.", "The island sits only a little over one degree north of the Equator.", "Its four official languages are English, Malay, Mandarin and Tamil."], skyFacts: ["Near-equatorial observers can see stars from both celestial hemispheres.", "The Southern Cross can be seen from Singapore at suitable times of year."] },
+  { country: "India", emoji: "🇮🇳", capital: "New Delhi", facts: ["India spans tropical coasts, deserts, high plateaus and the Himalayas.", "Jantar Mantar observatories used enormous masonry instruments for naked-eye measurements.", "India is home to one of the world's oldest continuous astronomical traditions."], skyFacts: ["Seasonal Indian skies can show Orion, Scorpius and brilliant Milky Way fields.", "Historical Indian astronomy developed sophisticated calendars and planetary models."] },
+  { country: "Japan", emoji: "🇯🇵", capital: "Tokyo", facts: ["Japan is an archipelago of thousands of islands.", "Its islands stretch from cool northern latitudes into the subtropics.", "Mountains cover most of Japan's land area."], skyFacts: ["Japanese observers kept centuries of records of comets and guest stars.", "Subaru, the Japanese name for the Pleiades, literally refers to gathering together."] },
+  { country: "Chile", emoji: "🇨🇱", capital: "Santiago", facts: ["Chile is extraordinarily long and narrow, running along South America's Pacific coast.", "The Atacama Desert is among the driest places on Earth.", "Chile stretches from subtropical desert to subantarctic landscapes."], skyFacts: ["The Atacama hosts ALMA and several major international observatories.", "Dry, high-altitude air makes northern Chile one of Earth's premier astronomy regions."] },
+  { country: "Norway", emoji: "🇳🇴", capital: "Oslo", facts: ["Norway's coastline is carved by thousands of fjords and islands.", "The country extends far north of the Arctic Circle.", "Some northern communities experience weeks without sunset in summer."], skyFacts: ["Northern Norway lies beneath the auroral oval.", "Winter darkness creates long observing windows for aurora and circumpolar stars."] },
+  { country: "Australia", emoji: "🇦🇺", capital: "Canberra", facts: ["Australia is both a country and a continent.", "Its interior contains vast arid and semi-arid regions.", "Most Australians live relatively close to the coast."], skyFacts: ["Australian skies reveal the Southern Cross and Magellanic Clouds.", "The radio telescope at Parkes played an important role in space exploration and astronomy."] },
+  { country: "New Zealand", emoji: "🇳🇿", capital: "Wellington", facts: ["New Zealand consists mainly of two large islands and many smaller ones.", "Its landscapes were heavily shaped by tectonic and volcanic activity.", "The country is one of the first places to see a new day."], skyFacts: ["Aoraki Mackenzie is an internationally recognised dark-sky reserve.", "The Magellanic Clouds are prominent naked-eye objects from New Zealand."] },
+  { country: "South Africa", emoji: "🇿🇦", capital: "Pretoria", facts: ["South Africa has coastlines on both the Atlantic and Indian Oceans.", "Its interior includes high plateaus and the Karoo semi-desert.", "The country recognises multiple capital cities for different branches of government."], skyFacts: ["Sutherland hosts the Southern African Large Telescope.", "The Karoo's dry dark skies are also important for radio astronomy."] },
+  { country: "Egypt", emoji: "🇪🇬", capital: "Cairo", facts: ["Most of Egypt's population lives close to the Nile River.", "Ancient Egyptian calendars closely tracked seasonal cycles.", "The Sahara covers most of the country."], skyFacts: ["Sirius had major historical importance in Egyptian timekeeping.", "Ancient monuments frequently show careful orientation to cardinal directions and celestial cycles."] },
+  { country: "Greece", emoji: "🇬🇷", capital: "Athens", facts: ["Greece includes thousands of islands scattered through the Aegean and Ionian seas.", "Ancient Greek scholars developed influential geometric models of the cosmos.", "Many modern scientific terms preserve Greek roots."], skyFacts: ["A huge number of constellation names come through Greek mythology.", "Orion, Andromeda, Cassiopeia and Pegasus all carry Greek mythological stories."] },
+  { country: "United Kingdom", emoji: "🇬🇧", capital: "London", facts: ["The United Kingdom consists of England, Scotland, Wales and Northern Ireland.", "Its maritime history made precise navigation and timekeeping especially important.", "The Greenwich meridian passes through southeast London."], skyFacts: ["Greenwich became the reference point for longitude and global timekeeping.", "The Royal Observatory's history links astronomy directly to navigation at sea."] },
+  { country: "Canada", emoji: "🇨🇦", capital: "Ottawa", facts: ["Canada has the world's longest coastline.", "Much of northern Canada lies within the Arctic.", "The country spans six primary time zones."], skyFacts: ["Northern Canada has excellent auroral activity.", "Circumpolar constellations can remain visible all night from high northern latitudes."] },
+  { country: "Brazil", emoji: "🇧🇷", capital: "Brasília", facts: ["Brazil is the largest country in South America.", "The Equator crosses northern Brazil.", "The Amazon basin contains the world's largest tropical rainforest."], skyFacts: ["Southern celestial objects are much easier to observe from most of Brazil than from Europe.", "Near-equatorial regions can access substantial portions of both celestial hemispheres."] },
+  { country: "Mexico", emoji: "🇲🇽", capital: "Mexico City", facts: ["Mexico sits where several major tectonic plates interact.", "The country contains deserts, high plateaus, volcanoes and tropical forests.", "Mexico City lies at high elevation."], skyFacts: ["High-altitude sites can offer clearer astronomical seeing than humid lowlands.", "Mexico's latitude gives access to both northern constellations and objects nearer the southern sky."] },
+  { country: "Peru", emoji: "🇵🇪", capital: "Lima", facts: ["Peru contains Pacific desert, the Andes and Amazon rainforest.", "The Andes rise dramatically through the centre of the country.", "Ancient Andean cultures developed sophisticated landscape and sky traditions."], skyFacts: ["Andean astronomy includes dark-cloud constellations traced through the Milky Way.", "High mountain skies can be extraordinarily transparent when conditions are dry."] },
+  { country: "Argentina", emoji: "🇦🇷", capital: "Buenos Aires", facts: ["Argentina stretches from subtropical north to subantarctic Patagonia.", "The Andes form much of its western border.", "Patagonia has some of South America's widest open landscapes."], skyFacts: ["Southern Argentina offers dramatic views of the Milky Way's southern regions.", "Objects around the south celestial pole remain visible for long periods."] },
+  { country: "Kenya", emoji: "🇰🇪", capital: "Nairobi", facts: ["The Equator crosses Kenya.", "Kenya contains highlands, savannahs and part of the Great Rift Valley.", "Mount Kenya is the country's highest mountain."], skyFacts: ["From the Equator both celestial poles sit close to opposite horizons.", "Observers can see a remarkable mix of northern and southern constellations."] },
+  { country: "Indonesia", emoji: "🇮🇩", capital: "Jakarta", facts: ["Indonesia is the world's largest archipelagic state.", "It spans thousands of islands across the Equator.", "Its geology is shaped by the Pacific Ring of Fire."], skyFacts: ["Equatorial skies provide broad access to both celestial hemispheres.", "Dark island locations can offer spectacular Milky Way views away from city lights."] },
+  { country: "South Korea", emoji: "🇰🇷", capital: "Seoul", facts: ["South Korea occupies the southern part of the Korean Peninsula.", "Much of its landscape is mountainous.", "Cheomseongdae in Gyeongju dates to the seventh century."], skyFacts: ["Historical Korean records contain detailed observations of comets and guest stars.", "Cheomseongdae is among East Asia's oldest surviving astronomical structures."] },
+  { country: "Morocco", emoji: "🇲🇦", capital: "Rabat", facts: ["Morocco includes Atlantic coast, Mediterranean coast, mountains and Saharan landscapes.", "The Atlas Mountains cross much of the country.", "Its cities preserve layers of Amazigh, Arab, African and European history."], skyFacts: ["Dry desert regions can produce excellent dark-sky conditions.", "Broad Saharan horizons make zodiacal light and bright planets especially striking."] },
+  { country: "United Arab Emirates", emoji: "🇦🇪", capital: "Abu Dhabi", facts: ["The UAE consists of seven emirates.", "Its landscape combines modern coastal cities with large desert regions.", "Much of the country has a hot arid climate."], skyFacts: ["Desert sites away from cities offer clear views of winter constellations.", "The Emirates Mars Mission made the UAE one of the newest nations operating an interplanetary spacecraft."] },
+  { country: "Spain", emoji: "🇪🇸", capital: "Madrid", facts: ["Spain occupies most of the Iberian Peninsula.", "The Canary Islands lie far southwest of mainland Spain in the Atlantic.", "The country contains several distinct climate regions."], skyFacts: ["La Palma and Tenerife host major observatories above much of the cloud layer.", "The Canary Islands' stable atmosphere makes them prized astronomy locations."] },
+  { country: "Italy", emoji: "🇮🇹", capital: "Rome", facts: ["Italy extends into the Mediterranean Sea as a long peninsula.", "The Alps form much of its northern boundary.", "Italy has several active volcanoes."], skyFacts: ["Galileo's telescopic observations transformed understanding of the Moon and planets.", "Italy has a long history of observatories and astronomical instrument making."] },
+  { country: "France", emoji: "🇫🇷", capital: "Paris", facts: ["France spans landscapes from Atlantic coasts to the Alps and Mediterranean.", "It also includes overseas territories across several oceans.", "The metric system was developed during the French Revolution."], skyFacts: ["Paris Observatory was founded in the seventeenth century.", "French astronomers contributed extensively to mapping planets, stars and the shape of Earth."] },
+  { country: "United States", emoji: "🇺🇸", capital: "Washington, D.C.", facts: ["The United States spans arctic, tropical, desert, mountain and temperate environments.", "Alaska and Hawaii greatly extend its geographic range.", "The country has several large protected dark-sky regions."], skyFacts: ["Mauna Kea, Arizona and New Mexico host major optical observatories.", "The Very Large Array in New Mexico uses 27 radio antennas as one giant instrument."] },
+  { country: "Thailand", emoji: "🇹🇭", capital: "Bangkok", facts: ["Thailand stretches from northern mountains to a long tropical peninsula.", "The Chao Phraya plain is one of the country's major agricultural regions.", "Bangkok grew around a network of waterways."], skyFacts: ["Its latitude allows Orion, Scorpius and many southern objects to rise high in the sky.", "Dry-season observing can offer excellent views away from urban light pollution."] },
+  { country: "Philippines", emoji: "🇵🇭", capital: "Manila", facts: ["The Philippines is an archipelago of more than seven thousand islands.", "It lies along the Pacific Ring of Fire.", "Its climate is strongly influenced by surrounding tropical seas."], skyFacts: ["The Southern Cross can be observed from the Philippines.", "Orion and Scorpius are prominent seasonal constellations in Philippine skies."] },
+];
+
+const ORRERY_PLANETS: OrreryPlanet[] = [
+  { id: "mercury", name: "Mercury", symbol: "☿", orbit: 15, speed: 4.1, fact: "The closest planet to the Sun and the fastest around it." },
+  { id: "venus", name: "Venus", symbol: "♀", orbit: 23, speed: 1.6, fact: "A cloud-covered world with a runaway greenhouse atmosphere." },
+  { id: "earth", name: "Earth", symbol: "⊕", orbit: 31, speed: 1, fact: "Our home world, with one large natural satellite." },
+  { id: "mars", name: "Mars", symbol: "♂", orbit: 39, speed: .53, fact: "A cold desert world with giant volcanoes and canyons." },
+  { id: "jupiter", name: "Jupiter", symbol: "♃", orbit: 50, speed: .084, fact: "The largest planet, wrapped in turbulent cloud bands." },
+  { id: "saturn", name: "Saturn", symbol: "♄", orbit: 60, speed: .034, fact: "A gas giant surrounded by an immense system of icy rings." },
+];
+
+const RARE_EVENTS: RareEvent[] = [
+  { id: "meteor", title: "Meteor Crossing", description: "A bright meteor tears through the eyepiece and vanishes before the catalogue can assign a number." },
+  { id: "satellite", title: "Satellite Transit", description: "A tiny artificial point glides steadily through the field. Too straight, too patient to be a star." },
+  { id: "comet", title: "Unexpected Comet", description: "A diffuse visitor with a pale tail drifts into view. Someone has pencilled a question mark beside today's date." },
+  { id: "window", title: "A Window Where No Room Should Be", description: "For three seconds, the telescope frames a lit window suspended among the stars. Something moves behind the curtain.", reward: "dream-route" },
+];
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
@@ -247,6 +352,21 @@ export default function ObservatoryRoom() {
   const [bookOpen, setBookOpen] = useState<BookInfo | null>(null);
   const [catMood, setCatMood] = useState(0);
   const [wishCount, setWishCount] = useState(0);
+  const [secretBookOpen, setSecretBookOpen] = useState(false);
+  const [secretBookAwake, setSecretBookAwake] = useState(false);
+  const [secretBookPage, setSecretBookPage] = useState(0);
+  const [projectorPanelOpen, setProjectorPanelOpen] = useState(false);
+  const [projectorMode, setProjectorMode] = useState<"constellations" | "solar" | "rooms">("constellations");
+  const [orreryOpen, setOrreryOpen] = useState(false);
+  const [orreryAngles, setOrreryAngles] = useState<Record<string, number>>(() => Object.fromEntries(ORRERY_PLANETS.map((p, i) => [p.id, i * 42])));
+  const [selectedPlanet, setSelectedPlanet] = useState<OrreryPlanet>(ORRERY_PLANETS[2]);
+  const [moonLogOpen, setMoonLogOpen] = useState(false);
+  const [loggedMoonPhases, setLoggedMoonPhases] = useState<number[]>([]);
+  const [ladderOpen, setLadderOpen] = useState(false);
+  const [ladderVisited, setLadderVisited] = useState(false);
+  const [rareEvent, setRareEvent] = useState<RareEvent | null>(null);
+  const [scopeMoves, setScopeMoves] = useState(0);
+  const [globeHistory, setGlobeHistory] = useState<string[]>([]);
 
   const dragRef = useRef<DragState | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -304,9 +424,41 @@ export default function ObservatoryRoom() {
     setGlobeSpinning(true);
     setCountryFact(null);
     window.setTimeout(() => {
-      setCountryFact(COUNTRY_FACTS[Math.floor(Math.random() * COUNTRY_FACTS.length)]);
+      const available = COUNTRY_DATABASE.filter((entry) => !globeHistory.slice(-5).includes(entry.country));
+      const pool = available.length ? available : COUNTRY_DATABASE;
+      const entry = pool[Math.floor(Math.random() * pool.length)];
+      const fact = entry.facts[Math.floor(Math.random() * entry.facts.length)];
+      const skyFact = entry.skyFacts[Math.floor(Math.random() * entry.skyFacts.length)];
+      setCountryFact({ country: entry.country, emoji: entry.emoji, capital: entry.capital, fact, skyFact });
+      setGlobeHistory((history) => [...history.slice(-11), entry.country]);
       setGlobeSpinning(false);
     }, 950);
+  }
+
+  function maybeTriggerRareEvent() {
+    if (rareEvent || scopeMoves < 4) return;
+    if (Math.random() > 0.18) return;
+    const event = RARE_EVENTS[Math.floor(Math.random() * RARE_EVENTS.length)];
+    setRareEvent(event);
+    showToast(`RARE SIGHTING · ${event.title}`);
+    if (event.reward === "dream-route") discoverClue("observatory-coordinate-found");
+  }
+
+  function advanceOrrery(days = 30) {
+    setOrreryAngles((current) => {
+      const next = { ...current };
+      for (const planet of ORRERY_PLANETS) next[planet.id] = (next[planet.id] + days * planet.speed) % 360;
+      return next;
+    });
+  }
+
+  function setPlanetAngle(id: string, value: number) {
+    setOrreryAngles((current) => ({ ...current, [id]: value }));
+  }
+
+  function logMoonPhase() {
+    setLoggedMoonPhases((current) => current.includes(moonPhase) ? current : [...current, moonPhase]);
+    showToast(`${MOON_PHASES[moonPhase]} logged in the lunar notebook.`);
   }
 
   function inspectConstellation(constellation: Constellation) {
@@ -402,7 +554,11 @@ export default function ObservatoryRoom() {
   }
 
   function handleScopePointerUp(event: ReactPointerEvent<SVGSVGElement>) {
-    if (dragRef.current?.pointerId === event.pointerId) dragRef.current = null;
+    if (dragRef.current?.pointerId === event.pointerId) {
+      dragRef.current = null;
+      setScopeMoves((moves) => moves + 1);
+      window.setTimeout(maybeTriggerRareEvent, 0);
+    }
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
   }
 
@@ -423,12 +579,12 @@ export default function ObservatoryRoom() {
   ];
 
   return (
-    <main className={`observatory-v3 ${lanternsOn ? "is-lit" : "is-dim"} ${projectorOn ? "projector-on" : ""} ${domeOpen ? "dome-open" : "dome-closed"}`}>
+    <main className={`observatory-v3 ${lanternsOn ? "is-lit" : "is-dim"} ${projectorOn ? `projector-on projector-${projectorMode}` : ""} ${domeOpen ? "dome-open" : "dome-closed"}`}>
       <header className="obs3-header">
         <button type="button" onClick={returnToHub}>← hallway</button>
         <div><small>ROOM 04 · ABOVE THE WEATHER</small><h1>Observatory</h1><p>somebody has been charting things that do not belong to this sky</p></div>
         <div className="obs3-header-actions">
-          <button type="button" onClick={() => setProjectorOn((v) => !v)}>{projectorOn ? "projector: on" : "project stars"}</button>
+          <button type="button" onClick={() => setProjectorPanelOpen(true)}>{projectorOn ? "projector: on" : "constellation projector"}</button>
           <button type="button" onClick={() => setDomeOpen((v) => !v)}>{domeOpen ? "close dome" : "open dome"}</button>
         </div>
       </header>
@@ -447,16 +603,21 @@ export default function ObservatoryRoom() {
           <section className="obs3-bookcase">
             <div className="obs3-shelf-books">
               {OBSERVATORY_BOOKS.slice(0,5).map((book) => (
-                <button key={book.id} type="button" onClick={() => setBookOpen(book)} title={`Read ${book.subtitle}`}>{book.title}</button>
+                <button key={book.id} type="button" onClick={() => { if (book.id === "between") { setSecretBookOpen(true); window.setTimeout(() => setSecretBookAwake(true), 420); } else setBookOpen(book); }} title={`Read ${book.subtitle}`}>{book.title}</button>
               ))}
             </div>
             <button type="button" className="obs3-star-atlas" onClick={() => setAtlasOpen(true)}><span className="mini-constellation">✦ ─ ✧ ─ ✦<br/>╲　╱　╲　╱</span><strong>STAR ATLAS</strong><small>{foundConstellations.length} patterns recognised · click to study</small></button>
           </section>
-          <div className="obs3-ladder" aria-hidden="true"><i/><i/><i/><i/><i/></div>
+          <button type="button" className="obs3-ladder" onClick={() => { setLadderOpen(true); setLadderVisited(true); }} aria-label="Climb the observatory ladder"><i/><i/><i/><i/><i/><span>climb</span></button>
           <div className="obs3-lounge">
             <button type="button" className="obs3-chair chair-a" onClick={() => showToast("A folded note says: 'Do not trust a sky that never moves.'")}><span /></button>
             <button type="button" className="obs3-chair chair-b" onClick={() => showToast("The blanket is still warm.")}><span /></button>
-            <button type="button" className={`obs3-cat cat-${catMood % 3}`} onClick={() => { showToast(catMessages[catMood % catMessages.length]); setCatMood((v) => v + 1); }} aria-label="Pet the observatory cat"><span className="cat-ears"/><span className="cat-face">•ᴗ•</span><span className="cat-tail"/></button>
+            <button type="button" className={`obs3-cat cat-${catMood % 3}`} onClick={() => {
+              const nextMood = catMood + 1;
+              if (ladderVisited && nextMood >= 5) showToast("The cat knocks a brass star token from behind the cushion. It was apparently conducting independent research.");
+              else showToast(catMessages[catMood % catMessages.length]);
+              setCatMood(nextMood);
+            }} aria-label="Pet the observatory cat"><span className="cat-ears"/><span className="cat-face">•ᴗ•</span><span className="cat-tail"/></button>
             <span className="obs3-plant">♧</span>
             <button type="button" className="obs3-tea" onClick={() => showToast("The tea has gone cold. Astronomically predictable.")}>☕</button>
           </div>
@@ -484,7 +645,7 @@ export default function ObservatoryRoom() {
                 <button key={book.id} type="button" onClick={() => setBookOpen(book)} title={`Read ${book.subtitle}`}>{book.title}</button>
               ))}
             </div>
-            <button type="button" className={`obs3-orrery ${orreryRunning ? "is-running" : ""}`} onClick={() => setOrreryRunning((v) => !v)} aria-label="Toggle the orrery"><span className="orrery-orbit"><i/><i/><i/></span><b>☉</b><small>{orreryRunning ? "orrery turning" : "orrery paused"}</small></button>
+            <button type="button" className={`obs3-orrery ${orreryRunning ? "is-running" : ""}`} onClick={() => setOrreryOpen(true)} aria-label="Open interactive orrery"><span className="orrery-orbit"><i/><i/><i/></span><b>☉</b><small>{orreryRunning ? "orrery turning" : "orrery paused"}</small></button>
           </section>
 
           <section className="obs3-desk">
@@ -494,7 +655,7 @@ export default function ObservatoryRoom() {
             <button type="button" className="obs3-journal" onClick={() => setJournalPage(0)}><strong>FIELD NOTES</strong><span>3 entries</span><small>open journal</small></button>
             <div className="obs3-moon-phase">
               <strong>MOON PHASE</strong>
-              <MoonPhaseVisual phase={moonPhase} />
+              <button type="button" className="obs3-moon-open" onClick={() => setMoonLogOpen(true)} aria-label="Open lunar observation notebook"><MoonPhaseVisual phase={moonPhase} /></button>
               <input
                 aria-label="Moon phase"
                 type="range"
@@ -506,6 +667,7 @@ export default function ObservatoryRoom() {
                 onChange={(e) => setMoonPhase(Number(e.target.value))}
               />
               <small>{MOON_PHASES[moonPhase]}</small>
+              <button type="button" className="obs3-log-moon" onClick={logMoonPhase}>log phase</button>
             </div>
           </section>
 
@@ -603,6 +765,7 @@ export default function ObservatoryRoom() {
                       </g>
                     );
                   })}
+                  {rareEvent && <g className={`rare-sky-event rare-${rareEvent.id}`} onPointerDown={(e) => { e.stopPropagation(); showToast(rareEvent.title); }}><circle cx={skyCenter.x + 8} cy={skyCenter.y - 9} r="1.8"/><path d={`M ${skyCenter.x-2} ${skyCenter.y-2} L ${skyCenter.x+9} ${skyCenter.y-9}`} /><text x={skyCenter.x+11} y={skyCenter.y-10}>!</text></g>}
                 </svg>
                 <div className="obs3-crosshair" aria-hidden="true"><span/><i/></div>
                 <div className="obs3-scope-readout"><strong>{coordinates}</strong><span>ZOOM ×{zoom.toFixed(2)}</span></div>
@@ -611,6 +774,7 @@ export default function ObservatoryRoom() {
               <aside className="obs3-scope-side">
                 <div className="obs3-zoom-control"><label htmlFor="obsZoom">OPTICAL ZOOM · ×{zoom.toFixed(2)}</label><input id="obsZoom" type="range" min="1" max="2.6" step="0.05" value={zoom} onChange={(e) => setZoomClamped(Number(e.target.value))}/></div>
                 <div className="obs3-scope-actions"><button type="button" onClick={() => centerOn({x:28,y:25},1.5)}>find moon</button><button type="button" onClick={() => centerOn({x:193,y:28},1.6)}>galaxy hint</button><button type="button" onClick={() => setCatalogOpen(true)}>celestial log</button></div>
+                {rareEvent && <article className="obs3-rare-card"><small>RARE TELESCOPE EVENT</small><h2>{rareEvent.title}</h2><p>{rareEvent.description}</p><button type="button" onClick={() => setRareEvent(null)}>log & continue</button></article>}
                 {selectedConstellation ? (
                   <article className="obs3-discovery-card"><small>CONSTELLATION IDENTIFIED</small><h2>{selectedConstellation.name}</h2><strong>{selectedConstellation.nickname}</strong><p>{selectedConstellation.fact}</p><span>{selectedConstellation.season}</span></article>
                 ) : selectedObject ? (
@@ -637,6 +801,96 @@ export default function ObservatoryRoom() {
               <article key={c.id} className={foundConstellations.includes(c.id) ? "found" : ""}><div className="atlas-pattern" aria-hidden="true">✦ · ✧ ─ ✦ ╲ ✦</div><strong>{c.name}</strong><span>{c.nickname}</span><p>{c.fact}</p><small>{foundConstellations.includes(c.id) ? "✓ identified through telescope" : `best seen in ${c.season}`}</small></article>
             ))}</div>
             <button type="button" className="obs3-atlas-open-scope" onClick={() => { setAtlasOpen(false); setScopeOpen(true); }}>open telescope and search</button>
+          </section>
+        </div>
+      )}
+
+      {secretBookOpen && (
+        <div className="obs3-modal-backdrop magical" onMouseDown={() => { setSecretBookOpen(false); setSecretBookAwake(false); }}>
+          <section className={`obs3-secret-book ${secretBookAwake ? "is-awake" : ""}`} onMouseDown={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="The Rooms Between">
+            <button type="button" className="obs3-close dark" onClick={() => { setSecretBookOpen(false); setSecretBookAwake(false); }}>×</button>
+            <div className="secret-book-page left-page">
+              <small>PROPERTY OF NO ONE</small>
+              <h2>{secretBookAwake ? "The Rooms Between" : "Building Register"}</h2>
+              {!secretBookAwake ? <p>The page appears blank except for a faded floor plan and several impossible corrections.</p> : <>
+                <div className="arcane-wheel"><span/><i/><b>✦</b></div>
+                <p className="flicker-copy">The ink wakes when starlight touches it. Corridors redraw themselves around the rooms you have already entered.</p>
+                <button type="button" onClick={() => setSecretBookPage((p) => (p + 1) % 4)}>turn impossible page →</button>
+              </>}
+            </div>
+            <div className="secret-book-page right-page">
+              {!secretBookAwake ? <div className="sleeping-map">···</div> : <>
+                <div className="secret-room-map">
+                  {["NOSTALGIA","MIDNIGHT STUDY","OBSERVATORY","ARCADE","DREAM ROOM","TRAIN","GREENHOUSE"].map((room, i) => <span key={room} className={i <= secretBookPage + 2 ? "revealed" : "redacted"}>{i <= secretBookPage + 2 ? room : "████████"}</span>)}
+                </div>
+                <article className="building-secret">
+                  <small>PAGE {secretBookPage + 1}</small>
+                  <p>{[
+                    "The hallway is not a corridor. It is a memory of one.",
+                    "One room appears only when observed from somewhere that should not have a window.",
+                    "The train stops at a platform that does not exist on any timetable.",
+                    "When every fragment is returned, the building remembers its final door."
+                  ][secretBookPage]}</p>
+                </article>
+              </>}
+            </div>
+          </section>
+        </div>
+      )}
+
+      {projectorPanelOpen && (
+        <div className="obs3-modal-backdrop" onMouseDown={() => setProjectorPanelOpen(false)}>
+          <section className="obs3-projector-modal" onMouseDown={(e) => e.stopPropagation()}>
+            <button type="button" className="obs3-close" onClick={() => setProjectorPanelOpen(false)}>×</button>
+            <small>BRASS CONSTELLATION PROJECTOR</small><h2>Paint the dome with light</h2>
+            <div className="projector-modes">
+              {(["constellations","solar","rooms"] as const).map((mode) => <button key={mode} className={projectorMode===mode?"active":""} onClick={()=>setProjectorMode(mode)}>{mode}</button>)}
+            </div>
+            <div className={`projector-preview mode-${projectorMode}`}>{projectorMode === "constellations" ? "✦  Orion   ✧ Cassiopeia   ✦ Lyra   ✧ Pegasus" : projectorMode === "solar" ? "☉  · Mercury  · Venus  · Earth  · Mars  · Jupiter  · Saturn" : "01 · 02 · 04 · ? · 06 · 07"}</div>
+            <button type="button" className="obs3-primary small" onClick={() => { setProjectorOn(true); setProjectorPanelOpen(false); showToast(`${projectorMode} projection spread across the dome.`); }}>project onto room</button>
+            {projectorOn && <button type="button" className="obs3-secondary" onClick={() => setProjectorOn(false)}>switch projector off</button>}
+          </section>
+        </div>
+      )}
+
+      {orreryOpen && (
+        <div className="obs3-modal-backdrop" onMouseDown={() => setOrreryOpen(false)}>
+          <section className="obs3-orrery-modal" onMouseDown={(e)=>e.stopPropagation()}>
+            <button type="button" className="obs3-close" onClick={()=>setOrreryOpen(false)}>×</button>
+            <small>MECHANICAL ORRERY</small><h2>Interactive Solar System</h2><p>Move the planets, advance time, and click a world to inspect it.</p>
+            <div className="solar-system-stage">
+              <span className="solar-sun">☉</span>
+              {ORRERY_PLANETS.map((planet) => {
+                const angle = orreryAngles[planet.id] ?? 0;
+                return <button key={planet.id} type="button" className={`solar-planet planet-${planet.id}`} style={{"--orbit": `${planet.orbit * 4}px`, "--angle": `${angle}deg`} as CSSProperties} onClick={()=>setSelectedPlanet(planet)} title={planet.name}><span>{planet.symbol}</span></button>
+              })}
+            </div>
+            <div className="orrery-controls"><button onClick={()=>advanceOrrery(30)}>+30 days</button><button onClick={()=>advanceOrrery(180)}>+180 days</button><button onClick={()=>setOrreryRunning((v)=>!v)}>{orreryRunning?"pause mechanism":"resume mechanism"}</button></div>
+            <article className="planet-card"><h3>{selectedPlanet.name}</h3><p>{selectedPlanet.fact}</p><label>orbit position <input type="range" min="0" max="359" value={orreryAngles[selectedPlanet.id] ?? 0} onChange={(e)=>setPlanetAngle(selectedPlanet.id, Number(e.target.value))}/></label></article>
+          </section>
+        </div>
+      )}
+
+      {moonLogOpen && (
+        <div className="obs3-modal-backdrop" onMouseDown={()=>setMoonLogOpen(false)}>
+          <section className="obs3-moon-log" onMouseDown={(e)=>e.stopPropagation()}>
+            <button type="button" className="obs3-close" onClick={()=>setMoonLogOpen(false)}>×</button>
+            <small>LUNAR OBSERVATIONS</small><h2>Moon Notebook</h2>
+            <div className="moon-grid">{MOON_PHASES.map((name,index)=><button key={name} className={loggedMoonPhases.includes(index)?"logged":""} onClick={()=>setMoonPhase(index)}><MoonPhaseVisual phase={index}/><strong>{name}</strong><span>{loggedMoonPhases.includes(index)?"✓ logged":"set phase"}</span></button>)}</div>
+            <div className="moon-note"><b>APRIL 17 · 11:47 PM</b><p>“Something crossed the Moon, but the timing did not match any aircraft or satellite in the log.”</p></div>
+          </section>
+        </div>
+      )}
+
+      {ladderOpen && (
+        <div className="obs3-modal-backdrop" onMouseDown={()=>setLadderOpen(false)}>
+          <section className="obs3-ladder-modal" onMouseDown={(e)=>e.stopPropagation()}>
+            <button type="button" className="obs3-close" onClick={()=>setLadderOpen(false)}>×</button>
+            <small>DOME MAINTENANCE PLATFORM</small><h2>Above the Bookshelves</h2>
+            <div className="ladder-window">✦　·　✧　　☾　　·　✦</div>
+            <p>A dusty box contains spare eyepieces, an old photograph of the hallway, and a message scratched into the wood:</p>
+            <blockquote>DO NOT TRUST THE SKY ON APRIL 17.</blockquote>
+            <p>{catMood >= 5 ? "A tiny brass star token is missing from the box. The cat looks deeply innocent." : "There is a cat-sized trail through the dust."}</p>
           </section>
         </div>
       )}
