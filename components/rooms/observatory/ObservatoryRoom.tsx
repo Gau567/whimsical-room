@@ -173,6 +173,44 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
 
+function MoonPhaseVisual({ phase }: { phase: number }) {
+  const safePhase = clamp(phase, 0, 7);
+  const illuminated = [0.02, 0.25, 0.5, 0.75, 1, 0.75, 0.5, 0.25][safePhase];
+  const waxing = safePhase <= 4;
+  const radius = 44;
+  const litWidth = Math.max(2, illuminated * radius * 2);
+  const litX = waxing ? radius * 2 - litWidth : 0;
+
+  return (
+    <svg className={`moon-phase-svg phase-${safePhase}`} viewBox="0 0 100 100" aria-label={`Moon phase: ${MOON_PHASES[safePhase]}`} role="img">
+      <defs>
+        <clipPath id="obsMoonClip"><circle cx="50" cy="50" r="44" /></clipPath>
+        <radialGradient id="obsMoonGlow" cx="38%" cy="32%" r="70%">
+          <stop offset="0" stopColor="#fff5c9" />
+          <stop offset="1" stopColor="#e7d7aa" />
+        </radialGradient>
+      </defs>
+      <circle cx="50" cy="50" r="44" fill="#162640" />
+      {safePhase === 4 ? (
+        <circle cx="50" cy="50" r="44" fill="url(#obsMoonGlow)" />
+      ) : safePhase !== 0 ? (
+        <g clipPath="url(#obsMoonClip)">
+          <rect x={litX} y="6" width={litWidth} height="88" fill="url(#obsMoonGlow)" />
+          <ellipse
+            cx={waxing ? litX : litWidth}
+            cy="50"
+            rx={Math.max(2, 18 + Math.abs(0.5 - illuminated) * 30)}
+            ry="44"
+            fill={[1, 2, 3].includes(safePhase) ? "#162640" : "url(#obsMoonGlow)"}
+            opacity="0.72"
+          />
+        </g>
+      ) : null}
+      <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,.18)" strokeWidth="1" />
+    </svg>
+  );
+}
+
 export default function ObservatoryRoom() {
   const {
     returnToHub,
@@ -454,7 +492,21 @@ export default function ObservatoryRoom() {
               <span className="globe-meridian"><span className="globe-ball"><i className="continent c1"/><i className="continent c2"/><i className="continent c3"/><i className="lat l1"/><i className="lat l2"/></span></span><span className="globe-axis"/><span className="globe-base"/><strong>WORLD GLOBE</strong><small>{globeSpinning ? "spinning…" : "click to spin"}</small>
             </button>
             <button type="button" className="obs3-journal" onClick={() => setJournalPage(0)}><strong>FIELD NOTES</strong><span>3 entries</span><small>open journal</small></button>
-            <div className="obs3-moon-phase"><strong>MOON PHASE</strong><span className={`moon-disc phase-${moonPhase}`}/><input aria-label="Moon phase" type="range" min="0" max="7" value={moonPhase} onChange={(e) => setMoonPhase(Number(e.target.value))}/><small>{MOON_PHASES[moonPhase]}</small></div>
+            <div className="obs3-moon-phase">
+              <strong>MOON PHASE</strong>
+              <MoonPhaseVisual phase={moonPhase} />
+              <input
+                aria-label="Moon phase"
+                type="range"
+                min="0"
+                max="7"
+                step="1"
+                value={moonPhase}
+                onInput={(e) => setMoonPhase(Number((e.target as HTMLInputElement).value))}
+                onChange={(e) => setMoonPhase(Number(e.target.value))}
+              />
+              <small>{MOON_PHASES[moonPhase]}</small>
+            </div>
           </section>
 
           <section className="obs3-celestial-lock">
@@ -514,15 +566,15 @@ export default function ObservatoryRoom() {
                       <g
                         key={constellation.id}
                         className={`sky-constellation ${found ? "is-found" : ""}`}
-                        onPointerDown={(e) => e.stopPropagation()}
-                        onClick={(e) => {
+                        onPointerDown={(e) => {
                           e.stopPropagation();
                           inspectConstellation(constellation);
                         }}
+                        onClick={(e) => e.stopPropagation()}
                       >
                         {found && constellation.lines.map(([a,b], index) => <line key={index} x1={constellation.stars[a].x} y1={constellation.stars[a].y} x2={constellation.stars[b].x} y2={constellation.stars[b].y} />)}
                         {constellation.stars.map((star,index) => <circle key={index} cx={star.x} cy={star.y} r={found ? .9 : .72} filter="url(#starGlow)" />)}
-                        <circle className="constellation-hit" cx={constellation.anchor.x} cy={constellation.anchor.y} r="8" />
+                        <circle className="constellation-hit" cx={constellation.anchor.x} cy={constellation.anchor.y} r="10" />
                         {found && <text x={constellation.anchor.x + 4} y={constellation.anchor.y - 5}>{constellation.name}</text>}
                       </g>
                     );
@@ -535,18 +587,18 @@ export default function ObservatoryRoom() {
                       <g
                       key={object.id}
                       className={`sky-object object-${object.kind} ${found ? "is-found" : ""} ${visibleEnough ? "is-resolvable" : ""}`}
-                      onPointerDown={(e) => e.stopPropagation()}
-                      onClick={(e) => {
+                      onPointerDown={(e) => {
                         e.stopPropagation();
                         inspectSkyObject(object);
                       }}
+                      onClick={(e) => e.stopPropagation()}
                     >
                         {object.kind === "moon" && <><circle cx={object.x} cy={object.y} r="5.7"/><circle className="moon-shadow" cx={object.x + 2.2} cy={object.y - .2} r="5.6"/></>}
                         {object.kind === "galaxy" && <><ellipse cx={object.x} cy={object.y} rx="8.5" ry="2.5"/><ellipse className="galaxy-core" cx={object.x} cy={object.y} rx="3" ry=".9"/></>}
                         {object.kind === "cluster" && Array.from({ length: 8 },(_,i)=><circle key={i} cx={object.x + ((i*7)%9)-4} cy={object.y + ((i*11)%8)-4} r=".62"/>)}
                         {object.kind === "star" && <circle cx={object.x} cy={object.y} r="1.2" filter="url(#starGlow)"/>}
                         {object.kind === "mystery" && <circle cx={object.x} cy={object.y} r=".65" className="mystery-dot"/>}
-                        <circle className="object-hit" cx={object.x} cy={object.y} r="5" />
+                        <circle className="object-hit" cx={object.x} cy={object.y} r="7" />
                         {found && <text x={object.x + 3} y={object.y - 3}>{object.name}</text>}
                       </g>
                     );

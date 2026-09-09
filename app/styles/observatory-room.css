@@ -534,3 +534,48 @@
   .atlas-guide-grid { grid-template-columns: 1fr; }
   .obs3-atlas-modal { padding: 28px 18px; }
 }
+
+/* =========================================================
+   V6.1 INTERACTION PATCH — moon phases + sky hit targets
+   ========================================================= */
+.moon-phase-svg{
+  display:block;
+  width:96px;
+  height:96px;
+  flex:0 0 auto;
+  filter:drop-shadow(0 0 18px rgba(238,227,196,.08));
+}
+.obs3-moon-phase input{
+  position:relative;
+  z-index:3;
+  width:94%;
+  min-height:24px;
+  cursor:pointer;
+  touch-action:pan-x;
+}
+.obs3-moon-phase small{
+  min-height:18px;
+  font-size:13px!important;
+  text-transform:lowercase;
+}
+
+/* The telescope is draggable, but interactive sky targets always win the
+   pointer event. This prevents drag capture from swallowing discoveries. */
+.sky-constellation,
+.sky-object{
+  pointer-events:all;
+}
+.constellation-hit,
+.object-hit{
+  pointer-events:all!important;
+  fill:rgba(255,255,255,.002)!important;
+  stroke:rgba(222,190,113,.08);
+  stroke-width:.35;
+}
+.sky-constellation:hover .constellation-hit,
+.sky-constellation:focus .constellation-hit,
+.sky-object:hover .object-hit{
+  stroke:rgba(235,205,126,.6)!important;
+  stroke-width:.65!important;
+  stroke-dasharray:1.4;
+}
