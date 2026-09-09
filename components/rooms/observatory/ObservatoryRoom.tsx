@@ -334,6 +334,13 @@ export default function ObservatoryRoom() {
 
   function handleScopePointerDown(event: ReactPointerEvent<SVGSVGElement>) {
     if (event.button !== 0) return;
+
+    // Do not start a telescope drag when the player is clicking an
+    // interactive constellation/object. Pointer capture here was stealing
+    // the click from the SVG <g> elements.
+    const target = event.target as SVGElement;
+    if (target.closest?.(".sky-constellation, .sky-object")) return;
+
     event.currentTarget.setPointerCapture(event.pointerId);
     dragRef.current = {
       pointerId: event.pointerId,
@@ -504,7 +511,15 @@ export default function ObservatoryRoom() {
                   {CONSTELLATIONS.map((constellation) => {
                     const found = foundConstellations.includes(constellation.id);
                     return (
-                      <g key={constellation.id} className={`sky-constellation ${found ? "is-found" : ""}`} onClick={(e) => { e.stopPropagation(); inspectConstellation(constellation); }}>
+                      <g
+                        key={constellation.id}
+                        className={`sky-constellation ${found ? "is-found" : ""}`}
+                        onPointerDown={(e) => e.stopPropagation()}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          inspectConstellation(constellation);
+                        }}
+                      >
                         {found && constellation.lines.map(([a,b], index) => <line key={index} x1={constellation.stars[a].x} y1={constellation.stars[a].y} x2={constellation.stars[b].x} y2={constellation.stars[b].y} />)}
                         {constellation.stars.map((star,index) => <circle key={index} cx={star.x} cy={star.y} r={found ? .9 : .72} filter="url(#starGlow)" />)}
                         <circle className="constellation-hit" cx={constellation.anchor.x} cy={constellation.anchor.y} r="8" />
@@ -517,7 +532,15 @@ export default function ObservatoryRoom() {
                     const found = foundObjects.includes(object.id);
                     const visibleEnough = zoom >= object.minZoom;
                     return (
-                      <g key={object.id} className={`sky-object object-${object.kind} ${found ? "is-found" : ""} ${visibleEnough ? "is-resolvable" : ""}`} onClick={(e) => { e.stopPropagation(); inspectSkyObject(object); }}>
+                      <g
+                      key={object.id}
+                      className={`sky-object object-${object.kind} ${found ? "is-found" : ""} ${visibleEnough ? "is-resolvable" : ""}`}
+                      onPointerDown={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        inspectSkyObject(object);
+                      }}
+                    >
                         {object.kind === "moon" && <><circle cx={object.x} cy={object.y} r="5.7"/><circle className="moon-shadow" cx={object.x + 2.2} cy={object.y - .2} r="5.6"/></>}
                         {object.kind === "galaxy" && <><ellipse cx={object.x} cy={object.y} rx="8.5" ry="2.5"/><ellipse className="galaxy-core" cx={object.x} cy={object.y} rx="3" ry=".9"/></>}
                         {object.kind === "cluster" && Array.from({ length: 8 },(_,i)=><circle key={i} cx={object.x + ((i*7)%9)-4} cy={object.y + ((i*11)%8)-4} r=".62"/>)}
