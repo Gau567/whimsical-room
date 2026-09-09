@@ -1122,3 +1122,254 @@
   .obs3-completion-steps{grid-template-columns:repeat(2,minmax(0,1fr))}
   .obs3-completion-head{align-items:start;flex-direction:column}
 }
+
+/* =========================================================
+   OBSERVATORY V12 — COMPLETION / CELESTIAL DRAWER LAYOUT FIX
+   Desktop room geometry is rebalanced so the V11 completion
+   console does not collide with the right furniture column,
+   and the unlocked celestial drawer remains fully reachable.
+========================================================= */
+
+@media (min-width: 1201px) {
+  /* Give the new completion sequence enough vertical breathing room. */
+  .obs3-room {
+    min-height: 1080px;
+  }
+
+  /* Keep the three room zones genuinely separate. */
+  .obs3-left-zone {
+    left: 3%;
+    width: 26.5%;
+    top: 42%;
+    bottom: 3%;
+  }
+
+  .obs3-center-zone {
+    left: 29.5%;
+    width: 39%;
+    top: 42%;
+    bottom: 3%;
+    padding-inline: 8px;
+    overflow: visible;
+  }
+
+  .obs3-right-zone {
+    right: 2.5%;
+    width: 28%;
+    top: 42%;
+    bottom: 3%;
+
+    display: grid;
+    grid-template-rows: 104px 238px minmax(238px, auto);
+    gap: 12px;
+    align-content: stretch;
+    overflow: visible;
+  }
+
+  /* Reassert normal flow for all right-column furniture. */
+  .obs3-right-zone > .obs3-orrery-shelf,
+  .obs3-right-zone > .obs3-desk,
+  .obs3-right-zone > .obs3-celestial-lock {
+    position: relative !important;
+    inset: auto !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    width: 100%;
+    height: 100% !important;
+    min-height: 0;
+    box-sizing: border-box;
+  }
+
+  .obs3-orrery-shelf {
+    min-height: 104px;
+  }
+
+  .obs3-desk {
+    min-height: 238px;
+    overflow: visible;
+  }
+
+  /* Slightly tighten furniture so labels stay inside the desk. */
+  .obs3-globe {
+    min-height: 208px;
+  }
+
+  .globe-meridian {
+    width: 126px;
+    height: 126px;
+  }
+
+  .globe-axis {
+    top: 121px;
+    height: 39px;
+  }
+
+  .obs3-journal {
+    width: min(100%, 124px);
+    min-height: 155px;
+    margin-bottom: 8px;
+  }
+
+  .obs3-moon-phase {
+    min-height: 204px;
+    justify-content: center;
+  }
+
+  /* The lock now owns a full row instead of floating over the desk. */
+  .obs3-celestial-lock {
+    min-height: 238px !important;
+    padding: 14px;
+    overflow: visible;
+    z-index: 8;
+  }
+
+  .obs3-lock-buttons {
+    margin-top: 10px;
+    gap: 7px;
+  }
+
+  .obs3-lock-buttons button {
+    min-height: 66px;
+  }
+
+  .obs3-lock-buttons span {
+    font-size: 21px;
+  }
+
+  /* Most important fix: opened drawer gets real space and remains clickable. */
+  .obs3-secret-drawer {
+    position: relative;
+    z-index: 10;
+    min-height: 66px;
+    margin-top: 10px;
+    padding: 10px 12px;
+    overflow: visible;
+    transition: min-height .25s ease, background .25s ease, box-shadow .25s ease;
+  }
+
+  .obs3-secret-drawer.is-open {
+    min-height: 116px;
+    background: #171217;
+    border: 1px solid rgba(224, 189, 115, .22);
+    box-shadow: inset 0 10px 24px rgba(0,0,0,.38), 0 8px 18px rgba(0,0,0,.18);
+  }
+
+  .obs3-secret-drawer.is-open strong,
+  .obs3-secret-drawer.is-open p,
+  .obs3-secret-drawer.is-open button {
+    position: relative;
+    z-index: 11;
+  }
+
+  .obs3-secret-drawer.is-open button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    margin-top: 5px;
+    padding: 9px 14px;
+    pointer-events: auto;
+  }
+
+  /* Completion console stays entirely inside the telescope column. */
+  .obs3-completion-console {
+    position: relative;
+    z-index: 9;
+    width: min(520px, 96%);
+    margin: 14px auto 0;
+    padding: 13px 14px;
+    flex-shrink: 0;
+  }
+
+  .obs3-completion-head {
+    gap: 10px;
+    margin-bottom: 9px;
+  }
+
+  .obs3-completion-head strong {
+    font-size: 14px;
+  }
+
+  .obs3-completion-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .obs3-completion-steps span {
+    min-height: 38px;
+    padding: 6px 7px;
+    font-size: 8px;
+  }
+
+  .obs3-star-compartment,
+  .obs3-star-fragment-display {
+    margin-top: 10px;
+    padding: 10px 12px;
+  }
+
+  /* Pull telescope controls slightly upward to make room for progression UI. */
+  .obs3-primary {
+    margin-bottom: 112px;
+  }
+
+  .obs3-scope-status {
+    margin: -98px 0 78px;
+  }
+}
+
+/* Tablet: force the lock beneath the furniture rather than beside it. */
+@media (min-width: 761px) and (max-width: 1200px) {
+  .obs3-room {
+    min-height: 1460px;
+    overflow: hidden;
+  }
+
+  .obs3-right-zone {
+    height: auto;
+    min-height: 650px;
+    grid-template-columns: 1fr 1.15fr;
+    align-content: start;
+  }
+
+  .obs3-celestial-lock {
+    grid-column: 1 / -1;
+    min-height: 300px;
+    margin-top: 0;
+    overflow: visible;
+  }
+
+  .obs3-secret-drawer.is-open {
+    min-height: 120px;
+  }
+
+  .obs3-completion-console {
+    width: min(560px, 94%);
+  }
+}
+
+/* Mobile already stacks; just guarantee drawer access. */
+@media (max-width: 760px) {
+  .obs3-room {
+    min-height: 2020px;
+  }
+
+  .obs3-celestial-lock {
+    position: relative !important;
+    overflow: visible;
+    min-height: 330px;
+  }
+
+  .obs3-secret-drawer.is-open {
+    min-height: 128px;
+  }
+
+  .obs3-completion-console {
+    width: min(94%, 520px);
+  }
+
+  .obs3-completion-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
