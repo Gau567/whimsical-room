@@ -1,0 +1,394 @@
+/* =========================================================
+   WORLD HALLWAY V2
+   Import from app/layout.tsx AFTER world.css.
+   All selectors are namespaced so this can stay separate.
+========================================================= */
+
+.world-hall-v2 {
+  --hall-cream: #eee1cf;
+  --hall-muted: #a8959f;
+  --hall-wall: #261929;
+  --hall-wall-2: #17121d;
+  --hall-wood: #4a302d;
+  --hall-wood-dark: #261b1d;
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+  padding: 42px clamp(18px, 4vw, 68px) 150px;
+  color: var(--hall-cream);
+  background:
+    radial-gradient(circle at 50% 5%, rgba(112, 79, 118, .18), transparent 32%),
+    linear-gradient(180deg, #1c1421 0%, #130f17 100%);
+}
+
+.world-hall-v2-grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: .07;
+  background-image: radial-gradient(circle, rgba(255,255,255,.42) .5px, transparent .65px);
+  background-size: 5px 5px;
+}
+
+.world-hall-v2-ceiling-glow {
+  position: absolute;
+  left: 50%;
+  top: -130px;
+  width: 700px;
+  height: 310px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(ellipse, rgba(210, 177, 120, .14), transparent 68%);
+}
+
+.world-hall-v2-header {
+  position: relative;
+  z-index: 5;
+  margin: 0 auto 42px;
+  text-align: center;
+}
+
+.world-hall-v2-header p {
+  margin: 0;
+  font: 500 16px/1 var(--font-hand), cursive;
+  color: #c08ca5;
+}
+
+.world-hall-v2-header h1 {
+  margin: 3px 0 7px;
+  font: 700 clamp(34px, 5vw, 58px)/1 var(--font-serif), serif;
+  letter-spacing: .06em;
+}
+
+.world-hall-v2-header span {
+  font: 600 8px/1 var(--font-mono), monospace;
+  letter-spacing: .14em;
+  color: rgba(238,225,207,.45);
+}
+
+.world-hall-v2-scene {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: minmax(250px, .9fr) minmax(240px, .58fr) minmax(250px, .9fr);
+  gap: clamp(25px, 4vw, 70px);
+  width: min(1320px, 100%);
+  margin: auto;
+  padding: 48px clamp(18px, 3vw, 42px) 70px;
+  border: 1px solid rgba(232,207,178,.11);
+  border-radius: 20px;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.015), transparent 16% 84%, rgba(255,255,255,.015)),
+    linear-gradient(180deg, #2c1d31 0 73%, #17131a 73% 100%);
+  box-shadow: inset 0 1px rgba(255,255,255,.025), 0 35px 90px rgba(0,0,0,.34);
+}
+
+.world-hall-v2-scene::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 27%;
+  height: 9px;
+  background: #4a302c;
+  box-shadow: 0 4px 9px rgba(0,0,0,.2);
+}
+
+.world-hall-v2-wall {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+.world-hall-v2-center {
+  position: relative;
+  min-height: 850px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ---------- doors ---------- */
+.room-door-v2 {
+  --door-accent: #d5a55d;
+  position: relative;
+  min-width: 0;
+  text-align: center;
+}
+.room-door-v2-rose { --door-accent: #c9829c; }
+.room-door-v2-amber { --door-accent: #d3a05d; }
+.room-door-v2-cyan { --door-accent: #6caab7; }
+.room-door-v2-blue { --door-accent: #718fc6; }
+.room-door-v2-violet { --door-accent: #9878bd; }
+.room-door-v2-copper { --door-accent: #bd795c; }
+.room-door-v2-green { --door-accent: #7b9e75; }
+
+.room-door-v2-heading {
+  width: min(210px, 92%);
+  margin: 0 auto 7px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font: 700 7px/1 var(--font-mono), monospace;
+  letter-spacing: .13em;
+  color: rgba(236,222,206,.46);
+}
+.room-door-v2-heading i {
+  font-style: normal;
+  color: color-mix(in srgb, var(--door-accent) 76%, white 24%);
+  opacity: .65;
+}
+
+.room-door-v2-door {
+  position: relative;
+  width: min(210px, 92%);
+  height: 255px;
+  margin: auto;
+  padding: 0;
+  overflow: hidden;
+  border: 9px solid #24191c;
+  border-radius: 4px 4px 2px 2px;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.04), transparent 24%),
+    #563934;
+  color: var(--hall-cream);
+  box-shadow:
+    inset 0 0 0 2px rgba(194,144,116,.15),
+    0 20px 28px rgba(0,0,0,.27);
+  cursor: pointer;
+  transition: transform .18s ease, filter .18s ease, box-shadow .2s ease;
+}
+
+.room-door-v2-door:not(:disabled):hover {
+  transform: translateY(-4px);
+  box-shadow:
+    inset 0 0 0 2px rgba(194,144,116,.15),
+    0 0 34px color-mix(in srgb, var(--door-accent) 20%, transparent),
+    0 23px 32px rgba(0,0,0,.31);
+}
+
+.room-door-v2-door:disabled {
+  cursor: not-allowed;
+  filter: saturate(.43) brightness(.63);
+}
+
+.room-door-v2-panels {
+  position: absolute;
+  inset: 18px 17px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1.2fr;
+  gap: 10px;
+}
+.room-door-v2-panels i {
+  border: 2px solid rgba(35,22,24,.44);
+  background: rgba(38,24,26,.1);
+  box-shadow: inset 0 0 15px rgba(0,0,0,.09);
+}
+
+.room-door-v2-numberplate {
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  z-index: 3;
+  transform: translate(-50%,-50%);
+  min-width: 48px;
+  padding: 5px 8px;
+  border: 1px solid rgba(229,207,178,.16);
+  background: #2b1d20;
+  font: 700 9px/1 var(--font-mono), monospace;
+  letter-spacing: .15em;
+  color: rgba(239,224,207,.62);
+}
+
+.room-door-v2-handle {
+  position: absolute;
+  z-index: 4;
+  right: 20px;
+  top: 54%;
+  width: 11px;
+  height: 11px;
+  border: 2px solid #6b553a;
+  border-radius: 50%;
+  background: #d0aa64;
+  box-shadow: 0 0 9px rgba(222,178,96,.22);
+}
+
+.room-door-v2-light {
+  position: absolute;
+  left: 13%;
+  right: 13%;
+  bottom: -4px;
+  height: 8px;
+  opacity: 0;
+  background: var(--door-accent);
+  filter: blur(5px);
+  transition: opacity .2s ease;
+}
+.room-door-v2.is-unlocked .room-door-v2-light { opacity: .72; }
+.room-door-v2.has-world-clue .room-door-v2-light { opacity: .42; }
+
+.room-door-v2-lock {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  z-index: 5;
+  transform: translateX(-50%);
+  padding: 5px 9px;
+  border: 1px solid rgba(240,220,194,.13);
+  background: rgba(27,18,21,.78);
+  font: 700 6px/1 var(--font-mono), monospace;
+  letter-spacing: .17em;
+  color: rgba(238,221,203,.52);
+}
+.room-door-v2.is-unlocked .room-door-v2-lock { color: var(--door-accent); }
+
+.room-door-v2-copy { margin-top: 10px; }
+.room-door-v2-copy strong {
+  display: block;
+  font: 600 19px/1.05 var(--font-hand), cursive;
+  color: #eee0cf;
+}
+.room-door-v2-copy small {
+  display: block;
+  max-width: 230px;
+  margin: 5px auto 0;
+  min-height: 18px;
+  font: 500 8px/1.35 var(--font-serif), serif;
+  color: rgba(234,218,202,.47);
+}
+.room-door-v2-detail {
+  min-height: 22px;
+  margin-top: 7px;
+  font: 700 7px/1 var(--font-mono), monospace;
+  letter-spacing: .09em;
+  color: var(--door-accent);
+}
+
+/* ---------- room-specific clues ---------- */
+.hall-door-sound { font-size: 15px; animation: hall-v2-sound 2.2s ease-in-out infinite; }
+@keyframes hall-v2-sound { 50% { opacity: .35; transform: translateY(-2px); } }
+
+.hall-arcade-leds { display:inline-flex; gap:4px; }
+.hall-arcade-leds i { width:4px;height:4px;border-radius:50%;background:#56767b; }
+
+.hall-dream-moon { font-size:15px; opacity:.55; }
+.hall-study-mark { display:inline-block; transform:rotate(-4deg); padding:4px 7px; background:#d6c49c; color:#4b3932; }
+
+.hall-observatory-lens i {
+  display:inline-block;
+  width:10px;height:10px;
+  margin-right:5px;
+  vertical-align:-2px;
+  border:2px solid #8ea7d2;
+  border-radius:50%;
+  box-shadow:inset 0 0 0 2px #29374d,0 0 9px rgba(117,153,209,.35);
+}
+
+.hall-train-ticket {
+  display:inline-block;
+  padding:5px 8px;
+  transform:rotate(-2deg);
+  background:#d2bd8b;
+  color:#513830;
+  box-shadow:0 4px 8px rgba(0,0,0,.2);
+}
+
+.hall-greenhouse-vine { color:#91b086; }
+.hall-door-greenhouse.has-world-clue .room-door-v2-door::after {
+  content:"";
+  position:absolute;
+  left:-8px;top:12px;
+  width:30px;height:125px;
+  border-left:3px solid #567150;
+  border-radius:50%;
+  transform:rotate(-8deg);
+  opacity:.72;
+}
+
+/* ---------- centre furniture ---------- */
+.hall-v2-clock {
+  width:92px;height:92px;
+  display:grid;place-items:center;
+  margin-top:18px;
+  border:8px solid #493337;
+  border-radius:50%;
+  background:#d4c8b6;
+  color:#403339;
+  box-shadow:0 12px 24px rgba(0,0,0,.23);
+}
+.hall-v2-clock span { font:700 15px/1 var(--font-mono),monospace; }
+.hall-v2-clock small { position:absolute; margin-top:34px; font:700 6px/1 var(--font-mono),monospace; opacity:.48; }
+
+.hall-v2-frame {
+  width:min(210px,100%);
+  margin-top:58px;
+  padding:22px 15px;
+  border:7px solid #36272d;
+  background:#171925;
+  text-align:center;
+  transform:rotate(-1deg);
+  box-shadow:0 12px 22px rgba(0,0,0,.2);
+}
+.hall-v2-frame span,.hall-v2-frame strong { display:block; }
+.hall-v2-frame span { font:700 6px var(--font-mono),monospace; letter-spacing:.15em; color:#a17b93; }
+.hall-v2-frame strong { margin-top:8px; font:700 11px/1.4 var(--font-mono),monospace; color:#c9bdd0; }
+
+.hall-v2-console { width:min(230px,100%); margin-top:84px; }
+.hall-v2-console-top {
+  position:relative;
+  height:15px;
+  border-radius:2px;
+  background:#56372f;
+  box-shadow:0 6px 12px rgba(0,0,0,.26);
+}
+.hall-v2-console-top::before,.hall-v2-console-top::after {
+  content:"";position:absolute;top:14px;width:13px;height:116px;background:#382522;
+}
+.hall-v2-console-top::before{left:18px}.hall-v2-console-top::after{right:18px}
+.hall-v2-lamp { position:absolute;left:22px;bottom:12px;width:42px;height:24px;border-radius:60% 60% 8px 8px;background:#6b7560;box-shadow:0 0 24px rgba(204,174,101,.12); }
+.hall-v2-bowl { position:absolute;right:25px;bottom:8px;color:#aa8b63;font-size:24px; }
+
+.hall-v2-note-stack { position:relative;z-index:2;margin:23px 25px 0;display:grid;gap:8px; }
+.hall-v2-note-stack article { padding:9px;background:#bcae8d;color:#4e3d3b;opacity:.4;transform:rotate(-1deg); }
+.hall-v2-note-stack article:nth-child(2){transform:rotate(1.5deg);background:#9ea9aa}.hall-v2-note-stack article.is-visible{opacity:1}.hall-v2-note-stack small{font:700 5.5px var(--font-mono),monospace;letter-spacing:.12em}.hall-v2-note-stack p{margin:4px 0 0;font:600 8px var(--font-hand),cursive}
+
+.hall-v2-runner { position:absolute;bottom:20px;width:190px;height:300px;transform:perspective(500px) rotateX(64deg);transform-origin:bottom;background:#302331;opacity:.78;overflow:hidden; }
+.hall-v2-runner i { position:absolute;top:0;bottom:0;width:12px;background:#8e745f;opacity:.38; }
+.hall-v2-runner i:nth-child(1){left:15%}.hall-v2-runner i:nth-child(2){left:29%}.hall-v2-runner i:nth-child(3){left:44%}.hall-v2-runner i:nth-child(4){left:59%}.hall-v2-runner i:nth-child(5){left:73%}.hall-v2-runner i:nth-child(6){left:86%}
+
+.hall-v2-floor-whisper { position:absolute;bottom:12px;z-index:4;margin:0;font:600 6.5px var(--font-mono),monospace;letter-spacing:.1em;color:rgba(226,211,196,.35);white-space:nowrap; }
+
+.world-hall-v2-end { grid-column:1/-1;width:min(300px,100%);margin:10px auto 0; }
+.world-hall-v2-end .room-door-v2-door { height:230px; }
+
+.world-hall-v2-status { grid-column:1/-1;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:-5px; }
+.world-hall-v2-status span { padding:5px 8px;border:1px solid rgba(230,206,179,.1);border-radius:999px;font:700 6px var(--font-mono),monospace;letter-spacing:.09em;color:rgba(232,217,199,.28); }
+.world-hall-v2-status span.is-active { color:#9db191;border-color:rgba(157,177,145,.22);background:rgba(101,130,93,.08); }
+
+@media (max-width: 900px) {
+  .world-hall-v2-scene { grid-template-columns:1fr 1fr; gap:45px 20px; }
+  .world-hall-v2-center { grid-column:1/-1;grid-row:2;min-height:560px; }
+  .world-hall-v2-wall-left { grid-column:1;grid-row:1; }
+  .world-hall-v2-wall-right { grid-column:2;grid-row:1; }
+  .world-hall-v2-end { grid-row:3; }
+  .hall-v2-frame { margin-top:28px; }
+  .hall-v2-console { margin-top:55px; }
+  .hall-v2-runner { height:180px; }
+}
+
+@media (max-width: 590px) {
+  .world-hall-v2 { padding-inline:10px; }
+  .world-hall-v2-scene { grid-template-columns:1fr;padding-inline:10px; }
+  .world-hall-v2-wall-left,.world-hall-v2-wall-right,.world-hall-v2-center,.world-hall-v2-end { grid-column:1;grid-row:auto; }
+  .world-hall-v2-wall { gap:38px; }
+  .world-hall-v2-center { min-height:520px; }
+  .room-door-v2-door { height:235px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hall-door-sound { animation:none; }
+  .room-door-v2-door { transition:none; }
+}

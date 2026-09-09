@@ -1,61 +1,177 @@
 "use client";
 
 import RoomDoor from "./RoomDoor";
-import { WORLD_ROOMS } from "@/lib/world/worldTypes";
+import { useWorld } from "@/lib/world/WorldContext";
 
 export default function WorldHub() {
-  const nostalgia = WORLD_ROOMS.find((room) => room.id === "nostalgia")!;
-  const study = WORLD_ROOMS.find((room) => room.id === "study")!;
-  const arcade = WORLD_ROOMS.find((room) => room.id === "arcade")!;
-  const observatory = WORLD_ROOMS.find((room) => room.id === "observatory")!;
-  const dream = WORLD_ROOMS.find((room) => room.id === "dream")!;
-  const train = WORLD_ROOMS.find((room) => room.id === "train")!;
-  const greenhouse = WORLD_ROOMS.find((room) => room.id === "greenhouse")!;
+  const {
+    hasItem,
+    hasClue,
+    isRoomUnlocked,
+    completedQuests,
+  } = useWorld();
+
+  const hasLens = hasItem("telescope-lens");
+  const hasKey = hasItem("small-brass-key") || hasItem("brass-key");
+  const hasTrainClue = hasClue("train-platform-seven");
+  const solvedStudy = completedQuests.includes("study-locked-drawer");
+
+  const observatoryOpen = isRoomUnlocked("observatory");
+  const greenhouseOpen = isRoomUnlocked("greenhouse");
+  const trainOpen = isRoomUnlocked("train");
 
   return (
-    <main className="world-hub">
-      <div className="world-hub-grain" aria-hidden="true" />
+    <main className="world-hall-v2">
+      <div className="world-hall-v2-grain" aria-hidden="true" />
+      <div className="world-hall-v2-ceiling-glow" aria-hidden="true" />
 
-      <header className="world-hub-title">
+      <header className="world-hall-v2-header">
         <p>somewhere between</p>
-        <h1>THE ROOMS</h1>
-        <span>every door remembers something</span>
+        <h1>The Rooms</h1>
+        <span>the hallway remembers what you bring back</span>
       </header>
 
-      <section className="hallway" aria-label="Hallway of rooms">
-        <div className="hallway-side hallway-left">
-          <RoomDoor room={nostalgia} />
-          <RoomDoor room={arcade} />
-          <RoomDoor room={dream} />
+      <section className="world-hall-v2-scene" aria-label="Hallway between rooms">
+        <div className="world-hall-v2-wall world-hall-v2-wall-left">
+          <RoomDoor
+            room="nostalgia"
+            number="01"
+            title="The Nostalgia Room"
+            subtitle="music leaks softly beneath the door"
+            accent="rose"
+            className="hall-door-nostalgia"
+            detail={<span className="hall-door-sound">♪</span>}
+          />
+
+          <RoomDoor
+            room="arcade"
+            number="03"
+            title="Arcade Room"
+            subtitle="something in there is still running"
+            lockedHint="no power reaches this door yet"
+            accent="cyan"
+            className="hall-door-arcade"
+            detail={<span className="hall-arcade-leds"><i /><i /><i /></span>}
+          />
+
+          <RoomDoor
+            room="dream"
+            number="05"
+            title="Dream Room"
+            subtitle="you do not remember this door being here"
+            lockedHint="the number keeps changing when you blink"
+            accent="violet"
+            className="hall-door-dream"
+            detail={<span className="hall-dream-moon">☾</span>}
+          />
         </div>
 
-        <div className="hallway-center" aria-hidden="true">
-          <div className="hallway-clock">
+        <div className="world-hall-v2-center">
+          <div className="hall-v2-clock">
             <span>11:47</span>
+            <small>{hasTrainClue ? "departure?" : "stopped"}</small>
           </div>
 
-          <div className="hallway-frame hallway-frame-one">✦</div>
-          <div className="hallway-frame hallway-frame-two">☾</div>
-
-          <div className="hallway-table">
-            <span className="hallway-note">
-              SOME DOORS OPEN
-              <br />
-              FROM THE OTHER SIDE
-            </span>
+          <div className="hall-v2-frame hall-v2-frame-a">
+            <span>EVERY ROOM</span>
+            <strong>LEAVES SOMETHING BEHIND</strong>
           </div>
 
-          <div className="hallway-rug" />
+          <div className="hall-v2-console">
+            <div className="hall-v2-console-top">
+              <span className="hall-v2-lamp" />
+              <span className="hall-v2-bowl">◌</span>
+            </div>
+
+            <div className="hall-v2-note-stack">
+              <article className={solvedStudy ? "is-visible" : ""}>
+                <small>FOUND IN ROOM 02</small>
+                <p>{solvedStudy ? "04 / 17 opened something." : "the paper is blank."}</p>
+              </article>
+
+              <article className={hasTrainClue ? "is-visible" : ""}>
+                <small>SCRAWLED IN PENCIL</small>
+                <p>{hasTrainClue ? "PLATFORM 7 · 11:47" : "? ? ?"}</p>
+              </article>
+            </div>
+          </div>
+
+          <div className="hall-v2-runner" aria-hidden="true">
+            <i /><i /><i /><i /><i /><i />
+          </div>
+
+          <p className="hall-v2-floor-whisper">
+            {solvedStudy
+              ? "something in the hallway changed while you were away"
+              : "some doors open from the other side"}
+          </p>
         </div>
 
-        <div className="hallway-side hallway-right">
-          <RoomDoor room={study} />
-          <RoomDoor room={observatory} />
-          <RoomDoor room={train} />
+        <div className="world-hall-v2-wall world-hall-v2-wall-right">
+          <RoomDoor
+            room="study"
+            number="02"
+            title="Midnight Study"
+            subtitle="the banker lamp is still burning"
+            accent="amber"
+            className="hall-door-study"
+            detail={solvedStudy ? <span className="hall-study-mark">0417</span> : undefined}
+          />
+
+          <RoomDoor
+            room="observatory"
+            number="04"
+            title="Observatory"
+            subtitle="cold blue light spills beneath the door"
+            lockedHint={hasLens ? "the lens feels warm in your backpack" : "something optical is missing"}
+            accent="blue"
+            className={`hall-door-observatory ${hasLens ? "has-world-clue" : ""}`}
+            detail={
+              hasLens ? (
+                <span className="hall-observatory-lens">
+                  <i /> lens recognised
+                </span>
+              ) : undefined
+            }
+          />
+
+          <RoomDoor
+            room="train"
+            number="06"
+            title="Train Compartment"
+            subtitle="a distant announcement crackles beyond it"
+            lockedHint={hasTrainClue ? "a ticket has appeared beneath the door" : "departure unknown"}
+            accent="copper"
+            className={`hall-door-train ${hasTrainClue ? "has-world-clue" : ""}`}
+            detail={
+              hasTrainClue ? (
+                <span className="hall-train-ticket">11:47 · PLATFORM 7</span>
+              ) : undefined
+            }
+          />
         </div>
 
-        <div className="greenhouse-door">
-          <RoomDoor room={greenhouse} />
+        <div className="world-hall-v2-end">
+          <RoomDoor
+            room="greenhouse"
+            number="07"
+            title="Greenhouse"
+            subtitle="rain taps against glass somewhere beyond"
+            lockedHint={hasKey ? "a leaf-tagged key catches the light" : "the lock is unusually small"}
+            accent="green"
+            className={`hall-door-greenhouse ${hasKey ? "has-world-clue" : ""}`}
+            detail={
+              hasKey ? (
+                <span className="hall-greenhouse-vine">❧ brass key</span>
+              ) : undefined
+            }
+          />
+        </div>
+
+        <div className="world-hall-v2-status" aria-live="polite">
+          <span className={observatoryOpen ? "is-active" : ""}>◉ observatory</span>
+          <span className={trainOpen ? "is-active" : ""}>◉ train</span>
+          <span className={greenhouseOpen ? "is-active" : ""}>◉ greenhouse</span>
         </div>
       </section>
     </main>
