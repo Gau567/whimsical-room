@@ -17,6 +17,7 @@ import RoomNowPlaying from "@/components/RoomNowPlaying";
 import WorldHub from "@/components/world/WorldHub";
 import WorldHUD from "@/components/world/WorldHUD";
 import MidnightStudy from "@/components/rooms/study/MidnightStudy";
+import ObservatoryRoom from "@/components/rooms/observatory/ObservatoryRoom";
 
 import {
   MusicPlayerProvider,
@@ -87,12 +88,17 @@ function WorldApp() {
         <MidnightStudy />
       )}
 
+      {currentRoom === "observatory" && (
+      <ObservatoryRoom />
+    )}
+
 
       {/* FUTURE ROOMS */}
 
       {currentRoom !== "hub" &&
         currentRoom !== "nostalgia" &&
-        currentRoom !== "study" && (
+        currentRoom !== "study" && 
+        currentRoom !== "observatory" && (
           <FutureRoomPlaceholder
             roomName={currentRoom}
             onBack={returnToHub}

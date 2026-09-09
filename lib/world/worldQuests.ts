@@ -21,6 +21,12 @@ export const WORLD_QUESTS: QuestDefinition[] = [
     hint: "A brass-edged lens from the Study looks like it belongs to an optical instrument.",
   },
   {
+    id: "observatory-star-wheel",
+    title: "The Celestial Lock",
+    room: "Observatory",
+    hint: "The observatory journal describes three symbols in a very specific order.",
+  },
+  {
     id: "train-eleven-forty-seven",
     title: "11:47 · Platform Seven",
     room: "Train Compartment",

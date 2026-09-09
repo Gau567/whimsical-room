@@ -30,55 +30,24 @@ export type WorldClueId =
   | "study-radio"
   | "train-platform-seven"
   | "observatory-lens-found"
+  | "observatory-lens-installed"
+  | "observatory-constellation-solved"
+  | "observatory-coordinate-found"
   | "greenhouse-key-found";
 
 export type QuestId =
   | "study-locked-drawer"
   | "observatory-missing-lens"
+  | "observatory-star-wheel"
   | "train-eleven-forty-seven"
   | "greenhouse-small-key";
 
 export const WORLD_ROOMS: RoomInfo[] = [
-  {
-    id: "nostalgia",
-    number: "01",
-    name: "The Nostalgia Room",
-    subtitle: "music can be heard inside",
-  },
-  {
-    id: "study",
-    number: "02",
-    name: "Midnight Study",
-    subtitle: "the lamp is still on",
-  },
-  {
-    id: "arcade",
-    number: "03",
-    name: "Arcade Room",
-    subtitle: "something is still running",
-  },
-  {
-    id: "observatory",
-    number: "04",
-    name: "Observatory",
-    subtitle: "there is something in the sky",
-  },
-  {
-    id: "dream",
-    number: "05",
-    name: "Dream Room",
-    subtitle: "the door was not here before",
-  },
-  {
-    id: "train",
-    number: "06",
-    name: "Train Compartment",
-    subtitle: "departure unknown",
-  },
-  {
-    id: "greenhouse",
-    number: "07",
-    name: "Greenhouse",
-    subtitle: "rain against the glass",
-  },
+  { id: "nostalgia", number: "01", name: "The Nostalgia Room", subtitle: "music can be heard inside" },
+  { id: "study", number: "02", name: "Midnight Study", subtitle: "the lamp is still on" },
+  { id: "arcade", number: "03", name: "Arcade Room", subtitle: "something is still running" },
+  { id: "observatory", number: "04", name: "Observatory", subtitle: "there is something in the sky" },
+  { id: "dream", number: "05", name: "Dream Room", subtitle: "the door was not here before" },
+  { id: "train", number: "06", name: "Train Compartment", subtitle: "departure unknown" },
+  { id: "greenhouse", number: "07", name: "Greenhouse", subtitle: "rain against the glass" },
 ];
