@@ -82,8 +82,8 @@ type DragState = {
   startCenterY: number;
 };
 
-const SKY_WIDTH = 220;
-const SKY_HEIGHT = 140;
+const SKY_WIDTH = 360;
+const SKY_HEIGHT = 220;
 const BASE_VIEW_WIDTH = 108;
 const BASE_VIEW_HEIGHT = 76;
 
@@ -120,89 +120,87 @@ const CONSTELLATIONS: Constellation[] = [
   {
     id: "orion", name: "Orion", nickname: "The Hunter", season: "northern winter",
     fact: "Look for the three aligned stars of Orion's Belt. Betelgeuse marks a shoulder and Rigel a foot.",
-    anchor: { x: 58, y: 80 },
-    stars: [{x:49,y:65},{x:65,y:63},{x:54,y:76},{x:59,y:77},{x:64,y:78},{x:50,y:94},{x:69,y:97}],
+    anchor: { x: 63, y: 166 },
+    stars: [{x:52,y:149},{x:73,y:146},{x:57,y:160},{x:63,y:161},{x:69,y:162},{x:53,y:184},{x:77,y:188}],
     lines: [[0,2],[1,4],[2,3],[3,4],[2,5],[4,6]],
   },
   {
     id: "cassiopeia", name: "Cassiopeia", nickname: "The Queen", season: "northern autumn and winter",
     fact: "Five bright stars form Cassiopeia's unmistakable W or M shape.",
-    anchor: { x: 142, y: 35 },
-    stars: [{x:126,y:38},{x:134,y:29},{x:143,y:39},{x:153,y:27},{x:165,y:36}],
+    anchor: { x: 292, y: 38 },
+    stars: [{x:270,y:43},{x:280,y:31},{x:291,y:44},{x:304,y:28},{x:320,y:40}],
     lines: [[0,1],[1,2],[2,3],[3,4]],
   },
   {
     id: "ursa-major", name: "Ursa Major", nickname: "The Great Bear", season: "circumpolar in many northern skies",
     fact: "The Big Dipper is part of Ursa Major. Its outer bowl stars point toward Polaris.",
-    anchor: { x: 170, y: 77 },
-    stars: [{x:148,y:72},{x:157,y:67},{x:166,y:71},{x:174,y:78},{x:184,y:74},{x:194,y:67},{x:204,y:72}],
+    anchor: { x: 284, y: 116 },
+    stars: [{x:250,y:112},{x:262,y:103},{x:276,y:108},{x:287,y:119},{x:300,y:113},{x:316,y:102},{x:332,y:110}],
     lines: [[0,1],[1,2],[2,3],[3,4],[4,5],[5,6]],
   },
   {
     id: "cygnus", name: "Cygnus", nickname: "The Swan", season: "northern summer",
     fact: "Cygnus forms the Northern Cross. Deneb is one corner of the Summer Triangle.",
-    anchor: { x: 101, y: 34 },
-    stars: [{x:101,y:16},{x:101,y:28},{x:101,y:40},{x:101,y:54},{x:88,y:35},{x:116,y:35}],
+    anchor: { x: 180, y: 48 },
+    stars: [{x:180,y:20},{x:180,y:36},{x:180,y:51},{x:180,y:72},{x:159,y:50},{x:203,y:50}],
     lines: [[0,1],[1,2],[2,3],[4,2],[2,5]],
   },
   {
     id: "leo", name: "Leo", nickname: "The Lion", season: "northern spring",
     fact: "Leo's head forms a backward question-mark called the Sickle. Regulus sits near its base.",
-    anchor: { x: 92, y: 111 },
-    stars: [{x:75,y:107},{x:81,y:99},{x:90,y:101},{x:96,y:108},{x:91,y:118},{x:107,y:119},{x:121,y:112}],
+    anchor: { x: 172, y: 171 },
+    stars: [{x:147,y:166},{x:155,y:154},{x:168,y:157},{x:178,y:169},{x:170,y:182},{x:195,y:184},{x:215,y:173}],
     lines: [[0,1],[1,2],[2,3],[3,4],[4,0],[4,5],[5,6]],
   },
   {
     id: "scorpius", name: "Scorpius", nickname: "The Scorpion", season: "northern summer",
     fact: "Scorpius curves around reddish Antares, whose name means 'rival of Mars'.",
-    anchor: { x: 173, y: 117 },
-    stars: [{x:151,y:103},{x:159,y:109},{x:169,y:112},{x:178,y:115},{x:188,y:121},{x:197,y:129},{x:189,y:135},{x:180,y:132}],
+    anchor: { x: 313, y: 184 },
+    stars: [{x:279,y:162},{x:291,y:170},{x:304,y:174},{x:317,y:179},{x:331,y:188},{x:344,y:200},{x:334,y:209},{x:321,y:205}],
     lines: [[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,7]],
   },
-,
   {
     id: "lyra", name: "Lyra", nickname: "The Lyre", season: "northern summer",
     fact: "Lyra is a small constellation anchored by brilliant Vega, one of the brightest stars in the northern sky.",
-    anchor: { x: 128, y: 96 },
-    stars: [{x:124,y:85},{x:132,y:92},{x:127,y:101},{x:137,y:105},{x:141,y:96}],
+    anchor: { x: 225, y: 92 },
+    stars: [{x:218,y:77},{x:230,y:88},{x:222,y:102},{x:238,y:108},{x:245,y:95}],
     lines: [[0,1],[1,2],[2,3],[3,4],[4,1]],
   },
   {
     id: "taurus", name: "Taurus", nickname: "The Bull", season: "northern winter",
     fact: "Taurus contains orange Aldebaran and lies near the Pleiades. Its face is traced by the V-shaped Hyades.",
-    anchor: { x: 39, y: 46 },
-    stars: [{x:29,y:41},{x:36,y:47},{x:44,y:43},{x:48,y:51},{x:55,y:47},{x:60,y:39}],
+    anchor: { x: 72, y: 70 },
+    stars: [{x:55,y:64},{x:66,y:73},{x:79,y:67},{x:85,y:79},{x:98,y:73},{x:107,y:60}],
     lines: [[0,1],[1,2],[1,3],[3,4],[4,5]],
   },
   {
     id: "gemini", name: "Gemini", nickname: "The Twins", season: "northern winter",
     fact: "Gemini is marked by the bright twin stars Castor and Pollux, with two long chains of stars forming the twins' bodies.",
-    anchor: { x: 83, y: 25 },
-    stars: [{x:75,y:16},{x:86,y:15},{x:78,y:26},{x:88,y:28},{x:80,y:38},{x:90,y:40}],
+    anchor: { x: 118, y: 29 },
+    stars: [{x:105,y:18},{x:122,y:17},{x:110,y:31},{x:126,y:34},{x:113,y:49},{x:130,y:52}],
     lines: [[0,2],[2,4],[1,3],[3,5],[2,3]],
   },
   {
     id: "pegasus", name: "Pegasus", nickname: "The Winged Horse", season: "northern autumn",
     fact: "Pegasus is easy to begin with the Great Square: four bright stars forming a huge tilted box.",
-    anchor: { x: 181, y: 45 },
-    stars: [{x:169,y:36},{x:187,y:34},{x:190,y:52},{x:171,y:55},{x:202,y:43}],
+    anchor: { x: 286, y: 76 },
+    stars: [{x:266,y:62},{x:292,y:59},{x:296,y:87},{x:269,y:91},{x:317,y:73}],
     lines: [[0,1],[1,2],[2,3],[3,0],[1,4]],
   },
 ];
-
 const SKY_OBJECTS: SkyObject[] = [
-  { id: "moon", name: "The Moon", kind: "moon", x: 28, y: 25, minZoom: 1, short: "Earth's natural satellite", detail: "The dark plains are lunar maria: enormous ancient lava flows visible from Earth." },
-  { id: "andromeda", name: "Andromeda Galaxy", kind: "galaxy", x: 193, y: 28, minZoom: 1.15, short: "M31 · neighboring spiral galaxy", detail: "Andromeda is the nearest large galaxy to the Milky Way and appears as a soft elongated glow under dark skies." },
-  { id: "pleiades", name: "Pleiades", kind: "cluster", x: 30, y: 113, minZoom: 1.35, short: "M45 · open star cluster", detail: "The Pleiades are a young nearby cluster in Taurus. Several bright blue-white members are visible to the naked eye." },
-  { id: "polaris", name: "Polaris", kind: "star", x: 113, y: 11, minZoom: 1.7, short: "The North Star", detail: "Polaris lies close to the north celestial pole, so the northern sky appears to rotate around it." },
-  { id: "betelgeuse", name: "Betelgeuse", kind: "star", x: 49, y: 65, minZoom: 1.8, short: "Red supergiant in Orion", detail: "Betelgeuse is a huge evolved star whose warm colour is noticeably different from many nearby blue-white stars." },
-  { id: "rigel", name: "Rigel", kind: "star", x: 69, y: 97, minZoom: 1.8, short: "Blue supergiant in Orion", detail: "Rigel is one of Orion's brightest stars and marks the Hunter's foot." },
-  { id: "unknown", name: "Uncatalogued Object", kind: "mystery", x: 214, y: 126, minZoom: 2.25, short: "OBJECT NOT IN CATALOGUE", detail: "It shifts slightly between observations. The journal contains no matching entry." },
-  { id: "saturn", name: "Saturn", kind: "cluster", x: 152, y: 18, minZoom: 1.55, short: "Ringed gas giant", detail: "Saturn's rings are made mostly of countless icy particles. Even a modest telescope can reveal the planet's unmistakable flattened ring system." },
-  { id: "jupiter", name: "Jupiter", kind: "moon", x: 178, y: 102, minZoom: 1.4, short: "Largest planet in the Solar System", detail: "Jupiter's cloud bands and four bright Galilean moons make it one of the most rewarding telescope targets." },
-  { id: "mars", name: "Mars", kind: "star", x: 18, y: 72, minZoom: 1.35, short: "The Red Planet", detail: "Mars appears warm orange-red because iron minerals in its surface dust have oxidised." },
-  { id: "orion-nebula", name: "Orion Nebula", kind: "galaxy", x: 59, y: 83, minZoom: 1.75, short: "M42 · stellar nursery", detail: "The Orion Nebula is a vast cloud of glowing gas where new stars are forming, visible as a fuzzy patch beneath Orion's Belt." },
-  { id: "double-cluster", name: "Double Cluster", kind: "cluster", x: 149, y: 58, minZoom: 1.65, short: "NGC 869 + NGC 884", detail: "Two neighbouring open clusters in Perseus form a spectacular double spray of young stars." },
+  { id: "moon", name: "The Moon", kind: "moon", x: 42, y: 34, minZoom: 1, short: "Earth's natural satellite", detail: "The dark plains are lunar maria: enormous ancient lava flows visible from Earth." },
+  { id: "andromeda", name: "Andromeda Galaxy", kind: "galaxy", x: 326, y: 48, minZoom: 1.15, short: "M31 · neighboring spiral galaxy", detail: "Andromeda is the nearest large galaxy to the Milky Way and appears as a soft elongated glow under dark skies." },
+  { id: "pleiades", name: "Pleiades", kind: "cluster", x: 48, y: 108, minZoom: 1.35, short: "M45 · open star cluster", detail: "The Pleiades are a young nearby cluster in Taurus. Several bright blue-white members are visible to the naked eye." },
+  { id: "polaris", name: "Polaris", kind: "star", x: 188, y: 10, minZoom: 1.7, short: "The North Star", detail: "Polaris lies close to the north celestial pole, so the northern sky appears to rotate around it." },
+  { id: "betelgeuse", name: "Betelgeuse", kind: "star", x: 52, y: 149, minZoom: 1.8, short: "Red supergiant in Orion", detail: "Betelgeuse is a huge evolved star whose warm colour is noticeably different from many nearby blue-white stars." },
+  { id: "rigel", name: "Rigel", kind: "star", x: 77, y: 188, minZoom: 1.8, short: "Blue supergiant in Orion", detail: "Rigel is one of Orion's brightest stars and marks the Hunter's foot." },
+  { id: "unknown", name: "Uncatalogued Object", kind: "mystery", x: 345, y: 208, minZoom: 2.25, short: "OBJECT NOT IN CATALOGUE", detail: "It shifts slightly between observations. The journal contains no matching entry." },
+  { id: "saturn", name: "Saturn", kind: "cluster", x: 236, y: 28, minZoom: 1.55, short: "Ringed gas giant", detail: "Saturn's rings are made mostly of countless icy particles. Even a modest telescope can reveal the planet's unmistakable flattened ring system." },
+  { id: "jupiter", name: "Jupiter", kind: "moon", x: 318, y: 138, minZoom: 1.4, short: "Largest planet in the Solar System", detail: "Jupiter's cloud bands and four bright Galilean moons make it one of the most rewarding telescope targets." },
+  { id: "mars", name: "Mars", kind: "star", x: 20, y: 132, minZoom: 1.35, short: "The Red Planet", detail: "Mars appears warm orange-red because iron minerals in its surface dust have oxidised." },
+  { id: "orion-nebula", name: "Orion Nebula", kind: "galaxy", x: 63, y: 170, minZoom: 1.75, short: "M42 · stellar nursery", detail: "The Orion Nebula is a vast cloud of glowing gas where new stars are forming, visible as a fuzzy patch beneath Orion's Belt." },
+  { id: "double-cluster", name: "Double Cluster", kind: "cluster", x: 242, y: 118, minZoom: 1.65, short: "NGC 869 + NGC 884", detail: "Two neighbouring open clusters in Perseus form a spectacular double spray of young stars." },
 ];
 
 const OBSERVATORY_BOOKS: BookInfo[] = [
@@ -333,7 +331,7 @@ export default function ObservatoryRoom() {
   const [lensInstalled, setLensInstalled] = useState(false);
   const [scopeOpen, setScopeOpen] = useState(false);
   const [zoom, setZoom] = useState(1.15);
-  const [skyCenter, setSkyCenter] = useState({ x: 110, y: 70 });
+  const [skyCenter, setSkyCenter] = useState({ x: 180, y: 110 });
   const [countryFact, setCountryFact] = useState<CountryFact | null>(null);
   const [globeSpinning, setGlobeSpinning] = useState(false);
   const [journalPage, setJournalPage] = useState<number | null>(null);
@@ -365,6 +363,7 @@ export default function ObservatoryRoom() {
   const [ladderOpen, setLadderOpen] = useState(false);
   const [ladderVisited, setLadderVisited] = useState(false);
   const [rareEvent, setRareEvent] = useState<RareEvent | null>(null);
+  const [loggedRareEvents, setLoggedRareEvents] = useState<string[]>([]);
   const [scopeMoves, setScopeMoves] = useState(0);
   const [globeHistory, setGlobeHistory] = useState<string[]>([]);
 
@@ -715,10 +714,10 @@ export default function ObservatoryRoom() {
                     <filter id="starGlow"><feGaussianBlur stdDeviation="0.55" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
                   </defs>
                   <rect x="0" y="0" width={SKY_WIDTH} height={SKY_HEIGHT} fill="url(#skyBg)" />
-                  {Array.from({ length: 150 }, (_, i) => {
+                  {Array.from({ length: 260 }, (_, i) => {
                     const x = (i * 47 + (i % 9) * 13) % SKY_WIDTH;
                     const y = (i * 31 + (i % 11) * 7) % SKY_HEIGHT;
-                    const r = i % 13 === 0 ? .75 : i % 5 === 0 ? .45 : .24;
+                    const r = i % 29 === 0 ? .95 : i % 13 === 0 ? .62 : i % 5 === 0 ? .38 : .19;
                     return <circle key={`field-${i}`} cx={x} cy={y} r={r} className="field-star" />;
                   })}
 
@@ -735,8 +734,12 @@ export default function ObservatoryRoom() {
                         onClick={(e) => e.stopPropagation()}
                       >
                         {found && constellation.lines.map(([a,b], index) => <line key={index} x1={constellation.stars[a].x} y1={constellation.stars[a].y} x2={constellation.stars[b].x} y2={constellation.stars[b].y} />)}
-                        {constellation.stars.map((star,index) => <circle key={index} cx={star.x} cy={star.y} r={found ? .9 : .72} filter="url(#starGlow)" />)}
-                        <circle className="constellation-hit" cx={constellation.anchor.x} cy={constellation.anchor.y} r="10" />
+                        {constellation.stars.map((star,index) => (
+                          <g key={index} className="constellation-star-target">
+                            <circle cx={star.x} cy={star.y} r={found ? .9 : .58} filter="url(#starGlow)" />
+                            <circle className="constellation-star-hit" cx={star.x} cy={star.y} r="3.2" />
+                          </g>
+                        ))}
                         {found && <text x={constellation.anchor.x + 4} y={constellation.anchor.y - 5}>{constellation.name}</text>}
                       </g>
                     );
@@ -774,7 +777,7 @@ export default function ObservatoryRoom() {
               <aside className="obs3-scope-side">
                 <div className="obs3-zoom-control"><label htmlFor="obsZoom">OPTICAL ZOOM · ×{zoom.toFixed(2)}</label><input id="obsZoom" type="range" min="1" max="2.6" step="0.05" value={zoom} onChange={(e) => setZoomClamped(Number(e.target.value))}/></div>
                 <div className="obs3-scope-actions"><button type="button" onClick={() => centerOn({x:28,y:25},1.5)}>find moon</button><button type="button" onClick={() => centerOn({x:193,y:28},1.6)}>galaxy hint</button><button type="button" onClick={() => setCatalogOpen(true)}>celestial log</button></div>
-                {rareEvent && <article className="obs3-rare-card"><small>RARE TELESCOPE EVENT</small><h2>{rareEvent.title}</h2><p>{rareEvent.description}</p><button type="button" onClick={() => setRareEvent(null)}>log & continue</button></article>}
+                {rareEvent && <article className="obs3-rare-card"><small>RARE TELESCOPE EVENT</small><h2>{rareEvent.title}</h2><p>{rareEvent.description}</p><button type="button" onClick={() => { if (rareEvent) setLoggedRareEvents((current) => current.includes(rareEvent.id) ? current : [...current, rareEvent.id]); setRareEvent(null); }}>log & continue</button></article>}
                 {selectedConstellation ? (
                   <article className="obs3-discovery-card"><small>CONSTELLATION IDENTIFIED</small><h2>{selectedConstellation.name}</h2><strong>{selectedConstellation.nickname}</strong><p>{selectedConstellation.fact}</p><span>{selectedConstellation.season}</span></article>
                 ) : selectedObject ? (
@@ -906,7 +909,40 @@ export default function ObservatoryRoom() {
       )}
 
       {catalogOpen && (
-        <div className="obs3-modal-backdrop" onMouseDown={() => setCatalogOpen(false)}><section className="obs3-catalog-modal" onMouseDown={(e) => e.stopPropagation()}><button type="button" className="obs3-close" onClick={() => setCatalogOpen(false)}>×</button><small>CELESTIAL LOG</small><h2>Things Found Above</h2><p>{foundConstellations.length} constellations · {foundObjects.length} objects</p><div className="catalog-grid">{CONSTELLATIONS.map((c)=><button key={c.id} type="button" className={foundConstellations.includes(c.id)?"found":""} onClick={()=>{setCatalogOpen(false);setScopeOpen(true);centerOn(c.anchor,1.65);}}><strong>{foundConstellations.includes(c.id)?c.name:"???"}</strong><span>{foundConstellations.includes(c.id)?c.nickname:"unidentified constellation"}</span></button>)}{SKY_OBJECTS.map((o)=><button key={o.id} type="button" className={foundObjects.includes(o.id)?"found":""} onClick={()=>{setCatalogOpen(false);setScopeOpen(true);centerOn({x:o.x,y:o.y},Math.max(o.minZoom,1.55));}}><strong>{foundObjects.includes(o.id)?o.name:"???"}</strong><span>{foundObjects.includes(o.id)?o.short:`requires zoom ×${o.minZoom.toFixed(1)}`}</span></button>)}</div></section></div>
+        <div className="obs3-modal-backdrop" onMouseDown={() => setCatalogOpen(false)}>
+          <section className="obs3-catalog-modal" onMouseDown={(e) => e.stopPropagation()}>
+            <button type="button" className="obs3-close" onClick={() => setCatalogOpen(false)}>×</button>
+            <small>CELESTIAL LOG</small>
+            <h2>Things Found Above</h2>
+            <p>{foundConstellations.length} constellations · {foundObjects.length} objects · {loggedMoonPhases.length} moon phases · {loggedRareEvents.length} rare sightings</p>
+
+            <h3 className="catalog-section-title">Constellations & objects</h3>
+            <div className="catalog-grid">
+              {CONSTELLATIONS.map((c)=><button key={c.id} type="button" className={foundConstellations.includes(c.id)?"found":""} onClick={()=>{setCatalogOpen(false);setScopeOpen(true);centerOn(c.anchor,1.65);}}><strong>{foundConstellations.includes(c.id)?c.name:"???"}</strong><span>{foundConstellations.includes(c.id)?c.nickname:"unidentified constellation"}</span></button>)}
+              {SKY_OBJECTS.map((o)=><button key={o.id} type="button" className={foundObjects.includes(o.id)?"found":""} onClick={()=>{setCatalogOpen(false);setScopeOpen(true);centerOn({x:o.x,y:o.y},Math.max(o.minZoom,1.55));}}><strong>{foundObjects.includes(o.id)?o.name:"???"}</strong><span>{foundObjects.includes(o.id)?o.short:`requires zoom ×${o.minZoom.toFixed(1)}`}</span></button>)}
+            </div>
+
+            <h3 className="catalog-section-title">Lunar observations</h3>
+            <div className="catalog-mini-grid">
+              {MOON_PHASES.map((phase, index) => (
+                <div key={phase} className={loggedMoonPhases.includes(index) ? "catalog-mini-entry found" : "catalog-mini-entry"}>
+                  <strong>{loggedMoonPhases.includes(index) ? phase : "unlogged phase"}</strong>
+                  <span>{loggedMoonPhases.includes(index) ? "✓ observation recorded" : "use the moon dial to log it"}</span>
+                </div>
+              ))}
+            </div>
+
+            <h3 className="catalog-section-title">Rare sightings</h3>
+            <div className="catalog-mini-grid">
+              {RARE_EVENTS.map((event) => (
+                <div key={event.id} className={loggedRareEvents.includes(event.id) ? "catalog-mini-entry found" : "catalog-mini-entry"}>
+                  <strong>{loggedRareEvents.includes(event.id) ? event.title : "unrecorded anomaly"}</strong>
+                  <span>{loggedRareEvents.includes(event.id) ? event.description : "keep moving the telescope"}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
       )}
 
       {toast && <div className="obs3-toast">{toast}</div>}

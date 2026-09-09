@@ -724,3 +724,76 @@
 }
 .projector-on.projector-solar .obs3-room::after{content:"☉　·　☿　·　♀　·　⊕　·　♂　·　♃　·　♄"!important;color:rgba(244,207,126,.16)!important}
 .projector-on.projector-rooms .obs3-room::after{content:"01　NOSTALGIA　·　02　STUDY　·　04　OBSERVATORY　·　?　DREAM　·　06　TRAIN　·　07　GREENHOUSE"!important;color:rgba(212,166,255,.14)!important}
+
+/* =========================================================
+   V9 — WIDER SKY / HIDDEN CONSTELLATION HUNT / LOG EXPANSION
+========================================================= */
+
+/* Before discovery, constellation stars should blend into the ordinary field.
+   There are no visible target circles or hover outlines. */
+.constellation-star-target{pointer-events:all;cursor:crosshair}
+.constellation-star-hit{
+  fill:rgba(255,255,255,.001)!important;
+  stroke:none!important;
+  pointer-events:all;
+}
+.sky-constellation:not(.is-found) > .constellation-star-target > circle:first-child{
+  fill:#f4f2e5!important;
+  opacity:.76;
+}
+.sky-constellation.is-found > .constellation-star-target > circle:first-child{
+  fill:#ffd878!important;
+}
+.sky-constellation:hover .constellation-star-hit,
+.sky-constellation:focus .constellation-star-hit{
+  stroke:none!important;
+}
+/* Old V6 anchor-circle rules are intentionally neutralised. */
+.constellation-hit{display:none!important}
+
+/* The background field is denser so patterns have to be recognised rather
+   than spotted because their stars are obviously brighter. */
+.field-star:nth-of-type(7n){opacity:.42}
+.field-star:nth-of-type(11n){fill:#dce8ff}
+.field-star:nth-of-type(17n){fill:#ffe8ca}
+
+.catalog-section-title{
+  margin:28px 0 12px;
+  font:800 13px var(--font-mono),monospace;
+  letter-spacing:.11em;
+  text-transform:uppercase;
+  color:#d6a85f;
+}
+.catalog-mini-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.catalog-mini-entry{
+  min-height:76px;
+  padding:14px;
+  border:1px solid rgba(226,205,179,.12);
+  border-radius:10px;
+  background:#1c1925;
+  opacity:.62;
+}
+.catalog-mini-entry.found{
+  opacity:1;
+  border-color:rgba(224,184,102,.32);
+  background:#252133;
+}
+.catalog-mini-entry strong{
+  display:block;
+  font:800 13px/1.35 var(--font-mono),monospace;
+  color:#efe1cf;
+}
+.catalog-mini-entry span{
+  display:block;
+  margin-top:7px;
+  font:13px/1.45 var(--font-serif),serif;
+  color:#bcaea1;
+}
+
+@media(max-width:760px){
+  .catalog-mini-grid{grid-template-columns:1fr}
+}
