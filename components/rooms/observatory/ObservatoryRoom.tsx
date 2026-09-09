@@ -4,6 +4,7 @@ import {
   CSSProperties,
   PointerEvent as ReactPointerEvent,
   WheelEvent as ReactWheelEvent,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -47,7 +48,17 @@ type RareEvent = {
   id: string;
   title: string;
   description: string;
+  icon: string;
+  effectLabel: string;
+  logNote: string;
   reward?: string;
+  focus: SkyPoint;
+};
+
+type RareLogEntry = {
+  id: string;
+  firstSeen: number;
+  timesSeen: number;
 };
 
 type SkyPoint = { x: number; y: number };
@@ -266,10 +277,43 @@ const ORRERY_PLANETS: OrreryPlanet[] = [
 ];
 
 const RARE_EVENTS: RareEvent[] = [
-  { id: "meteor", title: "Meteor Crossing", description: "A bright meteor tears through the eyepiece and vanishes before the catalogue can assign a number." },
-  { id: "satellite", title: "Satellite Transit", description: "A tiny artificial point glides steadily through the field. Too straight, too patient to be a star." },
-  { id: "comet", title: "Unexpected Comet", description: "A diffuse visitor with a pale tail drifts into view. Someone has pencilled a question mark beside today's date." },
-  { id: "window", title: "A Window Where No Room Should Be", description: "For three seconds, the telescope frames a lit window suspended among the stars. Something moves behind the curtain.", reward: "dream-route" },
+  {
+    id: "meteor",
+    title: "Meteor Crossing",
+    description: "A bright meteor tears through the eyepiece and vanishes before the catalogue can assign a number.",
+    icon: "☄",
+    effectLabel: "Wish captured",
+    logNote: "The meteor crossed east-to-west in under two seconds. A thin amber trace remains on the observation glass.",
+    focus: { x: 248, y: 58 },
+  },
+  {
+    id: "satellite",
+    title: "Satellite Transit",
+    description: "A tiny artificial point glides steadily through the field. Too straight, too patient to be a star.",
+    icon: "◇",
+    effectLabel: "Orbital track pinned",
+    logNote: "The pass repeats close to 11:47. Someone has underlined the time twice in the margin.",
+    focus: { x: 112, y: 72 },
+  },
+  {
+    id: "comet",
+    title: "Unexpected Comet",
+    description: "A diffuse visitor with a pale tail drifts into view. Someone has pencilled a question mark beside today's date.",
+    icon: "✧",
+    effectLabel: "Comet ephemeris unlocked",
+    logNote: "Its tail points away from the Sun. The calculated path does not match anything in the shelf catalogue.",
+    focus: { x: 306, y: 138 },
+  },
+  {
+    id: "window",
+    title: "A Window Where No Room Should Be",
+    description: "For three seconds, the telescope frames a lit window suspended among the stars. Something moves behind the curtain.",
+    icon: "▣",
+    effectLabel: "Impossible window sketched",
+    logNote: "The frame has seven panes. None of the observatory's architectural drawings contain a window like it.",
+    reward: "dream-route",
+    focus: { x: 334, y: 38 },
+  },
 ];
 
 function clamp(value: number, min: number, max: number) {
@@ -363,9 +407,32 @@ export default function ObservatoryRoom() {
   const [ladderOpen, setLadderOpen] = useState(false);
   const [ladderVisited, setLadderVisited] = useState(false);
   const [rareEvent, setRareEvent] = useState<RareEvent | null>(null);
-  const [loggedRareEvents, setLoggedRareEvents] = useState<string[]>([]);
+  const [rareLog, setRareLog] = useState<RareLogEntry[]>([]);
+  const [selectedRareId, setSelectedRareId] = useState<string | null>(null);
   const [scopeMoves, setScopeMoves] = useState(0);
   const [globeHistory, setGlobeHistory] = useState<string[]>([]);
+
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem("observatory-v10-rare-log");
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as RareLogEntry[];
+      if (Array.isArray(parsed)) setRareLog(parsed);
+    } catch {
+      // A damaged local log should never stop the room from loading.
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem("observatory-v10-rare-log", JSON.stringify(rareLog));
+    } catch {
+      // localStorage may be unavailable in strict/private browser modes.
+    }
+  }, [rareLog]);
+
+  const loggedRareEvents = useMemo(() => rareLog.map((entry) => entry.id), [rareLog]);
+  const rareResearchScore = rareLog.reduce((sum, entry) => sum + entry.timesSeen, 0);
 
   const dragRef = useRef<DragState | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -436,11 +503,58 @@ export default function ObservatoryRoom() {
 
   function maybeTriggerRareEvent() {
     if (rareEvent || scopeMoves < 4) return;
-    if (Math.random() > 0.18) return;
-    const event = RARE_EVENTS[Math.floor(Math.random() * RARE_EVENTS.length)];
+
+    const unseen = RARE_EVENTS.filter((event) => !loggedRareEvents.includes(event.id));
+    const pool = unseen.length ? unseen : RARE_EVENTS;
+
+    // Gentle pity system: rare events become more likely the longer the player explores.
+    const chance = scopeMoves >= 12 ? 1 : Math.min(0.18 + (scopeMoves - 4) * 0.055, 0.72);
+    if (Math.random() > chance) return;
+
+    const event = pool[Math.floor(Math.random() * pool.length)];
     setRareEvent(event);
     showToast(`RARE SIGHTING · ${event.title}`);
-    if (event.reward === "dream-route") discoverClue("observatory-coordinate-found");
+  }
+
+  function logRareEvent(event: RareEvent) {
+    setRareLog((current) => {
+      const existing = current.find((entry) => entry.id === event.id);
+      if (existing) {
+        return current.map((entry) =>
+          entry.id === event.id ? { ...entry, timesSeen: entry.timesSeen + 1 } : entry
+        );
+      }
+      return [...current, { id: event.id, firstSeen: Date.now(), timesSeen: 1 }];
+    });
+
+    if (event.id === "meteor") {
+      setWishCount((value) => value + 1);
+    }
+
+    if (event.id === "satellite") {
+      showToast("Satellite transit logged · 11:47 marked for comparison.");
+    }
+
+    if (event.id === "comet") {
+      showToast("Comet ephemeris added to the celestial log.");
+    }
+
+    if (event.id === "window") {
+      discoverClue("observatory-coordinate-found");
+      if (!hasItem("impossible-window-sketch")) {
+        addItem({
+          id: "impossible-window-sketch",
+          name: "Sketch of an Impossible Window",
+          icon: "▣",
+          description: "Seven panes copied from a window seen through the Observatory telescope. The reverse reads: 'find the room that dreams'.",
+          sourceRoom: "observatory",
+          useIn: "dream",
+        });
+      }
+    }
+
+    setSelectedRareId(event.id);
+    setRareEvent(null);
   }
 
   function advanceOrrery(days = 30) {
@@ -768,7 +882,27 @@ export default function ObservatoryRoom() {
                       </g>
                     );
                   })}
-                  {rareEvent && <g className={`rare-sky-event rare-${rareEvent.id}`} onPointerDown={(e) => { e.stopPropagation(); showToast(rareEvent.title); }}><circle cx={skyCenter.x + 8} cy={skyCenter.y - 9} r="1.8"/><path d={`M ${skyCenter.x-2} ${skyCenter.y-2} L ${skyCenter.x+9} ${skyCenter.y-9}`} /><text x={skyCenter.x+11} y={skyCenter.y-10}>!</text></g>}
+                  {rareEvent && (
+                    <g className={`rare-sky-event rare-${rareEvent.id}`} onPointerDown={(e) => { e.stopPropagation(); showToast(`${rareEvent.icon} ${rareEvent.title}`); }}>
+                      {rareEvent.id === "meteor" && <>
+                        <path d={`M ${skyCenter.x-12} ${skyCenter.y+7} L ${skyCenter.x+10} ${skyCenter.y-8}`} />
+                        <circle cx={skyCenter.x+10} cy={skyCenter.y-8} r="1.8"/>
+                      </>}
+                      {rareEvent.id === "satellite" && <>
+                        <path className="rare-track" d={`M ${skyCenter.x-16} ${skyCenter.y-3} L ${skyCenter.x+16} ${skyCenter.y+5}`} />
+                        <circle cx={skyCenter.x+3} cy={skyCenter.y+1} r="1.4"/>
+                      </>}
+                      {rareEvent.id === "comet" && <>
+                        <ellipse cx={skyCenter.x+4} cy={skyCenter.y-4} rx="2.2" ry="1.4"/>
+                        <path d={`M ${skyCenter.x-14} ${skyCenter.y+2} Q ${skyCenter.x-4} ${skyCenter.y-1} ${skyCenter.x+4} ${skyCenter.y-4}`} />
+                      </>}
+                      {rareEvent.id === "window" && <>
+                        <rect className="rare-window-frame" x={skyCenter.x-5} y={skyCenter.y-6} width="10" height="8" rx=".6"/>
+                        <path className="rare-window-cross" d={`M ${skyCenter.x} ${skyCenter.y-6} V ${skyCenter.y+2} M ${skyCenter.x-5} ${skyCenter.y-2} H ${skyCenter.x+5}`} />
+                      </>}
+                      <text x={skyCenter.x+11} y={skyCenter.y-10}>{rareEvent.icon}</text>
+                    </g>
+                  )}
                 </svg>
                 <div className="obs3-crosshair" aria-hidden="true"><span/><i/></div>
                 <div className="obs3-scope-readout"><strong>{coordinates}</strong><span>ZOOM ×{zoom.toFixed(2)}</span></div>
@@ -777,7 +911,7 @@ export default function ObservatoryRoom() {
               <aside className="obs3-scope-side">
                 <div className="obs3-zoom-control"><label htmlFor="obsZoom">OPTICAL ZOOM · ×{zoom.toFixed(2)}</label><input id="obsZoom" type="range" min="1" max="2.6" step="0.05" value={zoom} onChange={(e) => setZoomClamped(Number(e.target.value))}/></div>
                 <div className="obs3-scope-actions"><button type="button" onClick={() => centerOn({x:28,y:25},1.5)}>find moon</button><button type="button" onClick={() => centerOn({x:193,y:28},1.6)}>galaxy hint</button><button type="button" onClick={() => setCatalogOpen(true)}>celestial log</button></div>
-                {rareEvent && <article className="obs3-rare-card"><small>RARE TELESCOPE EVENT</small><h2>{rareEvent.title}</h2><p>{rareEvent.description}</p><button type="button" onClick={() => { if (rareEvent) setLoggedRareEvents((current) => current.includes(rareEvent.id) ? current : [...current, rareEvent.id]); setRareEvent(null); }}>log & continue</button></article>}
+                {rareEvent && <article className="obs3-rare-card"><small>RARE TELESCOPE EVENT</small><h2><span>{rareEvent.icon}</span> {rareEvent.title}</h2><p>{rareEvent.description}</p><div className="rare-effect-preview"><b>LOG EFFECT</b><span>{rareEvent.effectLabel}</span></div><button type="button" onClick={() => logRareEvent(rareEvent)}>record sighting</button></article>}
                 {selectedConstellation ? (
                   <article className="obs3-discovery-card"><small>CONSTELLATION IDENTIFIED</small><h2>{selectedConstellation.name}</h2><strong>{selectedConstellation.nickname}</strong><p>{selectedConstellation.fact}</p><span>{selectedConstellation.season}</span></article>
                 ) : selectedObject ? (
@@ -835,6 +969,7 @@ export default function ObservatoryRoom() {
                     "When every fragment is returned, the building remembers its final door."
                   ][secretBookPage]}</p>
                 </article>
+                {loggedRareEvents.length > 0 && <aside className="rare-book-addendum"><small>INK ADDED ITSELF</small><p>{loggedRareEvents.includes("window") ? "A seventh window has appeared in the building plan. It opens onto a room labelled only: DREAM." : `The book has copied ${loggedRareEvents.length} unusual sky ${loggedRareEvents.length === 1 ? "sighting" : "sightings"} into its margins.`}</p></aside>}
               </>}
             </div>
           </section>
@@ -933,14 +1068,26 @@ export default function ObservatoryRoom() {
             </div>
 
             <h3 className="catalog-section-title">Rare sightings</h3>
+            <div className="catalog-rare-summary">Research stamps: <b>{rareResearchScore}</b> · unique anomalies: <b>{loggedRareEvents.length}/{RARE_EVENTS.length}</b></div>
             <div className="catalog-mini-grid">
-              {RARE_EVENTS.map((event) => (
-                <div key={event.id} className={loggedRareEvents.includes(event.id) ? "catalog-mini-entry found" : "catalog-mini-entry"}>
-                  <strong>{loggedRareEvents.includes(event.id) ? event.title : "unrecorded anomaly"}</strong>
-                  <span>{loggedRareEvents.includes(event.id) ? event.description : "keep moving the telescope"}</span>
-                </div>
-              ))}
+              {RARE_EVENTS.map((event) => {
+                const record = rareLog.find((entry) => entry.id === event.id);
+                const found = Boolean(record);
+                return (
+                  <button key={event.id} type="button" className={found ? "catalog-mini-entry catalog-rare-entry found" : "catalog-mini-entry catalog-rare-entry"} disabled={!found} onClick={() => setSelectedRareId(event.id)}>
+                    <strong>{found ? `${event.icon} ${event.title}` : "unrecorded anomaly"}</strong>
+                    <span>{found ? `${event.effectLabel} · seen ${record?.timesSeen ?? 1}×` : "keep moving the telescope"}</span>
+                  </button>
+                );
+              })}
             </div>
+
+            {selectedRareId && (() => {
+              const event = RARE_EVENTS.find((entry) => entry.id === selectedRareId);
+              const record = rareLog.find((entry) => entry.id === selectedRareId);
+              if (!event || !record) return null;
+              return <article className="catalog-rare-detail"><small>ARCHIVED SIGHTING</small><h3>{event.icon} {event.title}</h3><p>{event.description}</p><blockquote>{event.logNote}</blockquote><div><span>{event.effectLabel}</span><span>observed {record.timesSeen}×</span></div><button type="button" onClick={() => { setCatalogOpen(false); setScopeOpen(true); centerOn(event.focus, 1.8); }}>return to recorded coordinates</button></article>;
+            })()}
           </section>
         </div>
       )}

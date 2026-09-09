@@ -797,3 +797,172 @@
 @media(max-width:760px){
   .catalog-mini-grid{grid-template-columns:1fr}
 }
+
+/* =========================================================
+   V10 — RARE SIGHTINGS THAT ACTUALLY MATTER
+========================================================= */
+
+.rare-sky-event{
+  pointer-events:all;
+}
+
+.rare-sky-event ellipse,
+.rare-sky-event rect{
+  fill:rgba(248,221,154,.16);
+  stroke:#f2cf79;
+  stroke-width:.75;
+}
+
+.rare-sky-event .rare-track{
+  stroke-dasharray:2 2;
+  animation:rareTrack 1.4s linear infinite;
+}
+
+.rare-sky-event .rare-window-frame{
+  fill:rgba(251,213,139,.13);
+  stroke:#f4cf78;
+  filter:drop-shadow(0 0 2px rgba(244,207,120,.7));
+}
+
+.rare-sky-event .rare-window-cross{
+  stroke:#f4cf78;
+  stroke-width:.5;
+  opacity:.85;
+}
+
+.rare-effect-preview{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:14px 0;
+  padding:10px 12px;
+  border:1px solid rgba(224,180,94,.22);
+  border-radius:8px;
+  background:rgba(224,180,94,.07);
+}
+
+.rare-effect-preview b{
+  font:800 10px var(--font-mono),monospace;
+  letter-spacing:.1em;
+  color:#d8ab57;
+}
+
+.rare-effect-preview span{
+  font:700 12px var(--font-mono),monospace;
+  color:#efe1cf;
+}
+
+.catalog-rare-summary{
+  margin:0 0 12px;
+  font:700 12px/1.5 var(--font-mono),monospace;
+  color:#bfae9d;
+}
+
+.catalog-rare-summary b{
+  color:#e2b35c;
+}
+
+.catalog-rare-entry{
+  width:100%;
+  text-align:left;
+  cursor:pointer;
+}
+
+.catalog-rare-entry:disabled{
+  cursor:default;
+}
+
+.catalog-rare-entry.found:hover{
+  transform:translateY(-1px);
+  border-color:rgba(224,184,102,.5);
+  background:#2b2638;
+}
+
+.catalog-rare-detail{
+  margin-top:14px;
+  padding:18px;
+  border:1px solid rgba(224,184,102,.3);
+  border-radius:12px;
+  background:linear-gradient(145deg,#24202f,#1b1824);
+  color:#eee1d2;
+}
+
+.catalog-rare-detail > small{
+  font:800 10px var(--font-mono),monospace;
+  letter-spacing:.11em;
+  color:#d8aa57;
+}
+
+.catalog-rare-detail h3{
+  margin:8px 0 10px;
+  font:700 25px/1.15 var(--font-hand),cursive;
+}
+
+.catalog-rare-detail p,
+.catalog-rare-detail blockquote{
+  font:15px/1.55 var(--font-serif),serif;
+}
+
+.catalog-rare-detail blockquote{
+  margin:14px 0;
+  padding:12px 14px;
+  border-left:3px solid #d5a553;
+  background:#17151e;
+  color:#d8cbbd;
+}
+
+.catalog-rare-detail > div{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:12px 0;
+}
+
+.catalog-rare-detail > div span{
+  padding:6px 8px;
+  border-radius:999px;
+  background:rgba(214,168,95,.1);
+  font:800 10px var(--font-mono),monospace;
+  color:#d8b26d;
+}
+
+.catalog-rare-detail button{
+  padding:9px 12px;
+  border:1px solid rgba(224,188,127,.24);
+  border-radius:7px;
+  background:#302739;
+  color:#efe4d8;
+  font:800 11px var(--font-mono),monospace;
+  cursor:pointer;
+}
+
+.rare-book-addendum{
+  margin-top:12px;
+  padding:12px 14px;
+  border:1px solid rgba(176,137,219,.2);
+  border-radius:8px;
+  background:rgba(84,58,108,.12);
+  animation:rareInkFlicker 2.6s ease-in-out infinite;
+}
+
+.rare-book-addendum small{
+  font:800 9px var(--font-mono),monospace;
+  letter-spacing:.12em;
+  color:#bfa0df;
+}
+
+.rare-book-addendum p{
+  margin:6px 0 0;
+  font:14px/1.5 var(--font-serif),serif;
+}
+
+@keyframes rareTrack{
+  to{stroke-dashoffset:-8}
+}
+
+@keyframes rareInkFlicker{
+  0%,92%,100%{opacity:1}
+  94%{opacity:.42}
+  96%{opacity:.88}
+}
