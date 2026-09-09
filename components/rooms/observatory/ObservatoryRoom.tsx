@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  CSSProperties,
   PointerEvent as ReactPointerEvent,
   WheelEvent as ReactWheelEvent,
   useMemo,
@@ -15,6 +16,14 @@ type CountryFact = {
   capital: string;
   fact: string;
   skyFact: string;
+};
+
+type BookInfo = {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  note: string;
 };
 
 type SkyPoint = { x: number; y: number };
@@ -55,16 +64,32 @@ const BASE_VIEW_WIDTH = 108;
 const BASE_VIEW_HEIGHT = 76;
 
 const COUNTRY_FACTS: CountryFact[] = [
-  { country: "Singapore", emoji: "🇸🇬", capital: "Singapore", fact: "Singapore is one of the world's few city-states and has four official languages.", skyFact: "Near the equator, observers can see parts of both the northern and southern celestial hemispheres through the year." },
-  { country: "Japan", emoji: "🇯🇵", capital: "Tokyo", fact: "Japan stretches across thousands of islands and has more than 100 active volcanoes.", skyFact: "Japan has a long observational tradition, including historical star maps and calendars based on celestial motion." },
-  { country: "India", emoji: "🇮🇳", capital: "New Delhi", fact: "India's astronomical tradition includes the Jantar Mantar observatories built to measure time and celestial positions.", skyFact: "At many Indian latitudes, both prominent northern constellations and rich Milky Way fields are visible seasonally." },
-  { country: "Chile", emoji: "🇨🇱", capital: "Santiago", fact: "Northern Chile's dry, dark skies host several of the world's major astronomical observatories.", skyFact: "The Atacama Desert is prized for high altitude, very low humidity and exceptionally clear observing conditions." },
-  { country: "Iceland", emoji: "🇮🇸", capital: "Reykjavík", fact: "Iceland lies close to the Arctic Circle and has extremely long winter nights.", skyFact: "Those dark winter nights make aurora viewing possible when solar activity and weather cooperate." },
-  { country: "Brazil", emoji: "🇧🇷", capital: "Brasília", fact: "Brazil is crossed by both the Equator and the Tropic of Capricorn.", skyFact: "Much of Brazil has access to southern constellations that are low or invisible from far-northern locations." },
-  { country: "Norway", emoji: "🇳🇴", capital: "Oslo", fact: "Northern Norway reaches well inside the Arctic Circle.", skyFact: "It sits beneath the auroral oval, one of Earth's strongest regions for viewing the northern lights." },
-  { country: "Egypt", emoji: "🇪🇬", capital: "Cairo", fact: "Ancient Egyptian architecture shows careful attention to solar cycles and cardinal directions.", skyFact: "Bright stars such as Sirius had major calendrical and cultural importance in ancient Egypt." },
-  { country: "South Korea", emoji: "🇰🇷", capital: "Seoul", fact: "Cheomseongdae in Gyeongju is one of East Asia's oldest surviving astronomical observatories.", skyFact: "Historical Korean astronomy maintained detailed records of celestial events including comets and unusual stars." },
-  { country: "New Zealand", emoji: "🇳🇿", capital: "Wellington", fact: "New Zealand is an island nation in the southwest Pacific.", skyFact: "Observers can see the Southern Cross, Magellanic Clouds and other southern-sky objects unavailable from much of the Northern Hemisphere." },
+  { country: "Singapore", emoji: "🇸🇬", capital: "Singapore", fact: "Singapore is a compact island city-state near the equator with four official languages.", skyFact: "Its equatorial latitude lets observers see parts of both the northern and southern celestial hemispheres during the year." },
+  { country: "Japan", emoji: "🇯🇵", capital: "Tokyo", fact: "Japan is an island country stretching from cool northern latitudes to the subtropics.", skyFact: "Japanese astronomy has centuries of star maps, calendars and careful records of comets and unusual celestial events." },
+  { country: "India", emoji: "🇮🇳", capital: "New Delhi", fact: "India has a long astronomical tradition, including monumental Jantar Mantar instruments built for naked-eye measurements.", skyFact: "Across India, seasonal skies include familiar northern constellations as well as rich Milky Way fields." },
+  { country: "Chile", emoji: "🇨🇱", capital: "Santiago", fact: "Chile runs along the Pacific side of South America and includes some of the driest landscapes on Earth.", skyFact: "The Atacama Desert hosts major observatories because of its altitude, dry air and unusually clear skies." },
+  { country: "Iceland", emoji: "🇮🇸", capital: "Reykjavík", fact: "Iceland is a volcanic island in the North Atlantic, close to the Arctic Circle.", skyFact: "Long, dark winter nights can provide excellent aurora viewing when clouds and solar activity cooperate." },
+  { country: "Brazil", emoji: "🇧🇷", capital: "Brasília", fact: "Brazil is the largest country in South America and crosses both the Equator and Tropic of Capricorn.", skyFact: "Much of Brazil has excellent access to southern-sky constellations that sit low or remain invisible from far northern latitudes." },
+  { country: "Norway", emoji: "🇳🇴", capital: "Oslo", fact: "Norway stretches far north into the Arctic and has a famously long, deeply indented coastline.", skyFact: "Northern Norway lies beneath the auroral oval, making it a renowned place to watch the northern lights." },
+  { country: "Egypt", emoji: "🇪🇬", capital: "Cairo", fact: "Ancient Egyptian architecture and calendars paid close attention to the Sun, stars and cardinal directions.", skyFact: "Sirius was especially important historically because its seasonal appearance was tied to the Nile cycle." },
+  { country: "South Korea", emoji: "🇰🇷", capital: "Seoul", fact: "South Korea preserves Cheomseongdae, one of East Asia's oldest surviving astronomical observatories.", skyFact: "Historical Korean records include detailed observations of comets, eclipses and temporary 'guest stars'." },
+  { country: "New Zealand", emoji: "🇳🇿", capital: "Wellington", fact: "New Zealand lies in the southwest Pacific and is famous for dramatic mountains, coastlines and dark rural skies.", skyFact: "Observers can see the Southern Cross, Magellanic Clouds and other southern objects unavailable from much of the Northern Hemisphere." },
+  { country: "Australia", emoji: "🇦🇺", capital: "Canberra", fact: "Australia spans tropical, desert and temperate regions across an entire continent.", skyFact: "Its southern latitude gives excellent views of the Southern Cross, Centaurus and the Magellanic Clouds." },
+  { country: "South Africa", emoji: "🇿🇦", capital: "Pretoria", fact: "South Africa contains deserts, grasslands, mountains and long Atlantic and Indian Ocean coastlines.", skyFact: "Its southern skies are used by major observatories, including facilities near Sutherland in the Karoo." },
+  { country: "United States", emoji: "🇺🇸", capital: "Washington, D.C.", fact: "The United States spans a huge range of latitudes, climates and landscapes.", skyFact: "From Hawaii's high volcanic summits to Arizona's deserts, the country contains several internationally important observing sites." },
+  { country: "Canada", emoji: "🇨🇦", capital: "Ottawa", fact: "Canada stretches from the Atlantic to the Pacific and deep into the Arctic.", skyFact: "Large northern areas sit beneath strong auroral activity, while dark rural skies make circumpolar constellations easy to follow." },
+  { country: "Mexico", emoji: "🇲🇽", capital: "Mexico City", fact: "Mexico combines high plateaus, deserts, mountains and tropical coastlines.", skyFact: "High-altitude sites can offer clear views of both northern constellations and objects nearer the celestial equator." },
+  { country: "Peru", emoji: "🇵🇪", capital: "Lima", fact: "Peru stretches from Pacific desert to the Andes and Amazon basin.", skyFact: "Andean cultures developed sophisticated sky traditions, including attention to both bright stars and dark shapes within the Milky Way." },
+  { country: "Argentina", emoji: "🇦🇷", capital: "Buenos Aires", fact: "Argentina extends from subtropical South America far into cool Patagonia.", skyFact: "Southern Argentina offers excellent access to the Milky Way's southern regions and constellations around the south celestial pole." },
+  { country: "France", emoji: "🇫🇷", capital: "Paris", fact: "France has played a major role in the history of mathematics, physics and astronomy.", skyFact: "The Paris Observatory, founded in the seventeenth century, became one of Europe's major astronomical institutions." },
+  { country: "United Kingdom", emoji: "🇬🇧", capital: "London", fact: "The United Kingdom has a long maritime and scientific history closely linked to navigation.", skyFact: "Greenwich became the reference for the prime meridian and Greenwich Mean Time, deeply connecting astronomy with global timekeeping." },
+  { country: "Greece", emoji: "🇬🇷", capital: "Athens", fact: "Ancient Greek scholars helped shape early Western models of geometry, planetary motion and the heavens.", skyFact: "Many constellation names used today come through Greek mythology, including Orion, Cassiopeia and Andromeda." },
+  { country: "Turkey", emoji: "🇹🇷", capital: "Ankara", fact: "Turkey bridges southeastern Europe and western Asia.", skyFact: "The region has a long history of astronomical scholarship, including observatories and star catalogues from the medieval Islamic world." },
+  { country: "United Arab Emirates", emoji: "🇦🇪", capital: "Abu Dhabi", fact: "The UAE combines modern cities with extensive desert landscapes.", skyFact: "Desert areas away from city lights can offer broad horizons and very clear views of the Moon, planets and winter constellations." },
+  { country: "Indonesia", emoji: "🇮🇩", capital: "Jakarta", fact: "Indonesia is a vast equatorial archipelago made up of thousands of islands.", skyFact: "Near-equatorial skies allow observers to see a wide mix of northern and southern constellations across the year." },
+  { country: "Philippines", emoji: "🇵🇭", capital: "Manila", fact: "The Philippines is an archipelago in the western Pacific made up of thousands of islands.", skyFact: "Its tropical latitude gives access to Orion, Scorpius, the Southern Cross and many Milky Way fields in different seasons." },
+  { country: "Thailand", emoji: "🇹🇭", capital: "Bangkok", fact: "Thailand stretches from mountainous northern regions to tropical southern coasts.", skyFact: "At its latitude, observers can follow many northern constellations while still seeing southern objects rise above the horizon." },
+  { country: "Kenya", emoji: "🇰🇪", capital: "Nairobi", fact: "Kenya lies across the equator and contains highlands, savannahs and the Great Rift Valley.", skyFact: "Equatorial observers can watch stars from both celestial hemispheres, with the celestial poles sitting near opposite horizons." },
 ];
 
 const CONSTELLATIONS: Constellation[] = [
@@ -122,6 +147,18 @@ const SKY_OBJECTS: SkyObject[] = [
   { id: "unknown", name: "Uncatalogued Object", kind: "mystery", x: 214, y: 126, minZoom: 2.25, short: "OBJECT NOT IN CATALOGUE", detail: "It shifts slightly between observations. The journal contains no matching entry." },
 ];
 
+const OBSERVATORY_BOOKS: BookInfo[] = [
+  { id: "atlas", title: "ATLAS", subtitle: "A Pocket Atlas of the Northern Sky", description: "A compact field guide for locating seasonal constellations. The pages use simple landmark patterns rather than detailed star charts.", note: "Useful trick: find one unmistakable shape first, then hop from bright star to bright star." },
+  { id: "orbits", title: "ORBITS", subtitle: "Clockwork Heavens", description: "Notes on how planets, moons and comets move under gravity. Several pages compare elliptical orbits with the brass orrery on the shelf.", note: "The farther an orbiting body is from its star, the longer one complete trip usually takes." },
+  { id: "light", title: "LIGHT", subtitle: "What Starlight Can Tell Us", description: "An introduction to colour, spectra and brightness. It explains how astronomers can learn about temperature and composition without ever touching a star.", note: "Blue-white stars are generally hotter at their surfaces than orange-red stars." },
+  { id: "notes", title: "NOTES", subtitle: "Observatory Night Log", description: "Loose observations from previous nights: cloud cover, seeing conditions, strange noises in the dome and objects worth revisiting.", note: "A margin entry is underlined twice: 'If it moves between charts, log the time.'" },
+  { id: "maps", title: "MAPS", subtitle: "Celestial Coordinates", description: "A practical guide to right ascension and declination—the sky's equivalent of longitude and latitude.", note: "Right ascension is measured in hours; declination is measured north or south of the celestial equator." },
+  { id: "stars", title: "STARS", subtitle: "Lives of Stars", description: "A beginner-friendly guide to stellar evolution, from protostars to red giants, white dwarfs and supernova remnants.", note: "A star's mass strongly affects how quickly it burns fuel and how its life ends." },
+  { id: "comets", title: "COMETS", subtitle: "Visitors from the Outer Dark", description: "Sketches of comet nuclei, tails and long elliptical paths. Several pages track famous historical comet appearances.", note: "A comet's tail points broadly away from the Sun because of sunlight and the solar wind." },
+  { id: "optics", title: "OPTICS", subtitle: "Lenses, Mirrors & Focus", description: "A maintenance handbook for refracting telescopes: focal length, magnification, lens alignment and why too much magnification can make an image worse.", note: "Sharpness depends on the atmosphere and optics—not just on turning the zoom higher." },
+  { id: "time", title: "TIME", subtitle: "Keeping Time by the Sky", description: "A small history of sundials, sidereal time, meridians and why astronomers care about precise clocks.", note: "A sidereal day is slightly shorter than a solar day because Earth moves along its orbit while it rotates." },
+];
+
 const JOURNAL_PAGES = [
   { heading: "Observation 17", body: "The missing brass lens was moved downstairs after the storm. Without it, the telescope shows only a soft circle of light." },
   { heading: "Observation 18", body: "The celestial lock responds in order: North Star, three-point crown, then the little falling star." },
@@ -168,6 +205,8 @@ export default function ObservatoryRoom() {
   const [foundObjects, setFoundObjects] = useState<string[]>([]);
   const [selectedObject, setSelectedObject] = useState<SkyObject | null>(null);
   const [catalogOpen, setCatalogOpen] = useState(false);
+  const [atlasOpen, setAtlasOpen] = useState(false);
+  const [bookOpen, setBookOpen] = useState<BookInfo | null>(null);
   const [catMood, setCatMood] = useState(0);
   const [wishCount, setWishCount] = useState(0);
 
@@ -339,7 +378,7 @@ export default function ObservatoryRoom() {
   ];
 
   return (
-    <main className={`observatory-v3 ${lanternsOn ? "is-lit" : "is-dim"} ${projectorOn ? "projector-on" : ""}`}>
+    <main className={`observatory-v3 ${lanternsOn ? "is-lit" : "is-dim"} ${projectorOn ? "projector-on" : ""} ${domeOpen ? "dome-open" : "dome-closed"}`}>
       <header className="obs3-header">
         <button type="button" onClick={returnToHub}>← hallway</button>
         <div><small>ROOM 04 · ABOVE THE WEATHER</small><h1>Observatory</h1><p>somebody has been charting things that do not belong to this sky</p></div>
@@ -361,8 +400,12 @@ export default function ObservatoryRoom() {
 
         <aside className="obs3-left-zone">
           <section className="obs3-bookcase">
-            <div className="obs3-shelf-books">{["ATLAS","ORBITS","LIGHT","NOTES","MAPS"].map((book) => <span key={book}>{book}</span>)}</div>
-            <button type="button" className="obs3-star-atlas" onClick={() => setCatalogOpen(true)}><span className="mini-constellation">✦ ─ ✧ ─ ✦<br/>╲　╱　╲　╱</span><strong>STAR ATLAS</strong><small>{foundConstellations.length} patterns recognised</small></button>
+            <div className="obs3-shelf-books">
+              {OBSERVATORY_BOOKS.slice(0,5).map((book) => (
+                <button key={book.id} type="button" onClick={() => setBookOpen(book)} title={`Read ${book.subtitle}`}>{book.title}</button>
+              ))}
+            </div>
+            <button type="button" className="obs3-star-atlas" onClick={() => setAtlasOpen(true)}><span className="mini-constellation">✦ ─ ✧ ─ ✦<br/>╲　╱　╲　╱</span><strong>STAR ATLAS</strong><small>{foundConstellations.length} patterns recognised · click to study</small></button>
           </section>
           <div className="obs3-ladder" aria-hidden="true"><i/><i/><i/><i/><i/></div>
           <div className="obs3-lounge">
@@ -374,7 +417,7 @@ export default function ObservatoryRoom() {
           </div>
         </aside>
 
-        <section className="obs3-center-zone" style={{ "--scope-x": `${(skyCenter.x - 110) / 110}`, "--scope-y": `${(skyCenter.y - 70) / 70}` } as React.CSSProperties}>
+        <section className="obs3-center-zone" style={{ "--scope-x": `${(skyCenter.x - 110) / 110}`, "--scope-y": `${(skyCenter.y - 70) / 70}` } as CSSProperties}>
           <div className="obs3-telescope-wrap">
             <div className="obs3-telescope">
               <span className="scope-main-tube"/><span className="scope-rim"/><span className="scope-eyepiece"/><span className="scope-finder"/><span className="scope-band band-a"/><span className="scope-band band-b"/><span className="scope-focus-wheel"/>
@@ -391,7 +434,11 @@ export default function ObservatoryRoom() {
 
         <aside className="obs3-right-zone">
           <section className="obs3-orrery-shelf">
-            <div className="obs3-shelf-books compact">{["STARS","COMETS","LIGHT","TIME"].map((book) => <span key={book}>{book}</span>)}</div>
+            <div className="obs3-shelf-books compact">
+              {OBSERVATORY_BOOKS.slice(5).map((book) => (
+                <button key={book.id} type="button" onClick={() => setBookOpen(book)} title={`Read ${book.subtitle}`}>{book.title}</button>
+              ))}
+            </div>
             <button type="button" className={`obs3-orrery ${orreryRunning ? "is-running" : ""}`} onClick={() => setOrreryRunning((v) => !v)} aria-label="Toggle the orrery"><span className="orrery-orbit"><i/><i/><i/></span><b>☉</b><small>{orreryRunning ? "orrery turning" : "orrery paused"}</small></button>
           </section>
 
@@ -504,6 +551,29 @@ export default function ObservatoryRoom() {
 
       {journalPage !== null && (
         <div className="obs3-modal-backdrop" onMouseDown={() => setJournalPage(null)}><section className="obs3-journal-modal" onMouseDown={(e) => e.stopPropagation()}><button type="button" className="obs3-close dark" onClick={() => setJournalPage(null)}>×</button><article><small>FIELD NOTES · {journalPage + 1}/3</small><h2>{JOURNAL_PAGES[journalPage].heading}</h2><p>{JOURNAL_PAGES[journalPage].body}</p></article><aside><strong>✦　♕　☄</strong><p>north · crown · falling</p><div><button type="button" disabled={journalPage === 0} onClick={() => setJournalPage((p) => Math.max(0,(p ?? 0)-1))}>← previous</button><button type="button" disabled={journalPage === 2} onClick={() => setJournalPage((p) => Math.min(2,(p ?? 0)+1))}>next →</button></div></aside></section></div>
+      )}
+
+      {atlasOpen && (
+        <div className="obs3-modal-backdrop" onMouseDown={() => setAtlasOpen(false)}>
+          <section className="obs3-atlas-modal" onMouseDown={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Star atlas">
+            <button type="button" className="obs3-close" onClick={() => setAtlasOpen(false)}>×</button>
+            <small>REFERENCE SHELF · FIELD GUIDE</small><h2>Star Atlas</h2><p>Six patterns have been marked in pencil. Study their shapes here, then find them by moving the telescope.</p>
+            <div className="atlas-guide-grid">{CONSTELLATIONS.map((c) => (
+              <article key={c.id} className={foundConstellations.includes(c.id) ? "found" : ""}><div className="atlas-pattern" aria-hidden="true">✦ · ✧ ─ ✦ ╲ ✦</div><strong>{c.name}</strong><span>{c.nickname}</span><p>{c.fact}</p><small>{foundConstellations.includes(c.id) ? "✓ identified through telescope" : `best seen in ${c.season}`}</small></article>
+            ))}</div>
+            <button type="button" className="obs3-atlas-open-scope" onClick={() => { setAtlasOpen(false); setScopeOpen(true); }}>open telescope and search</button>
+          </section>
+        </div>
+      )}
+
+      {bookOpen && (
+        <div className="obs3-modal-backdrop" onMouseDown={() => setBookOpen(null)}>
+          <section className="obs3-book-modal" onMouseDown={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={bookOpen.subtitle}>
+            <button type="button" className="obs3-close dark" onClick={() => setBookOpen(null)}>×</button>
+            <div className="book-cover"><small>OBSERVATORY REFERENCE</small><strong>{bookOpen.title}</strong><span>{bookOpen.subtitle}</span></div>
+            <article><small>FROM THE SHELF</small><h2>{bookOpen.subtitle}</h2><p>{bookOpen.description}</p><div><b>MARGIN NOTE</b><p>{bookOpen.note}</p></div></article>
+          </section>
+        </div>
       )}
 
       {catalogOpen && (
