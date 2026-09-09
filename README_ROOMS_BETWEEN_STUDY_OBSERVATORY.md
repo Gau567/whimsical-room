@@ -13,6 +13,7 @@ It also records how both rooms connect to the shared world systems.
 
 ---
 
+
 ## 1. Project Direction
 
 The expansion is designed around one rule:
