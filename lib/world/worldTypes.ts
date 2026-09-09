@@ -33,12 +33,17 @@ export type WorldClueId =
   | "observatory-lens-installed"
   | "observatory-constellation-solved"
   | "observatory-coordinate-found"
+  | "observatory-moon-solved"
+  | "observatory-coordinate-locked"
+  | "observatory-star-fragment"
+  | "observatory-complete"
   | "greenhouse-key-found";
 
 export type QuestId =
   | "study-locked-drawer"
   | "observatory-missing-lens"
   | "observatory-star-wheel"
+  | "observatory-complete"
   | "train-eleven-forty-seven"
   | "greenhouse-small-key";
 

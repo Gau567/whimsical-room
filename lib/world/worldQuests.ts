@@ -27,6 +27,12 @@ export const WORLD_QUESTS: QuestDefinition[] = [
     hint: "The observatory journal describes three symbols in a very specific order.",
   },
   {
+    id: "observatory-complete",
+    title: "The Sky Remembers",
+    room: "Observatory",
+    hint: "Repair the telescope, chart enough constellations, record anomalies, solve the April 17 moon, and align the hidden coordinates.",
+  },
+  {
     id: "train-eleven-forty-seven",
     title: "11:47 · Platform Seven",
     room: "Train Compartment",

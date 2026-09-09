@@ -21,6 +21,18 @@ export default function QuestLog() {
     if (hasItem("telescope-lens") || hasClue("observatory-lens-found")) {
       ids.push("observatory-missing-lens");
     }
+    if (
+      completedQuests.includes("observatory-missing-lens") ||
+      hasClue("observatory-lens-installed")
+    ) {
+      ids.push("observatory-star-wheel");
+    }
+    if (
+      completedQuests.includes("observatory-star-wheel") ||
+      hasClue("observatory-constellation-solved")
+    ) {
+      ids.push("observatory-complete");
+    }
     if (hasClue("train-platform-seven")) {
       ids.push("train-eleven-forty-seven");
     }
@@ -29,7 +41,7 @@ export default function QuestLog() {
     }
 
     return ids;
-  }, [inventory, discoveredClues, hasItem, hasClue]);
+  }, [inventory, discoveredClues, completedQuests, hasItem, hasClue]);
 
   const visibleQuests = WORLD_QUESTS.filter((quest) =>
     visibleQuestIds.includes(quest.id),

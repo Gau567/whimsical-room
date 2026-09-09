@@ -15,6 +15,8 @@ export default function WorldHub() {
   const hasKey = hasItem("small-brass-key") || hasItem("brass-key");
   const hasTrainClue = hasClue("train-platform-seven");
   const solvedStudy = completedQuests.includes("study-locked-drawer");
+  const observatoryComplete =
+    completedQuests.includes("observatory-complete") || hasItem("star-fragment");
 
   const observatoryOpen = isRoomUnlocked("observatory");
   const greenhouseOpen = isRoomUnlocked("greenhouse");
@@ -59,10 +61,10 @@ export default function WorldHub() {
             number="05"
             title="Dream Room"
             subtitle="you do not remember this door being here"
-            lockedHint="the number keeps changing when you blink"
+            lockedHint={observatoryComplete ? "something behind the door noticed the fragment" : "the number keeps changing when you blink"}
             accent="violet"
-            className="hall-door-dream"
-            detail={<span className="hall-dream-moon">☾</span>}
+            className={`hall-door-dream ${observatoryComplete ? "has-observatory-echo" : ""}`}
+            detail={observatoryComplete ? <span className="hall-dream-star-echo">✦ the door remembers the sky</span> : <span className="hall-dream-moon">☾</span>}
           />
         </div>
 
@@ -93,6 +95,11 @@ export default function WorldHub() {
                 <small>SCRAWLED IN PENCIL</small>
                 <p>{hasTrainClue ? "PLATFORM 7 · 11:47" : "? ? ?"}</p>
               </article>
+
+              <article className={observatoryComplete ? "is-visible hall-v2-star-note" : ""}>
+                <small>NEW INK · ROOM 04</small>
+                <p>{observatoryComplete ? "one fragment remembers the sky ✦" : "the paper is blank."}</p>
+              </article>
             </div>
           </div>
 
@@ -101,9 +108,11 @@ export default function WorldHub() {
           </div>
 
           <p className="hall-v2-floor-whisper">
-            {solvedStudy
-              ? "something in the hallway changed while you were away"
-              : "some doors open from the other side"}
+            {observatoryComplete
+              ? "a faint constellation follows you out of Room 04"
+              : solvedStudy
+                ? "something in the hallway changed while you were away"
+                : "some doors open from the other side"}
           </p>
         </div>
 
@@ -125,9 +134,11 @@ export default function WorldHub() {
             subtitle="cold blue light spills beneath the door"
             lockedHint={hasLens ? "the lens feels warm in your backpack" : "something optical is missing"}
             accent="blue"
-            className={`hall-door-observatory ${hasLens ? "has-world-clue" : ""}`}
+            className={`hall-door-observatory ${hasLens ? "has-world-clue" : ""} ${observatoryComplete ? "is-observatory-complete" : ""}`}
             detail={
-              hasLens ? (
+              observatoryComplete ? (
+                <span className="hall-observatory-complete">✦ fragment recovered</span>
+              ) : hasLens ? (
                 <span className="hall-observatory-lens">
                   <i /> lens recognised
                 </span>

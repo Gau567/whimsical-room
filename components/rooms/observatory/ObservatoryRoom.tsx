@@ -98,6 +98,12 @@ const SKY_HEIGHT = 220;
 const BASE_VIEW_WIDTH = 108;
 const BASE_VIEW_HEIGHT = 76;
 
+const REQUIRED_CONSTELLATIONS = 6;
+const REQUIRED_RARE_EVENTS = 2;
+const MOON_PUZZLE_PHASE = 3; // waxing gibbous
+const COORDINATE_TARGET: SkyPoint = { x: 84, y: 117 }; // ~05h35m, -05°23′
+const COORDINATE_TOLERANCE = 7.5;
+
 const COUNTRY_FACTS: CountryFact[] = [
   { country: "Singapore", emoji: "🇸🇬", capital: "Singapore", fact: "Singapore is a compact island city-state near the equator with four official languages.", skyFact: "Its equatorial latitude lets observers see parts of both the northern and southern celestial hemispheres during the year." },
   { country: "Japan", emoji: "🇯🇵", capital: "Tokyo", fact: "Japan is an island country stretching from cool northern latitudes to the subtropics.", skyFact: "Japanese astronomy has centuries of star maps, calendars and careful records of comets and unusual celestial events." },
@@ -411,6 +417,9 @@ export default function ObservatoryRoom() {
   const [selectedRareId, setSelectedRareId] = useState<string | null>(null);
   const [scopeMoves, setScopeMoves] = useState(0);
   const [globeHistory, setGlobeHistory] = useState<string[]>([]);
+  const [moonPuzzleSolved, setMoonPuzzleSolved] = useState(false);
+  const [coordinateLocked, setCoordinateLocked] = useState(false);
+  const [progressLoaded, setProgressLoaded] = useState(false);
 
   useEffect(() => {
     try {
@@ -425,11 +434,52 @@ export default function ObservatoryRoom() {
 
   useEffect(() => {
     try {
+      const raw = window.localStorage.getItem("observatory-v11-progress");
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as {
+        foundConstellations?: string[];
+        foundObjects?: string[];
+        loggedMoonPhases?: number[];
+        moonPuzzleSolved?: boolean;
+        coordinateLocked?: boolean;
+      };
+      if (Array.isArray(parsed.foundConstellations)) setFoundConstellations(parsed.foundConstellations);
+      if (Array.isArray(parsed.foundObjects)) setFoundObjects(parsed.foundObjects);
+      if (Array.isArray(parsed.loggedMoonPhases)) setLoggedMoonPhases(parsed.loggedMoonPhases);
+      if (typeof parsed.moonPuzzleSolved === "boolean") setMoonPuzzleSolved(parsed.moonPuzzleSolved);
+      if (typeof parsed.coordinateLocked === "boolean") setCoordinateLocked(parsed.coordinateLocked);
+    } catch {
+      // Progress persistence is helpful, never required.
+    } finally {
+      setProgressLoaded(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
       window.localStorage.setItem("observatory-v10-rare-log", JSON.stringify(rareLog));
     } catch {
       // localStorage may be unavailable in strict/private browser modes.
     }
   }, [rareLog]);
+
+  useEffect(() => {
+    if (!progressLoaded) return;
+    try {
+      window.localStorage.setItem(
+        "observatory-v11-progress",
+        JSON.stringify({
+          foundConstellations,
+          foundObjects,
+          loggedMoonPhases,
+          moonPuzzleSolved,
+          coordinateLocked,
+        }),
+      );
+    } catch {
+      // Ignore browser storage restrictions.
+    }
+  }, [progressLoaded, foundConstellations, foundObjects, loggedMoonPhases, moonPuzzleSolved, coordinateLocked]);
 
   const loggedRareEvents = useMemo(() => rareLog.map((entry) => entry.id), [rareLog]);
   const rareResearchScore = rareLog.reduce((sum, entry) => sum + entry.timesSeen, 0);
@@ -441,6 +491,17 @@ export default function ObservatoryRoom() {
   const hasCoordinateCard = hasItem("celestial-coordinate-card");
   const lensQuestComplete = isQuestComplete("observatory-missing-lens");
   const scopeReady = lensInstalled || lensQuestComplete;
+  const observatoryComplete = isQuestComplete("observatory-complete") || hasItem("star-fragment");
+  const constellationRequirementMet = foundConstellations.length >= REQUIRED_CONSTELLATIONS;
+  const rareRequirementMet = loggedRareEvents.length >= REQUIRED_RARE_EVENTS;
+  const coordinateDistance = Math.hypot(skyCenter.x - COORDINATE_TARGET.x, skyCenter.y - COORDINATE_TARGET.y);
+  const coordinateInRange = coordinateDistance <= COORDINATE_TOLERANCE && zoom >= 1.8;
+  const roomCompletionReady =
+    scopeReady &&
+    constellationRequirementMet &&
+    rareRequirementMet &&
+    moonPuzzleSolved &&
+    coordinateLocked;
 
   const viewSize = useMemo(() => ({
     width: BASE_VIEW_WIDTH / zoom,
@@ -571,7 +632,15 @@ export default function ObservatoryRoom() {
 
   function logMoonPhase() {
     setLoggedMoonPhases((current) => current.includes(moonPhase) ? current : [...current, moonPhase]);
-    showToast(`${MOON_PHASES[moonPhase]} logged in the lunar notebook.`);
+
+    if (moonPhase === MOON_PUZZLE_PHASE) {
+      setMoonPuzzleSolved(true);
+      discoverClue("observatory-moon-solved");
+      showToast("APRIL 17 alignment confirmed · waxing gibbous.");
+      return;
+    }
+
+    showToast(`${MOON_PHASES[moonPhase]} logged · the April 17 note does not react.`);
   }
 
   function inspectConstellation(constellation: Constellation) {
@@ -629,6 +698,54 @@ export default function ObservatoryRoom() {
     });
     discoverClue("observatory-coordinate-found");
     showToast("Celestial Coordinate Card added to your backpack.");
+  }
+
+  function lockCoordinateFragment() {
+    if (coordinateLocked) {
+      showToast("The telescope is already locked to 05h 35m · −05° 23′.");
+      return;
+    }
+
+    if (!hasCoordinateCard) {
+      showToast("You need the Celestial Coordinate Card from the brass drawer.");
+      return;
+    }
+
+    if (zoom < 1.8) {
+      showToast("The coordinate marks are too broad. Increase zoom to at least ×1.8.");
+      return;
+    }
+
+    if (!coordinateInRange) {
+      const horizontal = skyCenter.x < COORDINATE_TARGET.x ? "east" : "west";
+      const vertical = skyCenter.y < COORDINATE_TARGET.y ? "south" : "north";
+      showToast(`Not aligned · drift ${horizontal} and ${vertical}.`);
+      return;
+    }
+
+    setCoordinateLocked(true);
+    discoverClue("observatory-coordinate-locked");
+    setSkyCenter(COORDINATE_TARGET);
+    setZoomClamped(Math.max(zoom, 2.05));
+    showToast("COORDINATE LOCK · 05h 35m · −05° 23′. Something clicks inside the mount.");
+  }
+
+  function claimStarFragment() {
+    if (!roomCompletionReady || observatoryComplete) return;
+
+    addItem({
+      id: "star-fragment",
+      name: "Star Fragment",
+      icon: "✦",
+      description: "A warm brass-edged shard of glass that glows like a captured piece of night sky.",
+      sourceRoom: "observatory",
+      useIn: "dream",
+    });
+
+    discoverClue("observatory-star-fragment");
+    discoverClue("observatory-complete");
+    completeQuest("observatory-complete");
+    showToast("STAR FRAGMENT RECOVERED · the Observatory remembers you.");
   }
 
   function setZoomClamped(next: number) {
@@ -749,6 +866,35 @@ export default function ObservatoryRoom() {
             <button type="button" className="obs3-primary" disabled={!domeOpen} onClick={() => setScopeOpen(true)}>{domeOpen ? "look through telescope" : "open dome first"}</button>
           )}
           <p className="obs3-scope-status">{scopeReady ? "✓ optics calibrated · drag the sky · scroll or slide to zoom" : "42mm brass lens mount · currently empty"}</p>
+
+          <section className={`obs3-completion-console ${roomCompletionReady ? "is-ready" : ""} ${observatoryComplete ? "is-complete" : ""}`}>
+            <div className="obs3-completion-head">
+              <small>{observatoryComplete ? "ROOM 04 · COMPLETE" : "OBSERVATORY SEQUENCE"}</small>
+              <strong>{observatoryComplete ? "The sky remembers." : "Five mechanisms must agree."}</strong>
+            </div>
+
+            <div className="obs3-completion-steps">
+              <span className={scopeReady ? "done" : ""}>{scopeReady ? "✓" : "○"} repair telescope</span>
+              <span className={constellationRequirementMet ? "done" : ""}>{constellationRequirementMet ? "✓" : "○"} constellations {Math.min(foundConstellations.length, REQUIRED_CONSTELLATIONS)}/{REQUIRED_CONSTELLATIONS}</span>
+              <span className={rareRequirementMet ? "done" : ""}>{rareRequirementMet ? "✓" : "○"} rare sightings {Math.min(loggedRareEvents.length, REQUIRED_RARE_EVENTS)}/{REQUIRED_RARE_EVENTS}</span>
+              <span className={moonPuzzleSolved ? "done" : ""}>{moonPuzzleSolved ? "✓" : "○"} April 17 moon</span>
+              <span className={coordinateLocked ? "done" : ""}>{coordinateLocked ? "✓" : "○"} coordinate lock</span>
+            </div>
+
+            {!observatoryComplete && roomCompletionReady && (
+              <button type="button" className="obs3-star-compartment" onClick={claimStarFragment}>
+                <i>✦</i>
+                <span><small>BRASS COMPARTMENT OPEN</small><strong>take the Star Fragment</strong></span>
+              </button>
+            )}
+
+            {observatoryComplete && (
+              <div className="obs3-star-fragment-display">
+                <i>✦</i>
+                <span><strong>STAR FRAGMENT RECOVERED</strong><small>stored in world inventory</small></span>
+              </div>
+            )}
+          </section>
         </section>
 
         <aside className="obs3-right-zone">
@@ -910,14 +1056,25 @@ export default function ObservatoryRoom() {
 
               <aside className="obs3-scope-side">
                 <div className="obs3-zoom-control"><label htmlFor="obsZoom">OPTICAL ZOOM · ×{zoom.toFixed(2)}</label><input id="obsZoom" type="range" min="1" max="2.6" step="0.05" value={zoom} onChange={(e) => setZoomClamped(Number(e.target.value))}/></div>
-                <div className="obs3-scope-actions"><button type="button" onClick={() => centerOn({x:28,y:25},1.5)}>find moon</button><button type="button" onClick={() => centerOn({x:193,y:28},1.6)}>galaxy hint</button><button type="button" onClick={() => setCatalogOpen(true)}>celestial log</button></div>
+                <div className="obs3-scope-actions">
+                    <button type="button" onClick={() => centerOn({x:42,y:34},1.5)}>find moon</button>
+                    <button type="button" onClick={() => centerOn({x:326,y:48},1.6)}>galaxy hint</button>
+                    <button type="button" className={coordinateLocked ? "is-locked" : ""} onClick={lockCoordinateFragment}>{coordinateLocked ? "coordinates locked" : "lock coordinates"}</button>
+                    <button type="button" onClick={() => setCatalogOpen(true)}>celestial log</button>
+                  </div>
                 {rareEvent && <article className="obs3-rare-card"><small>RARE TELESCOPE EVENT</small><h2><span>{rareEvent.icon}</span> {rareEvent.title}</h2><p>{rareEvent.description}</p><div className="rare-effect-preview"><b>LOG EFFECT</b><span>{rareEvent.effectLabel}</span></div><button type="button" onClick={() => logRareEvent(rareEvent)}>record sighting</button></article>}
                 {selectedConstellation ? (
                   <article className="obs3-discovery-card"><small>CONSTELLATION IDENTIFIED</small><h2>{selectedConstellation.name}</h2><strong>{selectedConstellation.nickname}</strong><p>{selectedConstellation.fact}</p><span>{selectedConstellation.season}</span></article>
                 ) : selectedObject ? (
                   <article className={`obs3-discovery-card ${selectedObject.kind === "mystery" ? "is-mystery" : ""}`}><small>{selectedObject.kind === "mystery" ? "CATALOGUE ERROR" : "CELESTIAL OBJECT"}</small><h2>{selectedObject.name}</h2><strong>{selectedObject.short}</strong><p>{selectedObject.detail}</p>{selectedObject.kind === "mystery" && <span>signal fragment: ···· · .-.. .-.. ---</span>}</article>
                 ) : (
-                  <article className="obs3-discovery-card"><small>CONSTELLATION HUNT</small><h2>{foundConstellations.length} / {CONSTELLATIONS.length}</h2><p>Move the telescope. Constellation lines only appear after you identify the pattern. Increase zoom to resolve named stars and smaller objects.</p><span>{foundObjects.length} celestial objects logged</span></article>
+                  <article className="obs3-discovery-card">
+                    <small>CONSTELLATION HUNT</small>
+                    <h2>{foundConstellations.length} / {CONSTELLATIONS.length}</h2>
+                    <p>Move the telescope. Constellation lines only appear after you identify the pattern. Increase zoom to resolve named stars and smaller objects.</p>
+                    <span>{foundObjects.length} celestial objects logged</span>
+                    {hasCoordinateCard && <em className={coordinateLocked ? "coordinate-complete" : ""}>card: 05h 35m · −05° 23′ · {coordinateLocked ? "LOCKED" : `offset ${coordinateDistance.toFixed(1)}`}</em>}
+                  </article>
                 )}
               </aside>
             </div>
@@ -970,6 +1127,7 @@ export default function ObservatoryRoom() {
                   ][secretBookPage]}</p>
                 </article>
                 {loggedRareEvents.length > 0 && <aside className="rare-book-addendum"><small>INK ADDED ITSELF</small><p>{loggedRareEvents.includes("window") ? "A seventh window has appeared in the building plan. It opens onto a room labelled only: DREAM." : `The book has copied ${loggedRareEvents.length} unusual sky ${loggedRareEvents.length === 1 ? "sighting" : "sightings"} into its margins.`}</p></aside>}
+                {observatoryComplete && <aside className="rare-book-addendum observatory-complete-entry"><small>ROOM 04 · OBSERVATORY · STATUS: SEEN</small><p>The sky was not empty. The building is larger than the hallway admits.</p><strong>FRAGMENT RECOVERED · ✦</strong></aside>}
               </>}
             </div>
           </section>
@@ -1015,7 +1173,7 @@ export default function ObservatoryRoom() {
             <button type="button" className="obs3-close" onClick={()=>setMoonLogOpen(false)}>×</button>
             <small>LUNAR OBSERVATIONS</small><h2>Moon Notebook</h2>
             <div className="moon-grid">{MOON_PHASES.map((name,index)=><button key={name} className={loggedMoonPhases.includes(index)?"logged":""} onClick={()=>setMoonPhase(index)}><MoonPhaseVisual phase={index}/><strong>{name}</strong><span>{loggedMoonPhases.includes(index)?"✓ logged":"set phase"}</span></button>)}</div>
-            <div className="moon-note"><b>APRIL 17 · 11:47 PM</b><p>“Something crossed the Moon, but the timing did not match any aircraft or satellite in the log.”</p></div>
+            <div className="moon-note"><b>APRIL 17 · 11:47 PM</b><p>“Something crossed the Moon when the bright side had just grown past half. The brass dial answered only once.”</p><small>hint: just past first quarter → waxing gibbous</small></div>
           </section>
         </div>
       )}
