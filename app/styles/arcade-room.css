@@ -26,3 +26,71 @@
 .arcade-reset-warning{margin:25px 0;padding:17px;border:1px solid rgba(255,90,150,.35);border-radius:13px;background:rgba(90,30,50,.18)}.arcade-reset-warning strong{color:#ff8fbd}.arcade-reset-warning p{color:#c4b1bb}.arcade-danger-button{width:100%;padding:14px;border:1px solid #d85682;border-radius:9px;background:#512035;color:#ffdbe6;font-weight:900;cursor:pointer}.arcade-modal-prizes{width:min(1040px,95vw)}
 @media(max-width:1280px){.arcade-jackpot-tables{grid-template-columns:repeat(2,290px)}.arcade-vip-booth{top:625px}.arcade-midway-games{grid-template-columns:repeat(2,180px)}.arcade-claw-shelf-preview{top:880px}}
 @media(max-width:680px){.arcade-memory-grid{grid-template-columns:1fr}.arcade-risk-row{flex-direction:column;align-items:center}.arcade-poker-hand{flex-wrap:wrap}}
+
+/* V4.2 · easier repeatable token recovery */
+.arcade-token-options > .arcade-token-option:nth-child(3) {
+  grid-column: 1 / -1;
+  min-height: 104px;
+  border-color: rgba(255, 202, 90, .25);
+  background:
+    radial-gradient(circle at 8% 50%, rgba(255, 200, 90, .08), transparent 28%),
+    #1a1830;
+}
+
+.arcade-token-options > .arcade-token-option:nth-child(3):not(:disabled):hover {
+  border-color: rgba(255, 202, 90, .62);
+}
+
+
+
+/* =========================================================
+   V4.3 · THREE EXTRA GAMES + EXPANDED PRIZE CATALOGUE
+   ========================================================= */
+.arcade-center-mini-games {
+  grid-template-columns: repeat(3, minmax(135px, 1fr));
+  width: 470px;
+}
+.arcade-center-mini-games .arcade-midway-game {
+  min-height: 118px;
+}
+.arcade-midway-games {
+  grid-template-columns: repeat(4, 165px);
+  max-width: 760px;
+}
+.arcade-midway-games .arcade-midway-game {
+  min-height: 170px;
+}
+.arcade-jackpot-tables {
+  grid-template-columns: repeat(3, 270px);
+  max-width: 870px;
+}
+.arcade-racer-road {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  width: min(650px,90%);
+  height: 220px;
+  margin: 24px auto;
+  overflow: hidden;
+  border: 3px solid #4b4258;
+  border-radius: 18px;
+  background: repeating-linear-gradient(90deg,#171528 0 31%,#4b4354 31% 32%,#171528 32% 65%,#4b4354 65% 66%,#171528 66% 100%);
+}
+.arcade-racer-road i { display:grid;place-items:start center;padding-top:18px;color:#8f8598;font-style:normal;font-size:9px; }
+.arcade-racer-road i.hazard { background:linear-gradient(rgba(255,74,111,.18),transparent);color:#ff809c; }
+.arcade-racer-road b { position:absolute;bottom:18px;transform:translateX(-50%);font-size:42px;transition:left .18s ease; }
+.arcade-bottle-stack { min-height:130px;display:grid;place-items:center;margin:20px;border:2px solid #4b3b49;border-radius:16px;background:#1a1728; }
+.arcade-bottle-stack span { max-width:620px;font-size:30px;letter-spacing:8px;line-height:1.6;text-align:center; }
+.arcade-vault-grid { display:grid;grid-template-columns:repeat(3,110px);justify-content:center;gap:12px;margin:28px 0; }
+.arcade-vault-grid button { height:100px;border:2px solid #5a4b49;border-radius:14px;background:#211a28;color:#f6d080;font-size:28px;cursor:pointer; }
+.arcade-vault-grid button.is-open { border-color:#ffd164;box-shadow:0 0 18px rgba(255,209,100,.25); }
+.arcade-vault-grid small { display:block;margin-top:6px;color:#9e92a5;font-size:9px; }
+.arcade-modal-prizes { max-height:92vh; }
+@media (max-width: 1180px) {
+  .arcade-midway-games { grid-template-columns:repeat(3,170px); }
+  .arcade-jackpot-tables { grid-template-columns:repeat(2,285px); }
+}
+@media (max-width: 760px) {
+  .arcade-center-mini-games,.arcade-midway-games,.arcade-jackpot-tables { grid-template-columns:1fr; width:min(260px,85%); }
+  .arcade-vault-grid { grid-template-columns:repeat(3,80px); }
+}

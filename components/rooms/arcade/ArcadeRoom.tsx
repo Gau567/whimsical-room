@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useWorld } from "@/lib/world/WorldContext";
 
 type Zone = 0 | 1 | 2;
-type Modal = null | "token" | "prizes" | "collection" | "food" | "scores" | "reaction" | "slots" | "twentyone" | "memory" | "rhythm" | "basketball" | "clown" | "beanbag" | "claw" | "skeeball" | "ringtoss" | "wheel" | "highlow" | "dice" | "triplestar" | "poker" | "colorbet" | "secret" | "reset";
+type Modal = null | "token" | "prizes" | "collection" | "food" | "scores" | "reaction" | "slots" | "twentyone" | "memory" | "rhythm" | "basketball" | "clown" | "beanbag" | "claw" | "skeeball" | "ringtoss" | "wheel" | "highlow" | "dice" | "triplestar" | "poker" | "colorbet" | "pixelracer" | "bottlebash" | "vaultpick" | "secret" | "reset";
 type ReactionState = "idle" | "waiting" | "ready" | "done" | "too-early";
 type CollectibleId = "pixel-bear" | "moon-bunny" | "tiny-astronomer" | "ghost-cat" | "pocket-atlas" | "crt-robot";
 
@@ -13,6 +13,7 @@ type ArcadeSave = {
   tickets: number;
   welcomeClaimed: boolean;
   tokenStamp: number;
+  coinReturnStamp: number;
   wins: string[];
   highScores: Record<string, number>;
   secretBooted: boolean;
@@ -31,6 +32,7 @@ const DEFAULT_SAVE: ArcadeSave = {
   tickets: 0,
   welcomeClaimed: false,
   tokenStamp: 0,
+  coinReturnStamp: 0,
   wins: [],
   highScores: {},
   secretBooted: false,
@@ -85,6 +87,15 @@ const PRIZES = [
   ["music-box","🎵","8-Bit Music Box",72,"plays four suspicious notes"],
   ["dream-lantern","🏮","Dream Lantern",82,"future Dream Room decoration"],
   ["star-globe","🌌","Pocket Star Globe",90,"future Observatory decoration"],
+  ["fortune-card","🃏","Fortune Card Deck",32,"glittery cards with impossible suits"],
+  ["mini-basket","🏀","Mini Hoop Set",36,"desk-sized and dangerously competitive"],
+  ["clown-pin","🤡","Midway Clown Pin",44,"it looks happier upside down"],
+  ["beanbag-set","🔴","Tiny Beanbag Set",48,"three miniature stitched beanbags"],
+  ["lucky-bell","🔔","Lucky Counter Bell",56,"rings by itself at 11:47"],
+  ["ticket-crown","👑","Ticket Crown",68,"ridiculous, shiny, absolutely necessary"],
+  ["arcade-book","📕","Arcade Secrets Book",76,"half strategy guide, half room gossip"],
+  ["neon-clock","🕚","Neon 11:47 Clock",88,"future Train / Nostalgia decoration"],
+  ["mystery-box","🎁","Mystery Prize Box",96,"sealed with a tiny clover sticker"],
   ["giant-plush","🧸","Giant Arcade Bear",105,"objectively too large"],
 ] as const;
 
@@ -132,6 +143,9 @@ export default function ArcadeRoom() {
   const [rhythmPos,setRhythmPos]=useState(5); const [rhythmTarget,setRhythmTarget]=useState(50); const [rhythmHits,setRhythmHits]=useState(0); const [rhythmActive,setRhythmActive]=useState(false); const rhythmTimer=useRef<ReturnType<typeof setInterval>|null>(null);
   const [skeeBalls,setSkeeBalls]=useState(0); const [skeeScore,setSkeeScore]=useState(0); const [ringThrows,setRingThrows]=useState(0); const [ringScore,setRingScore]=useState(0);
   const [pokerHand,setPokerHand]=useState(["A♠","7♥","K♣","4♦","9♠"]); const [pokerMessage,setPokerMessage]=useState("five-card draw"); const [colorResult,setColorResult]=useState<string>("?");
+  const [racerLane,setRacerLane]=useState(1); const [racerRound,setRacerRound]=useState(0); const [racerScore,setRacerScore]=useState(0); const [racerHazard,setRacerHazard]=useState<number|null>(null); const [racerActive,setRacerActive]=useState(false); const [racerMessage,setRacerMessage]=useState("pick a lane, dodge six hazards");
+  const [bottleThrows,setBottleThrows]=useState(0); const [bottlesLeft,setBottlesLeft]=useState(10); const [bottleMessage,setBottleMessage]=useState("three throws · choose your power");
+  const [vaultRound,setVaultRound]=useState(0); const [vaultMessage,setVaultMessage]=useState("choose one vault door"); const [vaultOpened,setVaultOpened]=useState<number|null>(null);
 
   const hasStarFragment = hasItem("star-fragment");
   const uniqueWins = new Set(save.wins).size;
@@ -166,9 +180,9 @@ export default function ArcadeRoom() {
   }, []);
 
   const scoreRows = useMemo(() => [
-    ["QUICKDRAW", "reaction"], ["LUCKY 7", "slots"], ["TWENTY ONE", "twentyone"], ["MEMORY MATRIX", "memory"], ["RHYTHM RUSH", "rhythm"],
-    ["HOOP FEVER", "basketball"], ["HIT THE CLOWN", "clown"], ["BEANBAG", "beanbag"], ["SKEE BALL", "skeeball"], ["RING TOSS", "ringtoss"],
-    ["LUCKY WHEEL", "wheel"], ["HIGH / LOW", "highlow"], ["DICE DUEL", "dice"], ["TRIPLE STAR", "triplestar"], ["POKER DRAW", "poker"], ["COLOR BET", "colorbet"],
+    ["QUICKDRAW", "reaction"], ["LUCKY 7", "slots"], ["TWENTY ONE", "twentyone"], ["MEMORY MATRIX", "memory"], ["RHYTHM RUSH", "rhythm"], ["PIXEL RACER", "pixelracer"],
+    ["HOOP FEVER", "basketball"], ["HIT THE CLOWN", "clown"], ["BEANBAG", "beanbag"], ["SKEE BALL", "skeeball"], ["RING TOSS", "ringtoss"], ["BOTTLE BASH", "bottlebash"],
+    ["LUCKY WHEEL", "wheel"], ["HIGH / LOW", "highlow"], ["DICE DUEL", "dice"], ["TRIPLE STAR", "triplestar"], ["POKER DRAW", "poker"], ["COLOR BET", "colorbet"], ["VAULT PICK", "vaultpick"],
   ], []);
 
   const update = (fn: (s: ArcadeSave) => ArcadeSave) => setSave(fn);
@@ -196,6 +210,26 @@ export default function ArcadeRoom() {
     update(s => ({ ...s, tokens: s.tokens + due * 2, tokenStamp: stamps }));
     setToast(`PLAYER CARD stamped · +${due * 2} tokens.`);
   }
+  function claimCoinReturn() {
+    const returns = Math.floor(save.paidPlays / 3);
+
+    if (returns <= save.coinReturnStamp) {
+      const progress = save.paidPlays % 3;
+      const remaining = progress === 0 ? 3 : 3 - progress;
+      setToast(`coin return is empty · ${remaining} more paid round${remaining === 1 ? "" : "s"} until it rattles again.`);
+      return;
+    }
+
+    const due = returns - save.coinReturnStamp;
+    update(s => ({
+      ...s,
+      tokens: s.tokens + due,
+      coinReturnStamp: returns,
+    }));
+
+    setToast(`you check the old coin-return tray · +${due} token${due === 1 ? "" : "s"}.`);
+  }
+
   function tradeTickets() {
     if (save.tickets < 20) return;
     update(s => ({ ...s, tickets: s.tickets - 20, tokens: s.tokens + 3 }));
@@ -276,9 +310,17 @@ export default function ArcadeRoom() {
   function throwRing(d:1|2|3){if(ringThrows<=0)return;const chance=d===1?.72:d===2?.45:.25;const score=ringScore+(Math.random()<chance?d*3:0),left=ringThrows-1;setRingScore(score);setRingThrows(left);if(left===0){awardTickets(Math.min(14,score));highScore("ringtoss",score);if(score>=9)markWin("ring-toss")}}
   function playPoker(){if(!spend(3))return;const ranks=["A","K","Q","J","10","9","8","7","6","5","4","3","2"],suits=["♠","♥","♦","♣"];const hand=Array.from({length:5},()=>ranks[rand(0,ranks.length-1)]+suits[rand(0,3)]);setPokerHand(hand);const ranksOnly=hand.map(x=>x.slice(0,-1));const counts=Object.values(ranksOnly.reduce<Record<string,number>>((a,r)=>{a[r]=(a[r]??0)+1;return a},{})).sort((a,b)=>b-a);let pay=0,label="HIGH CARD";if(counts[0]>=4){pay=34;label="FOUR OF A KIND"}else if(counts[0]===3&&counts[1]===2){pay=25;label="FULL HOUSE"}else if(counts[0]===3){pay=15;label="THREE OF A KIND"}else if(counts[0]===2&&counts[1]===2){pay=10;label="TWO PAIR"}else if(counts[0]===2){pay=5;label="PAIR"}awardTickets(pay);setPokerMessage(`${label} · ${pay} tickets`);highScore("poker",pay);if(pay>=10)markWin("poker-draw")}
   function colorBet(choice:"red"|"black"|"gold"){if(!spend(2))return;const r=Math.random(),res=r<.46?"red":r<.92?"black":"gold";setColorResult(res);const pay=choice===res?(res==="gold"?28:8):0;awardTickets(pay);highScore("colorbet",pay);if(pay>=8)markWin("color-bet")}
-  function resetArcade(){try{localStorage.removeItem("arcade-v1-progress");localStorage.removeItem("arcade-v3-progress");localStorage.removeItem("arcade-v4-progress");localStorage.removeItem("whimsical-world-state-v2")}catch{}window.location.assign(window.location.pathname)}
-  function starCabinet() { if(!hasStarFragment){setToast("STAR CHASER: INSERT SOMETHING THAT REMEMBERS THE SKY.");return;} if(save.claimedStarBonus){setToast("stellar signature already saved.");return;} awardTickets(15,"Star Fragment recognised · +15 celestial tickets."); discoverClue("arcade-starlight-recognised"); update(s=>({...s,claimedStarBonus:true})); }
-  function bootSecret() { if(!secretAvailable){setToast(`OUT OF ORDER · clear ${5-uniqueWins} more different game${5-uniqueWins===1?"":"s"}.`);return;} setModal("secret"); if(!save.secretBooted){update(s=>({...s,secretBooted:true})); discoverClue("arcade-corrupted-save"); discoverClue("train-platform-seven");} }
+  function startPixelRacer(){if(!spend(1))return;setRacerLane(1);setRacerRound(0);setRacerScore(0);setRacerHazard(null);setRacerActive(true);setRacerMessage("choose LEFT, CENTRE or RIGHT")}
+  function driveRacer(lane:0|1|2){if(!racerActive)return;const hazard=rand(0,2);setRacerLane(lane);setRacerHazard(hazard);const safe=lane!==hazard;const round=racerRound+1;const score=racerScore+(safe?1:0);setRacerRound(round);setRacerScore(score);if(!safe)setRacerMessage(`CRASH in lane ${["LEFT","CENTRE","RIGHT"][hazard]} · keep going`);else setRacerMessage(`clean dodge · ${score} safe`);if(round>=6){setRacerActive(false);const pay=score>=6?14:score>=5?9:score>=4?5:1;awardTickets(pay);highScore("pixelracer",score);if(score>=5)markWin("pixel-racer");setRacerMessage(`${score}/6 survived · ${pay} tickets`)}}
+
+  function startBottleBash(){if(!spend(1))return;setBottleThrows(3);setBottlesLeft(10);setBottleMessage("three balls ready")}
+  function throwBottleBall(power:1|2|3){if(bottleThrows<=0)return;const sweet=rand(1,3);const knocked=power===sweet?rand(4,6):Math.abs(power-sweet)===1?rand(1,3):0;const left=Math.max(0,bottlesLeft-knocked);const throws=bottleThrows-1;setBottlesLeft(left);setBottleThrows(throws);setBottleMessage(`${knocked} bottles down · ${left} remain`);if(throws===0||left===0){const score=10-left;const pay=left===0?12:score>=7?7:score>=4?3:0;awardTickets(pay);highScore("bottlebash",score);if(score>=7)markWin("bottle-bash");setBottleMessage(`${score}/10 knocked · ${pay} tickets`)}}
+
+  function playVaultPick(choice:number){if(vaultRound===0&&!spend(2))return;if(vaultRound===0)setVaultRound(1);const jackpot=rand(0,8);const silver=(jackpot+rand(1,7))%9;setVaultOpened(choice);let pay=0;if(choice===jackpot)pay=24;else if(choice===silver)pay=10;else if(Math.random()<.35)pay=3;awardTickets(pay);highScore("vaultpick",pay);if(pay>=10)markWin("vault-pick");setVaultMessage(pay===24?"GOLD VAULT · 24 tickets":pay===10?"SILVER VAULT · 10 tickets":pay===3?"loose tickets · 3":"empty vault");setVaultRound(0)}
+
+  function resetArcade(){try{localStorage.removeItem("arcade-v1-progress");localStorage.removeItem("arcade-v3-progress");localStorage.removeItem("arcade-v4-progress")}catch{}window.location.assign(window.location.pathname)}
+  function starCabinet() { if(!hasStarFragment){setToast("STAR CHASER: INSERT SOMETHING THAT REMEMBERS THE SKY.");return;} if(save.claimedStarBonus){setToast("stellar signature already saved.");return;} awardTickets(8,"Star Fragment recognised · +8 celestial tickets."); discoverClue("arcade-starlight-recognised"); update(s=>({...s,claimedStarBonus:true})); }
+  function bootSecret() { if(!secretAvailable){setToast(`OUT OF ORDER · clear ${7-uniqueWins} more different game${7-uniqueWins===1?"":"s"}.`);return;} setModal("secret"); if(!save.secretBooted){update(s=>({...s,secretBooted:true})); discoverClue("arcade-corrupted-save"); discoverClue("train-platform-seven");} }
   function takeDisk() { if(save.claimedDisk)return; addItem({id:"retro-system-disk",name:"Retro System Disk",icon:"▣",description:"A translucent save disk labelled NOSTALGIA_01. Scratched into the back: 04/17 · P7 · 11:47.",sourceRoom:"arcade",useIn:"nostalgia"}); discoverClue("arcade-nostalgia-disk"); update(s=>({...s,claimedDisk:true})); setToast("Retro System Disk added to Backpack."); }
   function buyPrize(id:string,cost:number) {
     if(save.tickets<cost||save.purchasedPrizes.includes(id))return; const p=PRIZES.find(x=>x[0]===id); if(!p)return;
@@ -291,6 +333,8 @@ export default function ArcadeRoom() {
     if(id==="crt-lamp")addItem({id:"tiny-crt-night-light",name:"Tiny CRT Night Light",icon:"💻",description:"A tiny prize-counter CRT lamp with a soft blue screen.",sourceRoom:"arcade",useIn:"nostalgia"});
     if(id==="dream-lantern")addItem({id:"dream-lantern",name:"Dream Lantern",icon:"🏮",description:"Its bulb stays lit even when removed.",sourceRoom:"arcade",useIn:"dream"});
     if(id==="star-globe")addItem({id:"pocket-star-globe",name:"Pocket Star Globe",icon:"🌌",description:"A tiny globe showing several impossible constellations.",sourceRoom:"arcade",useIn:"observatory"});
+    if(id==="neon-clock")addItem({id:"neon-1147-clock",name:"Neon 11:47 Clock",icon:"🕚",description:"A tiny neon clock permanently frozen at 11:47.",sourceRoom:"arcade",useIn:"train"});
+    if(id==="arcade-book")addItem({id:"arcade-secrets-book",name:"Arcade Secrets Book",icon:"📕",description:"A prize-counter strategy guide with handwritten notes about the other rooms.",sourceRoom:"arcade",useIn:"nostalgia"});
     setToast(`${p[1]} ${p[2]} redeemed.`);
   }
   function claimFragment(){if(save.claimedFragment||!save.secretBooted||save.tickets<120)return; addItem({id:"pixel-fragment",name:"Pixel Fragment",icon:"◈",description:"A translucent shard flickering magenta, cyan and gold.",sourceRoom:"arcade",useIn:"dream"}); completeQuest("arcade-after-hours"); discoverClue("arcade-pixel-fragment"); update(s=>({...s,tickets:s.tickets-120,claimedFragment:true})); setToast("PIXEL FRAGMENT recovered · PLAYER ONE SAVED.");}
@@ -313,19 +357,19 @@ export default function ArcadeRoom() {
       {zone===0 && <div className="arcade-zone-content arcade-main-floor">
         <button className="arcade-neon-sign" onClick={()=>setMarqueeOn(v=>!v)}><small>WELCOME TO</small><strong>NEON CLOVER</strong><span>ARCADE · GAMES · PRIZES</span></button>
         <button className="arcade-scoreboard" onClick={()=>setModal("scores")}><small>LOCAL HIGH SCORES</small><strong>{uniqueWins}/7 GAMES CLEARED</strong><span>tap to inspect</span></button>
-        <div className="arcade-left-bank"><Cabinet title="QUICKDRAW" subtitle="FREE · REACTION" accent="pink" icon="⚡" cost="FREE" onClick={()=>setModal("reaction")}/><Cabinet title="LUCKY 7" subtitle="TICKET SLOTS" accent="gold" icon="7" cost="1" onClick={()=>setModal("slots")}/><Cabinet title="TWENTY ONE" subtitle="CARD TABLE" accent="cyan" icon="♠" cost="2" onClick={()=>setModal("twentyone")}/></div><div className="arcade-center-mini-games"><GameCard icon="▦" name="MEMORY MATRIX" note="repeat five lights" cost="1 TOKEN" onClick={()=>setModal("memory")}/><GameCard icon="♫" name="RHYTHM RUSH" note="hit four beats" cost="1 TOKEN" onClick={()=>setModal("rhythm")}/></div>
+        <div className="arcade-left-bank"><Cabinet title="QUICKDRAW" subtitle="FREE · REACTION" accent="pink" icon="⚡" cost="FREE" onClick={()=>setModal("reaction")}/><Cabinet title="LUCKY 7" subtitle="TICKET SLOTS" accent="gold" icon="7" cost="1" onClick={()=>setModal("slots")}/><Cabinet title="TWENTY ONE" subtitle="CARD TABLE" accent="cyan" icon="♠" cost="2" onClick={()=>setModal("twentyone")}/></div><div className="arcade-center-mini-games"><GameCard icon="▦" name="MEMORY MATRIX" note="repeat five lights" cost="1 TOKEN" onClick={()=>setModal("memory")}/><GameCard icon="♫" name="RHYTHM RUSH" note="hit four beats" cost="1 TOKEN" onClick={()=>setModal("rhythm")}/><GameCard icon="🏎️" name="PIXEL RACER" note="dodge six hazards" cost="1 TOKEN" onClick={()=>setModal("pixelracer")}/></div>
         <div className="arcade-right-bank"><Cabinet title="STAR CHASER" subtitle={hasStarFragment?"SKY LINK READY":"SIGNAL LOST"} accent="blue" icon="✦" cost="LINK" onClick={starCabinet}/><Cabinet title="OUT OF ORDER" subtitle={secretAvailable?"...BOOT?":`${uniqueWins}/7 CLEARS`} accent="glitch" icon="?" cost="???" onClick={bootSecret}/><Cabinet title="GHOST SAVE" subtitle="NO CONTROLLER" accent="violet" icon="◌" cost="OFF" onClick={()=>setToast("PLAYER TWO: ROOM_05 · CONTROLLER NOT FOUND.")}/></div>
       </div>}
 
       {zone===1 && <div className="arcade-zone-content arcade-midway-floor">
         <div className="arcade-zone-sign"><small>CARNIVAL WING</small><strong>THE MIDWAY</strong><span>games of skill · suspiciously generous tickets</span></div>
-        <div className="arcade-midway-games"><GameCard icon="🏀" name="HOOP FEVER" note="five shots" cost="1 TOKEN" onClick={()=>setModal("basketball")}/><GameCard icon="🤡" name="HIT THE CLOWN" note="10 second bonkfest" cost="FREE" onClick={()=>setModal("clown")}/><GameCard icon="🔴" name="BEANBAG BONANZA" note="three throws" cost="1 TOKEN" onClick={()=>setModal("beanbag")}/><GameCard icon="🕹️" name="LUCKY CLAW" note="toys · books · figurines" cost="2 TOKENS" onClick={()=>setModal("claw")}/><GameCard icon="🎳" name="SKEE BALL" note="five balls · choose risk" cost="2 TOKENS" onClick={()=>setModal("skeeball")}/><GameCard icon="⭕" name="RING TOSS" note="five rings · three targets" cost="1 TOKEN" onClick={()=>setModal("ringtoss")}/></div>
+        <div className="arcade-midway-games"><GameCard icon="🏀" name="HOOP FEVER" note="five shots" cost="1 TOKEN" onClick={()=>setModal("basketball")}/><GameCard icon="🤡" name="HIT THE CLOWN" note="10 second bonkfest" cost="FREE" onClick={()=>setModal("clown")}/><GameCard icon="🔴" name="BEANBAG BONANZA" note="three throws" cost="1 TOKEN" onClick={()=>setModal("beanbag")}/><GameCard icon="🕹️" name="LUCKY CLAW" note="toys · books · figurines" cost="2 TOKENS" onClick={()=>setModal("claw")}/><GameCard icon="🎳" name="SKEE BALL" note="five balls · choose risk" cost="2 TOKENS" onClick={()=>setModal("skeeball")}/><GameCard icon="⭕" name="RING TOSS" note="five rings · three targets" cost="1 TOKEN" onClick={()=>setModal("ringtoss")}/><GameCard icon="🥫" name="BOTTLE BASH" note="three balls · ten bottles" cost="1 TOKEN" onClick={()=>setModal("bottlebash")}/></div>
         <button className="arcade-claw-shelf-preview" onClick={()=>setModal("collection")}><small>PRIZE SHELF</small><div>🧸 · 🐇 · 🔭 · 🐈 · 📘 · 🤖</div><strong>{save.collectibles.length}/6 COLLECTED</strong></button>
       </div>}
 
       {zone===2 && <div className="arcade-zone-content arcade-jackpot-floor">
         <div className="arcade-zone-sign arcade-jackpot-sign"><small>FICTIONAL TOKENS ONLY</small><strong>JACKPOT LOUNGE</strong><span>high-ticket games · very real bragging rights</span></div>
-        <div className="arcade-jackpot-tables"><CasinoCard icon="🎡" name="LUCKY WHEEL" note="up to 25 tickets" cost="2 TOKENS" onClick={()=>setModal("wheel")}/><CasinoCard icon="🂡" name="HIGH / LOW" note="quick ticket table" cost="1 TOKEN" onClick={()=>setModal("highlow")}/><CasinoCard icon="🎲" name="DICE DUEL" note="7 · doubles · twelve" cost="2 TOKENS" onClick={()=>setModal("dice")}/><CasinoCard icon="★★★" name="TRIPLE STAR" note="45-ticket jackpot" cost="3 TOKENS" onClick={()=>setModal("triplestar")}/><CasinoCard icon="🃏" name="POKER DRAW" note="pair · trips · full house" cost="3 TOKENS" onClick={()=>setModal("poker")}/><CasinoCard icon="◐" name="COLOR BET" note="red · black · rare gold" cost="2 TOKENS" onClick={()=>setModal("colorbet")}/></div>
+        <div className="arcade-jackpot-tables"><CasinoCard icon="🎡" name="LUCKY WHEEL" note="up to 25 tickets" cost="2 TOKENS" onClick={()=>setModal("wheel")}/><CasinoCard icon="🂡" name="HIGH / LOW" note="quick ticket table" cost="1 TOKEN" onClick={()=>setModal("highlow")}/><CasinoCard icon="🎲" name="DICE DUEL" note="7 · doubles · twelve" cost="2 TOKENS" onClick={()=>setModal("dice")}/><CasinoCard icon="★★★" name="TRIPLE STAR" note="45-ticket jackpot" cost="3 TOKENS" onClick={()=>setModal("triplestar")}/><CasinoCard icon="🃏" name="POKER DRAW" note="pair · trips · full house" cost="3 TOKENS" onClick={()=>setModal("poker")}/><CasinoCard icon="◐" name="COLOR BET" note="red · black · rare gold" cost="2 TOKENS" onClick={()=>setModal("colorbet")}/><CasinoCard icon="🔐" name="VAULT PICK" note="nine doors · one gold vault" cost="2 TOKENS" onClick={()=>setModal("vaultpick")}/></div>
         <button className="arcade-vip-booth" onClick={()=>setToast("VIP receipt: DEPARTURE 11:47 · PLATFORM 7.")}><span>VIP 07</span><strong>TABLE RESERVED</strong><small>receipt tucked beneath the glass...</small></button>
       </div>}
 
@@ -334,12 +378,12 @@ export default function ArcadeRoom() {
         <button className="arcade-prize-counter" onClick={()=>setModal("prizes")}><span className="prize-sign">PRIZE EXCHANGE</span><div className="prize-shelf">🧸 👾 🌙 🪩 🌱 ⭐ 🪐 📼</div><strong>{save.tickets} tickets available</strong></button>
         <button className="arcade-snack-bar" onClick={()=>setModal("food")}><span>PIXEL BITES</span><div>🍟 🥤 🍿 🥨 🧀 🥛</div><small>fuel for irresponsible high scores</small></button>
       </>}
-      <aside className="arcade-progress-board"><small>AFTER-HOURS CHALLENGE</small><strong>{secretAvailable?"SECRET CABINET READY":"CLEAR SEVEN DIFFERENT GAMES"}</strong><div className="arcade-progress-pips">{[0,1,2,3,4,5,6].map(n=><i key={n} className={n<uniqueWins?"is-on":""}/>)}</div><span>{save.claimedFragment?"◈ PLAYER ONE SAVED":save.secretBooted?"100 tickets unlock the fragment":`${uniqueWins}/7 unique clears`}</span></aside>
+      <aside className="arcade-progress-board"><small>AFTER-HOURS CHALLENGE</small><strong>{secretAvailable?"SECRET CABINET READY":"CLEAR SEVEN DIFFERENT GAMES"}</strong><div className="arcade-progress-pips">{[0,1,2,3,4,5,6].map(n=><i key={n} className={n<uniqueWins?"is-on":""}/>)}</div><span>{save.claimedFragment?"◈ PLAYER ONE SAVED":save.secretBooted?"120 tickets unlock the fragment":`${uniqueWins}/7 unique clears`}</span></aside>
       <p className="arcade-floor-toast">{toast}</p>
     </section>
 
     {modal && <div className="arcade-modal-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)setModal(null)}}><section className={`arcade-modal arcade-modal-${modal}`}><button className="arcade-modal-close" onClick={()=>setModal(null)}>×</button>
-      {modal==="token" && <><Heading eyebrow="TOKEN COUNTER" title="Keep Playing" text="Refill fictional arcade tokens without getting stuck."/><div className="arcade-token-options"><TokenOption icon="🎟️" title="Welcome Roll" text={save.welcomeClaimed?"already claimed":"+5 tokens · one time"} disabled={save.welcomeClaimed} onClick={claimWelcome}/><TokenOption icon="🪪" title="Player Card Stamp" text={`every 5 paid rounds → +2 tokens · ${save.paidPlays%5}/5`} disabled={Math.floor(save.paidPlays/5)<=save.tokenStamp} onClick={claimStamp}/><TokenOption icon="🔁" title="Ticket Exchange" text="20 tickets → 3 tokens" disabled={save.tickets<20} onClick={tradeTickets}/><TokenOption icon="🆘" title="Emergency Free Play" text="0 tokens → +3" disabled={save.tokens>0} onClick={emergency}/></div><p className="arcade-ticket-balance">{save.tokens} TOKENS · {save.tickets} TICKETS</p></>}
+      {modal==="token" && <><Heading eyebrow="TOKEN COUNTER" title="Keep Playing" text="Refill fictional arcade tokens without getting stuck."/><div className="arcade-token-options"><TokenOption icon="🎟️" title="Welcome Roll" text={save.welcomeClaimed?"already claimed":"+5 tokens · one time"} disabled={save.welcomeClaimed} onClick={claimWelcome}/><TokenOption icon="🪪" title="Player Card Stamp" text={`every 5 paid rounds → +2 tokens · ${save.paidPlays%5}/5`} disabled={Math.floor(save.paidPlays/5)<=save.tokenStamp} onClick={claimStamp}/><TokenOption icon="🪙" title="Check Coin Return" text={`every 3 paid rounds → +1 token · ${save.paidPlays%3}/3`} disabled={Math.floor(save.paidPlays/3)<=save.coinReturnStamp} onClick={claimCoinReturn}/><TokenOption icon="🔁" title="Ticket Exchange" text="20 tickets → 3 tokens" disabled={save.tickets<20} onClick={tradeTickets}/><TokenOption icon="🆘" title="Emergency Free Play" text="0 tokens → +3" disabled={save.tokens>0} onClick={emergency}/></div><p className="arcade-ticket-balance">{save.tokens} TOKENS · {save.tickets} TICKETS</p></>}
       {modal==="reaction" && <><Heading eyebrow="MAIN FLOOR · FREE" title="Quickdraw Lights" text="Wait for green, then hit it."/><button className={`arcade-reaction-pad is-${reactionState}`} disabled={["idle","done","too-early"].includes(reactionState)} onClick={hitReaction}>{reactionState==="waiting"?"WAIT...":reactionState==="ready"?"HIT!":reactionState==="done"?`${reactionMs} ms`:reactionState==="too-early"?"TOO EARLY":"READY?"}</button><button className="arcade-primary-button" onClick={startReaction}>START · FREE</button></>}
       {modal==="slots" && <><Heading eyebrow="MAIN FLOOR · 1 TOKEN" title="Lucky 7" text="Ticket slots using fictional arcade tokens only."/><div className="arcade-slot-reels">{reels.map((r,i)=><span key={i}>{r}</span>)}</div><p className="arcade-game-message">{slotMessage}</p><button className="arcade-primary-button" onClick={spinSlots} disabled={spinning}>SPIN · 1 TOKEN</button></>}
       {modal==="twentyone" && <><Heading eyebrow="MAIN FLOOR · 2 TOKENS" title="Twenty One" text="Get close to 21 without going over."/><div className="arcade-card-row">{cards.map((c,i)=><span key={i}>{c}</span>)}</div><strong className="arcade-total">TOTAL · {total21}</strong><p className="arcade-game-message">{twentyOneMessage}</p>{!twentyOneActive?<button className="arcade-primary-button" onClick={start21}>NEW HAND · 2 TOKENS</button>:<div className="arcade-button-row"><button onClick={hit21}>HIT</button><button onClick={()=>finish21()}>STAND</button></div>}</>}
@@ -350,14 +394,17 @@ export default function ArcadeRoom() {
       {modal==="wheel" && <><Heading eyebrow="JACKPOT · 2 TOKENS" title="Lucky Wheel" text="Small chance, chunky ticket payouts."/><div className="arcade-wheel">{wheelValue??"✦"}<small>TICKETS</small></div><button className="arcade-primary-button" onClick={spinWheel}>SPIN · 2 TOKENS</button></>}
       {modal==="highlow" && <><Heading eyebrow="JACKPOT · 1 TOKEN" title="Higher / Lower" text="Guess whether the next card is higher or lower."/><div className="arcade-highlow-card">{highLowCard}</div><p className="arcade-game-message">{highLowMessage}</p><div className="arcade-button-row"><button onClick={()=>guessHighLow("low")}>LOWER · 1</button><button onClick={()=>guessHighLow("high")}>HIGHER · 1</button></div></>}
       {modal==="dice" && <><Heading eyebrow="JACKPOT · 2 TOKENS" title="Dice Duel" text="Seven, doubles and twelve pay extra."/><div className="arcade-dice-row"><span>{dice[0]}</span><span>{dice[1]}</span></div><button className="arcade-primary-button" onClick={rollDice}>ROLL · 2 TOKENS</button></>}
-      {modal==="triplestar" && <><Heading eyebrow="VIP JACKPOT · 3 TOKENS" title="Triple Star" text="Two stars pay 45 tickets. Three stars pay 120."/><div className="arcade-triple-row">{triple.map((v,i)=><span key={i}>{v}</span>)}</div><button className="arcade-primary-button" onClick={playTriple}>PLAY · 3 TOKENS</button></>}
+      {modal==="triplestar" && <><Heading eyebrow="VIP JACKPOT · 3 TOKENS" title="Triple Star" text="Two stars pay 16 tickets. Three matching stars can pay up to 45."/><div className="arcade-triple-row">{triple.map((v,i)=><span key={i}>{v}</span>)}</div><button className="arcade-primary-button" onClick={playTriple}>PLAY · 3 TOKENS</button></>}
       {modal==="memory" && <><Heading eyebrow="MAIN FLOOR · 1 TOKEN" title="Memory Matrix" text="Memorise five lamps, then repeat them in order."/><div className="arcade-memory-grid">{["PINK","CYAN","GOLD","GREEN"].map((x,i)=><button key={x} disabled={memoryLocked||!memorySeq.length} onClick={()=>pressMemory(i)}>{x}</button>)}</div><p className="arcade-game-message">{memoryMessage}</p><button className="arcade-primary-button" onClick={startMemory}>NEW SEQUENCE · 1 TOKEN</button></>}
       {modal==="rhythm" && <><Heading eyebrow="MAIN FLOOR · 1 TOKEN" title="Rhythm Rush" text="Hit four beats while the marker is inside the glowing target."/><div className="arcade-rhythm-track"><i style={{left:`${rhythmTarget}%`}}/><b style={{left:`${rhythmPos}%`}}>◆</b></div><p className="arcade-game-message">{rhythmHits}/4 BEATS</p>{!rhythmActive?<button className="arcade-primary-button" onClick={startRhythm}>START · 1 TOKEN</button>:<button className="arcade-primary-button" onClick={hitRhythm}>HIT BEAT</button>}</>}
       {modal==="skeeball" && <><Heading eyebrow="MIDWAY · 2 TOKENS" title="Skee Ball" text="Five balls. Safe, middle or risky corner lane."/><div className="arcade-risk-row"><button disabled={skeeBalls<=0} onClick={()=>rollSkee(1)}>SAFE<small>10–20</small></button><button disabled={skeeBalls<=0} onClick={()=>rollSkee(2)}>MIDDLE<small>20–30</small></button><button disabled={skeeBalls<=0} onClick={()=>rollSkee(3)}>CORNER<small>0–50</small></button></div><p className="arcade-game-message">SCORE {skeeScore} · BALLS {skeeBalls}</p><button className="arcade-primary-button" onClick={startSkee}>NEW GAME · 2 TOKENS</button></>}
       {modal==="ringtoss" && <><Heading eyebrow="MIDWAY · 1 TOKEN" title="Ring Toss" text="Five rings. Harder targets score more."/><div className="arcade-risk-row"><button disabled={ringThrows<=0} onClick={()=>throwRing(1)}>🥤<small>EASY · 3</small></button><button disabled={ringThrows<=0} onClick={()=>throwRing(2)}>🧴<small>MEDIUM · 6</small></button><button disabled={ringThrows<=0} onClick={()=>throwRing(3)}>🏆<small>HARD · 9</small></button></div><p className="arcade-game-message">SCORE {ringScore} · RINGS {ringThrows}</p><button className="arcade-primary-button" onClick={startRings}>NEW ROUND · 1 TOKEN</button></>}
       {modal==="poker" && <><Heading eyebrow="JACKPOT · 3 TOKENS" title="Poker Draw" text="Quick five-card draw. Two-pair or better clears the table."/><div className="arcade-poker-hand">{pokerHand.map((x,i)=><span key={i}>{x}</span>)}</div><p className="arcade-game-message">{pokerMessage}</p><button className="arcade-primary-button" onClick={playPoker}>DEAL · 3 TOKENS</button></>}
       {modal==="colorbet" && <><Heading eyebrow="JACKPOT · 2 TOKENS" title="Color Bet" text="Red and black are common. Gold is rare, but pays more."/><div className={`arcade-color-result ${colorResult}`}>{colorResult.toUpperCase()}</div><div className="arcade-button-row"><button onClick={()=>colorBet("red")}>RED · 2</button><button onClick={()=>colorBet("black")}>BLACK · 2</button><button onClick={()=>colorBet("gold")}>GOLD · 2</button></div><p className="arcade-game-message">red/black 8 tickets · gold 28</p></>}
-      {modal==="reset" && <><Heading eyebrow="FRESH RUN" title="Reset for a New Player" text="This clears Arcade progress and shared world progress so the next person really starts from the beginning."/><div className="arcade-reset-warning"><strong>FULL GUEST RESET</strong><p>Tokens, tickets, prizes, claw toys, fragments and world inventory will be cleared.</p></div><button className="arcade-danger-button" onClick={resetArcade}>RESET & RETURN TO BEGINNING</button></>}
+      {modal==="pixelracer" && <><Heading eyebrow="MAIN FLOOR · 1 TOKEN" title="Pixel Racer" text="Six turns. Pick a lane each turn and try not to meet the incoming hazard."/><div className="arcade-racer-road"><i className={racerHazard===0?"hazard":""}>LEFT</i><i className={racerHazard===1?"hazard":""}>CENTRE</i><i className={racerHazard===2?"hazard":""}>RIGHT</i><b style={{left:`${16+racerLane*34}%`}}>🏎️</b></div><p className="arcade-game-message">{racerMessage} · ROUND {racerRound}/6</p>{!racerActive?<button className="arcade-primary-button" onClick={startPixelRacer}>START RACE · 1 TOKEN</button>:<div className="arcade-button-row"><button onClick={()=>driveRacer(0)}>LEFT</button><button onClick={()=>driveRacer(1)}>CENTRE</button><button onClick={()=>driveRacer(2)}>RIGHT</button></div>}</>}
+      {modal==="bottlebash" && <><Heading eyebrow="MIDWAY · 1 TOKEN" title="Bottle Bash" text="Three throws. Pick a power level; the hidden sweet spot changes every throw."/><div className="arcade-bottle-stack"><span>{"🥫".repeat(Math.max(0,bottlesLeft))}</span></div><p className="arcade-game-message">{bottleMessage} · THROWS {bottleThrows}</p>{bottleThrows===0?<button className="arcade-primary-button" onClick={startBottleBash}>NEW GAME · 1 TOKEN</button>:<div className="arcade-button-row"><button onClick={()=>throwBottleBall(1)}>SOFT</button><button onClick={()=>throwBottleBall(2)}>MEDIUM</button><button onClick={()=>throwBottleBall(3)}>HARD</button></div>}</>}
+      {modal==="vaultpick" && <><Heading eyebrow="JACKPOT LOUNGE · 2 TOKENS" title="Vault Pick" text="Nine miniature vaults. One is gold, one is silver, and a few hide loose tickets."/><div className="arcade-vault-grid">{Array.from({length:9},(_,i)=><button key={i} className={vaultOpened===i?"is-open":""} onClick={()=>playVaultPick(i)}>{vaultOpened===i?"🔓":"🔒"}<small>{i+1}</small></button>)}</div><p className="arcade-game-message">{vaultMessage}</p></>}
+      {modal==="reset" && <><Heading eyebrow="FRESH RUN" title="Reset for a New Player" text="This resets Neon Clover itself without touching Midnight Study, Observatory, the hallway, or any other room."/><div className="arcade-reset-warning"><strong>ARCADE-ONLY RESET</strong><p>Arcade tokens, tickets, game scores, cabinet clears and local prize-counter progress reset. Cross-room items already earned stay in your Backpack, and every other room keeps its progress.</p></div><button className="arcade-danger-button" onClick={resetArcade}>RESET ARCADE ONLY</button></>}
       {modal==="food" && <><Heading eyebrow="PIXEL BITES" title="Snack Counter" text="Questionable food is required arcade infrastructure."/><div className="arcade-food-grid">{FOOD.map(([id,icon,name,note])=><button key={id} onClick={()=>tasteFood(id,icon,name,note)}><span>{icon}</span><strong>{name}</strong><small>{save.foodTried.includes(id)?"tried ✓":"taste"}</small></button>)}</div></>}
       {modal==="collection" && <><Heading eyebrow="CLAW ALLEY" title="Your Arcade Collection" text="These finds can later physically appear on shelves in Nostalgia, Observatory or Dream."/><div className="arcade-collection-shelf">{CLAW_TOYS.map(t=>{const owned=save.collectibles.includes(t.id);return <div key={t.id} className={owned?"is-owned":"is-empty"}><span>{owned?t.icon:"?"}</span><strong>{owned?t.name:"empty shelf"}</strong><small>{owned?t.note:"win it from the claw"}</small></div>})}</div></>}
       {modal==="prizes" && <><Heading eyebrow="PRIZE EXCHANGE" title="Spend Your Tickets" text="Cheap nonsense, collectibles and cross-room items."/><div className="arcade-prize-grid arcade-prize-grid-large">{PRIZES.map(([id,icon,name,cost,note])=>{const claimed=save.purchasedPrizes.includes(id);return <PrizeCard key={id} icon={icon} name={name} cost={claimed?"CLAIMED":String(cost)} note={note} disabled={claimed||save.tickets<cost} onClick={()=>buyPrize(id,cost)}/>})}<PrizeCard icon="◈" name="Pixel Fragment" cost={save.claimedFragment?"RECOVERED":"120"} note={save.secretBooted?"after-hours grand prize":"case sealed · find the broken cabinet"} disabled={save.claimedFragment||!save.secretBooted||save.tickets<120} onClick={claimFragment} special/></div><p className="arcade-ticket-balance">AVAILABLE · {save.tickets} TICKETS</p></>}
