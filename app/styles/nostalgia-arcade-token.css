@@ -1,0 +1,181 @@
+.nostalgia-arcade-token-hotspot {
+  position: absolute;
+  z-index: 35;
+  left: 57%;
+  bottom: 10%;
+  width: 82px;
+  height: 64px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.nostalgia-token-coin {
+  position: absolute;
+  left: 25px;
+  top: 17px;
+  display: grid;
+  place-items: center;
+  width: 29px;
+  height: 29px;
+  border: 2px solid #68451f;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #f1cf80, #b77d32 45%, #60401f);
+  color: #3a2517;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, .45);
+  font: 900 15px var(--font-mono, monospace);
+  transform: rotate(-8deg);
+}
+
+.nostalgia-token-glint {
+  position: absolute;
+  left: 47px;
+  top: 4px;
+  color: #fff1a5;
+  text-shadow: 0 0 10px #ffd866;
+  animation: nostalgia-token-glint 1.8s ease-in-out infinite;
+}
+
+.nostalgia-arcade-token-hotspot small {
+  position: absolute;
+  top: 53px;
+  left: 50%;
+  width: 160px;
+  transform: translateX(-50%);
+  color: #eee0cf;
+  opacity: 0;
+  font: 600 10px var(--font-mono, monospace);
+  text-shadow: 0 2px 4px #000;
+  transition: opacity .16s ease;
+}
+
+.nostalgia-arcade-token-hotspot:hover small {
+  opacity: .9;
+}
+
+@keyframes nostalgia-token-glint {
+  0%, 100% { opacity: .25; transform: scale(.8); }
+  50% { opacity: 1; transform: scale(1.3) rotate(18deg); }
+}
+
+.nostalgia-token-backdrop {
+  position: fixed;
+  z-index: 5000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(11, 8, 14, .76);
+  backdrop-filter: blur(5px);
+}
+
+.nostalgia-token-card {
+  position: relative;
+  width: min(430px, 92vw);
+  padding: 34px;
+  border: 1px solid rgba(230, 193, 111, .34);
+  border-radius: 20px;
+  background: #21191c;
+  color: #ecdfcd;
+  text-align: center;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, .6);
+}
+
+.nostalgia-token-close {
+  position: absolute;
+  right: 14px;
+  top: 11px;
+  border: 0;
+  background: transparent;
+  color: #d9cbbb;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.nostalgia-token-card > p:first-of-type {
+  color: #c8a86c;
+  font: 800 10px var(--font-mono, monospace);
+  letter-spacing: .16em;
+}
+
+.nostalgia-token-large {
+  width: 130px;
+  aspect-ratio: 1;
+  margin: 20px auto;
+  display: grid;
+  place-content: center;
+  border: 6px double #68451f;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 29%, #f6d98e, #bd8438 30%, #7e5126 67%, #3f2819);
+  color: #382316;
+  transform: rotate(-5deg);
+}
+
+.nostalgia-token-large span,
+.nostalgia-token-large small {
+  font: 900 8px var(--font-mono, monospace);
+  letter-spacing: .08em;
+}
+
+.nostalgia-token-large strong {
+  font: 900 38px var(--font-mono, monospace);
+}
+
+.nostalgia-token-reverse {
+  margin-top: 18px;
+  padding: 12px;
+  border: 1px dashed rgba(230, 193, 111, .28);
+  border-radius: 10px;
+  color: #d6b66f;
+  font: 800 11px var(--font-mono, monospace);
+  letter-spacing: .08em;
+}
+
+.nostalgia-token-collect {
+  margin-top: 20px;
+  padding: 12px 17px;
+  border: 1px solid #9b6b30;
+  border-radius: 8px;
+  background: #c38b3b;
+  color: #211408;
+  font: 900 11px var(--font-mono, monospace);
+  cursor: pointer;
+}
+
+.nostalgia-arcade-token-toast {
+  position: fixed;
+  z-index: 5200;
+  left: 50%;
+  bottom: 90px;
+  width: min(440px, calc(100vw - 32px));
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 15px;
+  border: 1px solid rgba(80, 225, 238, .4);
+  border-radius: 12px;
+  background: rgba(17, 23, 31, .97);
+  color: #e8f8f9;
+}
+
+.nostalgia-arcade-token-toast > span {
+  color: #dfb55c;
+  font-size: 28px;
+}
+
+.nostalgia-arcade-token-toast strong,
+.nostalgia-arcade-token-toast small {
+  display: block;
+}
+
+.nostalgia-arcade-token-toast strong {
+  color: #68e8f4;
+  font: 800 11px var(--font-mono, monospace);
+}
+
+.nostalgia-arcade-token-toast small {
+  margin-top: 4px;
+  opacity: .7;
+}

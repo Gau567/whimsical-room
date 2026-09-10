@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import RoomDoor from "./RoomDoor";
 import { useWorld } from "@/lib/world/WorldContext";
 
@@ -8,9 +9,11 @@ export default function WorldHub() {
     hasItem,
     hasClue,
     isRoomUnlocked,
+    unlockRoom,
     completedQuests,
   } = useWorld();
 
+  const hasArcadeToken = hasItem("old-arcade-token");
   const hasLens = hasItem("telescope-lens");
   const hasKey = hasItem("small-brass-key") || hasItem("brass-key");
   const hasTrainClue = hasClue("train-platform-seven");
@@ -24,6 +27,14 @@ export default function WorldHub() {
   const observatoryOpen = isRoomUnlocked("observatory");
   const greenhouseOpen = isRoomUnlocked("greenhouse");
   const trainOpen = isRoomUnlocked("train");
+
+  // If an older save owns the token but Room 03 is still marked locked,
+  // repair the world state automatically.
+  useEffect(() => {
+    if (hasArcadeToken && !arcadeOpen) {
+      unlockRoom("arcade");
+    }
+  }, [hasArcadeToken, arcadeOpen, unlockRoom]);
 
   return (
     <main className="world-hall-v2">
@@ -53,7 +64,7 @@ export default function WorldHub() {
             number="03"
             title="Arcade Room"
             subtitle="something in there is still running"
-            lockedHint="no power reaches this door yet"
+            lockedHint={hasArcadeToken ? "PLAYER ONE accepted..." : "something metallic fits the token slot"}
             accent="cyan"
             className={`hall-door-arcade ${arcadeComplete ? "is-arcade-complete" : ""}`}
             detail={

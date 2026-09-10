@@ -25,6 +25,7 @@ export type InventoryItem = {
 };
 
 export type WorldClueId =
+  | "nostalgia-arcade-token"
   | "study-clock"
   | "study-date"
   | "study-radio"

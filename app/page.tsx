@@ -13,6 +13,7 @@ import PinBoard from "@/components/room/PinBoard";
 import MediaStation from "@/components/stations/MediaStation";
 import PersistentMusicPlayer from "@/components/PersistentMusicPlayer";
 import RoomNowPlaying from "@/components/RoomNowPlaying";
+import NostalgiaArcadeToken from "@/components/world/NostalgiaArcadeToken";
 
 import WorldHub from "@/components/world/WorldHub";
 import WorldHUD from "@/components/world/WorldHUD";
@@ -254,6 +255,7 @@ function NostalgiaRoomApp({ onReturnToHub }: { onReturnToHub: () => void }) {
               onToggleLamp={() => setLampOn((value) => !value)}
               onOpenDrawer={setOpenDrawer}
             />
+            <NostalgiaArcadeToken />
           </>
         )}
 
