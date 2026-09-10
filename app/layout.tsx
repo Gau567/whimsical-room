@@ -6,6 +6,7 @@ import "./styles/world-hallway.css";
 import "./styles/midnight-study.css";
 import "./styles/world-hud.css";
 import "./styles/observatory-room.css";
+import "./styles/arcade-room.css";
 
 export const metadata: Metadata = {
   title: {

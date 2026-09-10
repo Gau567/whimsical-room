@@ -37,6 +37,10 @@ export type WorldClueId =
   | "observatory-coordinate-locked"
   | "observatory-star-fragment"
   | "observatory-complete"
+  | "arcade-corrupted-save"
+  | "arcade-nostalgia-disk"
+  | "arcade-starlight-recognised"
+  | "arcade-pixel-fragment"
   | "greenhouse-key-found";
 
 export type QuestId =
@@ -44,6 +48,7 @@ export type QuestId =
   | "observatory-missing-lens"
   | "observatory-star-wheel"
   | "observatory-complete"
+  | "arcade-after-hours"
   | "train-eleven-forty-seven"
   | "greenhouse-small-key";
 

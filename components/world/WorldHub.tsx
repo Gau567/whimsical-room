@@ -17,7 +17,10 @@ export default function WorldHub() {
   const solvedStudy = completedQuests.includes("study-locked-drawer");
   const observatoryComplete =
     completedQuests.includes("observatory-complete") || hasItem("star-fragment");
+  const arcadeComplete =
+    completedQuests.includes("arcade-after-hours") || hasItem("pixel-fragment");
 
+  const arcadeOpen = isRoomUnlocked("arcade");
   const observatoryOpen = isRoomUnlocked("observatory");
   const greenhouseOpen = isRoomUnlocked("greenhouse");
   const trainOpen = isRoomUnlocked("train");
@@ -52,8 +55,14 @@ export default function WorldHub() {
             subtitle="something in there is still running"
             lockedHint="no power reaches this door yet"
             accent="cyan"
-            className="hall-door-arcade"
-            detail={<span className="hall-arcade-leds"><i /><i /><i /></span>}
+            className={`hall-door-arcade ${arcadeComplete ? "is-arcade-complete" : ""}`}
+            detail={
+              arcadeComplete ? (
+                <span className="hall-arcade-complete">◈ high score saved</span>
+              ) : (
+                <span className="hall-arcade-leds"><i /><i /><i /></span>
+              )
+            }
           />
 
           <RoomDoor
@@ -96,6 +105,11 @@ export default function WorldHub() {
                 <p>{hasTrainClue ? "PLATFORM 7 · 11:47" : "? ? ?"}</p>
               </article>
 
+              <article className={arcadeComplete ? "is-visible hall-v2-arcade-note" : ""}>
+                <small>PRINTED RECEIPT · ROOM 03</small>
+                <p>{arcadeComplete ? "PLAYER ONE SAVED · ◈" : "the receipt is blank."}</p>
+              </article>
+
               <article className={observatoryComplete ? "is-visible hall-v2-star-note" : ""}>
                 <small>NEW INK · ROOM 04</small>
                 <p>{observatoryComplete ? "one fragment remembers the sky ✦" : "the paper is blank."}</p>
@@ -108,9 +122,11 @@ export default function WorldHub() {
           </div>
 
           <p className="hall-v2-floor-whisper">
-            {observatoryComplete
-              ? "a faint constellation follows you out of Room 04"
-              : solvedStudy
+            {arcadeComplete
+              ? "three hallway lamps blink magenta, cyan, gold — like a saved combo"
+              : observatoryComplete
+                ? "a faint constellation follows you out of Room 04"
+                : solvedStudy
                 ? "something in the hallway changed while you were away"
                 : "some doors open from the other side"}
           </p>
@@ -180,6 +196,7 @@ export default function WorldHub() {
         </div>
 
         <div className="world-hall-v2-status" aria-live="polite">
+          <span className={arcadeOpen ? "is-active" : ""}>◉ arcade</span>
           <span className={observatoryOpen ? "is-active" : ""}>◉ observatory</span>
           <span className={trainOpen ? "is-active" : ""}>◉ train</span>
           <span className={greenhouseOpen ? "is-active" : ""}>◉ greenhouse</span>

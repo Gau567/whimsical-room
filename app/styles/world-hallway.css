@@ -439,3 +439,19 @@
 
 @keyframes hallObservatoryStars{50%{opacity:.46;transform:translateY(1px)}}
 @keyframes hallDreamEcho{50%{opacity:.42;letter-spacing:.12em}}
+
+
+/* ROOM 03 · ARCADE COMPLETION REACTION */
+.hall-door-arcade.is-arcade-complete {
+  box-shadow: 0 0 26px rgba(80, 231, 239, .16), 0 0 42px rgba(255, 86, 195, .08);
+}
+.hall-door-arcade.is-arcade-complete::after {
+  content: ""; position: absolute; inset: 8px; pointer-events: none; border-radius: inherit;
+  background: linear-gradient(90deg, transparent, rgba(83,232,240,.11), transparent, rgba(255,91,194,.1), transparent);
+}
+.hall-arcade-complete {
+  display: inline-block; padding: 5px 8px; border: 1px solid rgba(90,230,239,.28); border-radius: 999px;
+  color: #bffcff; background: rgba(25,35,48,.72); font-size: 8px; letter-spacing: .08em;
+}
+.hall-v2-arcade-note { border-color: rgba(91,225,235,.25)!important; }
+.hall-v2-arcade-note p { color: #9ef2f1!important; }

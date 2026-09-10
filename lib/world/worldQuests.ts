@@ -33,6 +33,12 @@ export const WORLD_QUESTS: QuestDefinition[] = [
     hint: "Repair the telescope, chart enough constellations, record anomalies, solve the April 17 moon, and align the hidden coordinates.",
   },
   {
+    id: "arcade-after-hours",
+    title: "After Hours",
+    room: "Arcade Room",
+    hint: "Clear three different cabinets. The machine marked OUT OF ORDER is paying attention.",
+  },
+  {
     id: "train-eleven-forty-seven",
     title: "11:47 · Platform Seven",
     room: "Train Compartment",

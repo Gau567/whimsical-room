@@ -18,6 +18,7 @@ import WorldHub from "@/components/world/WorldHub";
 import WorldHUD from "@/components/world/WorldHUD";
 import MidnightStudy from "@/components/rooms/study/MidnightStudy";
 import ObservatoryRoom from "@/components/rooms/observatory/ObservatoryRoom";
+import ArcadeRoom from "@/components/rooms/arcade/ArcadeRoom";
 
 import {
   MusicPlayerProvider,
@@ -91,6 +92,10 @@ function WorldApp() {
       {currentRoom === "observatory" && (
       <ObservatoryRoom />
     )}
+      {currentRoom === "arcade" && (
+        <ArcadeRoom />
+      )}
+
 
 
       {/* FUTURE ROOMS */}
@@ -98,7 +103,8 @@ function WorldApp() {
       {currentRoom !== "hub" &&
         currentRoom !== "nostalgia" &&
         currentRoom !== "study" && 
-        currentRoom !== "observatory" && (
+        currentRoom !== "observatory" && 
+        currentRoom !== "arcade" &&(
           <FutureRoomPlaceholder
             roomName={currentRoom}
             onBack={returnToHub}
