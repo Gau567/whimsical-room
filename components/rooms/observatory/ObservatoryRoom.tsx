@@ -364,6 +364,30 @@ function MoonPhaseVisual({ phase }: { phase: number }) {
   );
 }
 
+
+const FRESH_RUN_STORAGE_KEYS = [
+  "whimsical-world-state-v2",
+  "observatory-v10-rare-log",
+  "observatory-v11-progress",
+] as const;
+
+function clearSavedRun() {
+  for (const key of FRESH_RUN_STORAGE_KEYS) {
+    try {
+      window.localStorage.removeItem(key);
+    } catch {
+      // A browser may block storage in strict/private modes.
+    }
+  }
+}
+
+function restartFromBeginning() {
+  clearSavedRun();
+
+  // Reload at the project root so WorldContext rebuilds from its clean defaults.
+  window.location.assign(window.location.pathname);
+}
+
 export default function ObservatoryRoom() {
   const {
     returnToHub,
@@ -374,6 +398,19 @@ export default function ObservatoryRoom() {
     discoverClue,
     isQuestComplete,
   } = useWorld();
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+
+    if (url.searchParams.get("fresh") !== "1") return;
+
+    // A share link ending in ?fresh=1 always starts from a clean save.
+    // Remove the flag before reloading so this cannot create a reload loop.
+    clearSavedRun();
+    url.searchParams.delete("fresh");
+    window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+    window.location.reload();
+  }, []);
 
   const [lanternsOn, setLanternsOn] = useState(true);
   const [domeOpen, setDomeOpen] = useState(true);
@@ -816,6 +853,14 @@ export default function ObservatoryRoom() {
         <div className="obs3-header-actions">
           <button type="button" onClick={() => setProjectorPanelOpen(true)}>{projectorOn ? "projector: on" : "constellation projector"}</button>
           <button type="button" onClick={() => setDomeOpen((v) => !v)}>{domeOpen ? "close dome" : "open dome"}</button>
+          <button
+            type="button"
+            className="obs3-fresh-run"
+            onClick={restartFromBeginning}
+            title="Clear saved world and Observatory progress, then restart from the hallway"
+          >
+            fresh run
+          </button>
         </div>
       </header>
 

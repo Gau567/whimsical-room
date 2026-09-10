@@ -1373,3 +1373,18 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* =========================================================
+   V13 · FRESH GUEST RUN
+   ========================================================= */
+.obs3-header-actions .obs3-fresh-run {
+  border-color: rgba(242, 210, 142, .34);
+  background: rgba(35, 28, 40, .78);
+  color: rgba(242, 225, 195, .78);
+}
+
+.obs3-header-actions .obs3-fresh-run:hover {
+  border-color: rgba(242, 210, 142, .68);
+  color: #fff2cf;
+}
+
