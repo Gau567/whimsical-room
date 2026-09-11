@@ -168,6 +168,7 @@ export default function GreenhouseRoom() {
   const [selectedSpell, setSelectedSpell] = useState<SpellId>("luma");
   const [gestureInput, setGestureInput] = useState<string[]>([]);
   const [spellEffect, setSpellEffect] = useState("Choose a spell from the wall, then trace its gesture.");
+  const [spellPopup, setSpellPopup] = useState<SpellId | null>(null);
 
   const hasBrassKey = hasItem("small-brass-key") || hasItem("brass-key");
   const hasArcadeMoonflower = hasItem("moonflower-seed-packet");
@@ -384,6 +385,7 @@ export default function GreenhouseRoom() {
       setGestureInput([]);
       setWandBurst("gold");
       setSpellEffect(spell.effect);
+      setSpellPopup(spell.id);
       updateSave((current) => ({
         ...current,
         spellsCast: current.spellsCast.includes(spell.id)
@@ -408,6 +410,7 @@ export default function GreenhouseRoom() {
     setChosenWandId(randomWandId());
     setGestureInput([]);
     setSpellEffect("Room reset. The wand rack has changed its mind too.");
+    setSpellPopup(null);
     setZone("greenhouse");
     setToast("the greenhouse settles back into its first morning.");
   }
@@ -509,14 +512,23 @@ export default function GreenhouseRoom() {
         {zone === "potions" && (
           <>
             <div className="potions-stone-wall" aria-hidden="true" />
+            <div className="potion-lab-decor" aria-hidden="true">
+              <div className="potion-rain-window"><i/><i/><i/><i/><i/></div>
+              <div className="potion-hanging-herbs"><span>❧</span><span>❀</span><span>♧</span><span>❧</span><span>✾</span></div>
+              <div className="potion-lantern"><i /></div>
+              <div className="potion-back-shelf potion-back-shelf-a"><b>▥</b><i/><i/><i/><i/><i/><i/><i/></div>
+              <div className="potion-back-shelf potion-back-shelf-b"><i/><i/><i/><i/><i/><i/></div>
+              <div className="potion-table-clutter"><span>⚗</span><span>⌛</span><span>⚖</span><span>🕯</span></div>
+            </div>
             <button className="gh-zone-arrow gh-zone-arrow-left" type="button" onClick={() => changeZone("greenhouse")}><b>‹</b><span>greenhouse</span></button>
             <button className="gh-zone-arrow gh-zone-arrow-right" type="button" onClick={() => changeZone("wands")}><span>wand workshop</span><b>›</b></button>
 
             <aside className="potion-shelf potion-shelf-left">
               <h3>DRY HERBS</h3>
               {(["moonflower", "star-moss", "lavender", "rosemary", "fern-tip", "cinnamon-bark"] as IngredientId[]).map((id) => (
-                <button key={id} type="button" draggable onDragStart={(event) => startIngredientDrag(event, id)} onClick={() => addIngredient(id)}>
-                  <span>{INGREDIENTS[id].icon}</span><b>{INGREDIENTS[id].name}</b>
+                <button key={id} type="button" className={`potion-ingredient potion-ingredient-${id}`} draggable onDragStart={(event) => startIngredientDrag(event, id)} onClick={() => addIngredient(id)}>
+                  <span className="potion-ingredient-vessel"><i>{INGREDIENTS[id].icon}</i></span>
+                  <span className="potion-ingredient-copy"><b>{INGREDIENTS[id].name}</b><small>{INGREDIENTS[id].note}</small></span>
                 </button>
               ))}
             </aside>
@@ -524,14 +536,15 @@ export default function GreenhouseRoom() {
             <aside className="potion-shelf potion-shelf-right">
               <h3>JARS & LIQUIDS</h3>
               {(["night-dew", "silver-salt", "rainwater", "emberberry", "glass-thyme", "violet-cap"] as IngredientId[]).map((id) => (
-                <button key={id} type="button" draggable onDragStart={(event) => startIngredientDrag(event, id)} onClick={() => addIngredient(id)}>
-                  <span>{INGREDIENTS[id].icon}</span><b>{INGREDIENTS[id].name}</b>
+                <button key={id} type="button" className={`potion-ingredient potion-ingredient-${id}`} draggable onDragStart={(event) => startIngredientDrag(event, id)} onClick={() => addIngredient(id)}>
+                  <span className="potion-ingredient-vessel"><i>{INGREDIENTS[id].icon}</i></span>
+                  <span className="potion-ingredient-copy"><b>{INGREDIENTS[id].name}</b><small>{INGREDIENTS[id].note}</small></span>
                 </button>
               ))}
             </aside>
 
             <section className="potion-book">
-              <header><small>VOLUME {recipePage + 1}</small><strong>Practical Brews & Unwise Experiments</strong></header>
+              <header><small>THE APOTHECARY INDEX · RECIPE {recipePage + 1}/{POTION_RECIPES.length}</small><strong>Practical Brews & Unwise Experiments</strong></header>
               <article>
                 <h3>{POTION_RECIPES[recipePage].name}</h3>
                 <p className="potion-recipe-icons">{POTION_RECIPES[recipePage].ingredients.map((id) => INGREDIENTS[id].icon).join(" + ")}</p>
@@ -550,8 +563,14 @@ export default function GreenhouseRoom() {
                 onDragOver={(event) => event.preventDefault()}
                 onDrop={dropIntoCauldron}
               >
-                <div className="potion-liquid" />
-                <strong>{cauldron.length ? cauldron.map((id) => INGREDIENTS[id].icon).join(" ") : "DROP INGREDIENTS"}</strong>
+                <div className="potion-liquid"><i/><i/><i/><i/><i/></div>
+                <div className="potion-steam" aria-hidden="true"><i/><i/><i/><i/></div>
+                <strong>{cauldron.length ? "CAULDRON CONTENTS" : "DROP INGREDIENTS"}</strong>
+                {cauldron.length > 0 && (
+                  <div className="potion-cauldron-contents">
+                    {cauldron.map((id, index) => <span key={`${id}-${index}`}>{INGREDIENTS[id].icon} {INGREDIENTS[id].name}</span>)}
+                  </div>
+                )}
               </div>
               <div className="potion-controls">
                 <button type="button" onClick={stirCauldron} disabled={brewing}>STIR CAULDRON</button>
@@ -621,6 +640,28 @@ export default function GreenhouseRoom() {
               <p>{spellEffect}</p>
               <span>{equippedWandId ? `wand: ${WANDS.find((wand) => wand.id === equippedWandId)?.name}` : "no wand has chosen you yet"}</span>
             </section>
+
+            {spellPopup && (() => {
+              const popupSpell = SPELLS.find((spell) => spell.id === spellPopup)!;
+              return (
+                <div className={`spell-cast-popup spell-cast-popup-${popupSpell.id}`} role="dialog" aria-modal="true">
+                  <button type="button" className="spell-popup-close" onClick={() => setSpellPopup(null)}>×</button>
+                  <div className="spell-popup-stage" aria-hidden="true">
+                    {popupSpell.id === "luma" && <><span className="spell-luma-orb">✦</span><i/><i/><i/><i/><i/></>}
+                    {popupSpell.id === "verdant" && <><span className="spell-vine vine-a">❧</span><span className="spell-vine vine-b">❧</span><span className="spell-vine vine-c">❧</span></>}
+                    {popupSpell.id === "motes" && Array.from({ length: 18 }).map((_, index) => <i className={`spell-mote mote-${index % 6}`} key={index} />)}
+                    {popupSpell.id === "mendglass" && <div className="spell-glass-pane"><i/><i/><i/><i/></div>}
+                    {popupSpell.id === "raincall" && <div className="spell-rain-sheet">{Array.from({ length: 14 }).map((_, index) => <i key={index}/>)}</div>}
+                  </div>
+                  <div className="spell-popup-card">
+                    <small>SPELL CAST SUCCESSFULLY</small>
+                    <h2>{popupSpell.name}</h2>
+                    <p>{popupSpell.effect}</p>
+                    <button type="button" onClick={() => setSpellPopup(null)}>LET THE MAGIC SETTLE</button>
+                  </div>
+                </div>
+              );
+            })()}
 
             <section className="spell-progress">
               <small>SPELLS CAST</small>
