@@ -269,3 +269,545 @@
 .spell-cast-popup-mendglass{background:linear-gradient(rgba(9,18,25,.84),rgba(4,8,12,.9))}.spell-glass-pane{position:absolute;left:50%;top:50%;width:min(780px,75vw);height:70vh;transform:translate(-50%,-50%);border:10px solid rgba(110,142,158,.28);background:linear-gradient(135deg,rgba(156,204,219,.08),rgba(255,255,255,.02));box-shadow:inset 0 0 50px rgba(177,221,235,.05)}.spell-glass-pane::before,.spell-glass-pane::after,.spell-glass-pane i{content:"";position:absolute;left:50%;top:50%;width:3px;height:210px;transform-origin:top;background:#d9f0ef;box-shadow:0 0 12px #b7e5e5;animation:glass-mend 1.6s ease forwards}.spell-glass-pane::before{transform:rotate(33deg)}.spell-glass-pane::after{transform:rotate(-52deg)}.spell-glass-pane i:nth-child(1){transform:rotate(88deg);height:150px}.spell-glass-pane i:nth-child(2){transform:rotate(148deg);height:170px}.spell-glass-pane i:nth-child(3){transform:rotate(211deg);height:140px}.spell-glass-pane i:nth-child(4){transform:rotate(282deg);height:120px}@keyframes glass-mend{70%{opacity:1}to{opacity:.08;box-shadow:0 0 30px #d7ffff}}
 .spell-cast-popup-raincall{background:linear-gradient(rgba(12,22,32,.62),rgba(4,8,12,.88))}.spell-rain-sheet{position:absolute;inset:0}.spell-rain-sheet i{position:absolute;top:-80px;width:2px;height:100px;background:linear-gradient(transparent,#9dc7db);animation:spell-rain 1.15s linear infinite}.spell-rain-sheet i:nth-child(1){left:4%}.spell-rain-sheet i:nth-child(2){left:11%;animation-delay:.3s}.spell-rain-sheet i:nth-child(3){left:19%;animation-delay:.7s}.spell-rain-sheet i:nth-child(4){left:27%;animation-delay:.15s}.spell-rain-sheet i:nth-child(5){left:35%;animation-delay:.52s}.spell-rain-sheet i:nth-child(6){left:43%;animation-delay:.86s}.spell-rain-sheet i:nth-child(7){left:51%;animation-delay:.25s}.spell-rain-sheet i:nth-child(8){left:59%;animation-delay:.61s}.spell-rain-sheet i:nth-child(9){left:67%;animation-delay:.05s}.spell-rain-sheet i:nth-child(10){left:75%;animation-delay:.47s}.spell-rain-sheet i:nth-child(11){left:82%;animation-delay:.79s}.spell-rain-sheet i:nth-child(12){left:88%;animation-delay:.18s}.spell-rain-sheet i:nth-child(13){left:93%;animation-delay:.66s}.spell-rain-sheet i:nth-child(14){left:97%;animation-delay:.38s}@keyframes spell-rain{to{transform:translateY(110vh);opacity:.2}}@media(prefers-reduced-motion:reduce){.spell-cast-popup *,.potion-lab-decor *,.potion-liquid i,.potion-steam i{animation:none!important}}
 
+
+/* =========================================================
+   V3 · IMMERSIVE ROOM PASS
+   Makes all three Room 07 spaces feel environmental rather
+   than panel-first while preserving the existing mechanics.
+   ========================================================= */
+
+/* ---------- GLOBAL ROOM DEPTH ---------- */
+.greenhouse-scene {
+  isolation: isolate;
+  background-color: #101611;
+}
+
+.greenhouse-scene::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 90px rgba(0, 0, 0, .34),
+    inset 0 -100px 120px rgba(0, 0, 0, .16);
+}
+
+/* =========================================================
+   GREENHOUSE · IMMERSIVE GLASSHOUSE
+   ========================================================= */
+.greenhouse-zone-greenhouse .greenhouse-scene {
+  background:
+    radial-gradient(circle at 70% 18%, rgba(248, 233, 161, .20), transparent 21%),
+    radial-gradient(circle at 38% 20%, rgba(236, 238, 191, .11), transparent 27%),
+    linear-gradient(180deg, #a9b494 0 14%, #70806a 14% 63%, #424a37 63% 100%);
+}
+
+.gh-immersive-decor {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.gh-sunbeams i {
+  position: absolute;
+  top: 90px;
+  width: 240px;
+  height: 650px;
+  opacity: .18;
+  filter: blur(1px);
+  background: linear-gradient(180deg, rgba(255, 244, 187, .7), rgba(255, 245, 190, 0));
+  clip-path: polygon(35% 0, 65% 0, 100% 100%, 0 100%);
+}
+.gh-sunbeams i:nth-child(1){left:12%;transform:rotate(9deg)}
+.gh-sunbeams i:nth-child(2){left:44%;width:300px;opacity:.11;transform:rotate(-6deg)}
+.gh-sunbeams i:nth-child(3){right:6%;opacity:.13;transform:rotate(12deg)}
+
+.gh-hanging-pots {
+  position: absolute;
+  top: 80px;
+  left: 17%;
+  right: 12%;
+  display: flex;
+  justify-content: space-around;
+}
+.gh-hanging-pots span {
+  position: relative;
+  color: #345638;
+  font-size: 52px;
+  filter: drop-shadow(0 8px 6px rgba(0,0,0,.24));
+  transform-origin: top center;
+  animation: gh-pot-sway 5s ease-in-out infinite alternate;
+}
+.gh-hanging-pots span::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 36px;
+  width: 2px;
+  height: 95px;
+  background: rgba(61, 65, 48, .65);
+  transform: translateX(-50%);
+}
+.gh-hanging-pots span:nth-child(2){top:25px;animation-delay:.8s}
+.gh-hanging-pots span:nth-child(3){top:-12px;color:#6b7650;animation-delay:1.6s}
+.gh-hanging-pots span:nth-child(4){top:42px;animation-delay:2.2s}
+@keyframes gh-pot-sway { to { transform: rotate(4deg); } }
+
+.gh-back-shelves {
+  position: absolute;
+  top: 242px;
+  width: 315px;
+  height: 265px;
+  border: 10px solid #4c4936;
+  background:
+    repeating-linear-gradient(180deg, rgba(94,76,50,.62) 0 8px, transparent 8px 76px),
+    rgba(57, 64, 46, .38);
+  box-shadow: 0 20px 34px rgba(0,0,0,.24);
+  opacity: .76;
+}
+.gh-back-shelves-left { left: 112px; }
+.gh-back-shelves-right { right: 116px; }
+.gh-back-shelves i {
+  display: inline-block;
+  width: 44px;
+  height: 55px;
+  margin: 24px 10px 4px;
+  border-radius: 50% 50% 10px 10px;
+  background:
+    radial-gradient(circle at 50% 24%, #6f9258 0 18%, transparent 19%),
+    linear-gradient(#806b4c 0 58%, #684a33 59%);
+  box-shadow: 0 5px 10px rgba(0,0,0,.24);
+}
+.gh-back-shelves i:nth-child(2n){height:43px;background:linear-gradient(#506d43 0 58%,#755438 59%)}
+.gh-back-shelves i:nth-child(3n){background:linear-gradient(#7d704f 0 58%,#5d4330 59%)}
+
+.gh-workbench-clutter {
+  position: absolute;
+  left: 50%;
+  bottom: 138px;
+  width: 640px;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  font-size: 31px;
+  opacity: .72;
+  filter: saturate(.75) sepia(.12);
+}
+
+.gh-watering-can {
+  position: absolute;
+  right: 365px;
+  bottom: 110px;
+  color: #788b76;
+  font-size: 84px;
+  opacity: .7;
+  transform: rotate(-14deg);
+}
+
+.gh-floor-puddles i {
+  position: absolute;
+  bottom: 70px;
+  width: 160px;
+  height: 25px;
+  border-radius: 50%;
+  background: rgba(173, 197, 173, .12);
+  box-shadow: inset 0 2px 8px rgba(223,245,222,.12);
+}
+.gh-floor-puddles i:nth-child(1){left:25%;transform:rotate(6deg)}
+.gh-floor-puddles i:nth-child(2){left:56%;width:220px;transform:rotate(-4deg)}
+.gh-floor-puddles i:nth-child(3){right:8%;width:110px}
+
+.gh-leaf-drift i {
+  position: absolute;
+  top: 35%;
+  color: rgba(51, 81, 49, .65);
+  font-style: normal;
+  font-size: 17px;
+  animation: gh-leaf-fall 8s linear infinite;
+}
+.gh-leaf-drift i:nth-child(1){left:8%;animation-delay:.2s}.gh-leaf-drift i:nth-child(2){left:18%;animation-delay:2s}
+.gh-leaf-drift i:nth-child(3){left:30%;animation-delay:4s}.gh-leaf-drift i:nth-child(4){left:43%;animation-delay:1s}
+.gh-leaf-drift i:nth-child(5){left:56%;animation-delay:5s}.gh-leaf-drift i:nth-child(6){left:66%;animation-delay:3s}
+.gh-leaf-drift i:nth-child(7){left:76%;animation-delay:6s}.gh-leaf-drift i:nth-child(8){left:86%;animation-delay:2.8s}
+.gh-leaf-drift i:nth-child(9){left:94%;animation-delay:4.6s}
+@keyframes gh-leaf-fall { from{transform:translateY(-120px) rotate(0);opacity:0} 12%{opacity:.7} to{transform:translateY(560px) translateX(70px) rotate(300deg);opacity:0} }
+
+/* Make the gameplay pieces resemble physical benches / papers. */
+.gh-seed-bench {
+  left: 38px;
+  top: 322px;
+  width: 350px;
+  min-height: 425px;
+  border: 11px solid #56432d;
+  background:
+    linear-gradient(rgba(255,255,255,.03), rgba(0,0,0,.08)),
+    repeating-linear-gradient(90deg, #7c6948 0 42px, #806c4a 43px 84px);
+  box-shadow: 0 24px 50px rgba(0,0,0,.31), inset 0 0 28px rgba(64,45,28,.22);
+}
+.gh-seed-bench::after {
+  content: "";
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: -42px;
+  height: 44px;
+  background: linear-gradient(90deg,#4b3929 0 12%,transparent 12% 88%,#4b3929 88%);
+}
+.gh-seed-grid button {
+  background:
+    radial-gradient(circle at 78% 20%, rgba(224,211,166,.13), transparent 28%),
+    #8a7857;
+  box-shadow: inset 0 -12px 15px rgba(72,55,34,.15);
+}
+
+.gh-potting-table { top: 348px; gap: 12px; }
+.gh-pot {
+  min-height: 330px;
+  border-width: 6px;
+  background:
+    radial-gradient(circle at 50% 4%, #302518 0 22%, transparent 23%),
+    linear-gradient(#826846 0 9%,#795d3e 10% 83%,#4b392c 84%);
+  box-shadow: 0 23px 30px rgba(0,0,0,.3), inset 0 -22px 24px rgba(46,31,23,.16);
+}
+.gh-plant-visual { height: 175px; font-size: 76px; }
+
+.gh-ingredient-cabinet {
+  right: 45px;
+  top: 330px;
+  height: 230px;
+  border-width: 12px;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.018) 0 3px, transparent 3px 27px),
+    linear-gradient(#5d4b36,#413429);
+}
+.gh-ingredient-cabinet::before,
+.gh-ingredient-cabinet::after {
+  content:"";
+  position:absolute;
+  top:15px;
+  bottom:15px;
+  width:2px;
+  background:rgba(39,30,23,.4);
+}
+.gh-ingredient-cabinet::before{left:48%}.gh-ingredient-cabinet::after{left:52%}
+
+.gh-growing-log {
+  right: 55px;
+  top: 590px;
+  width: 285px;
+  padding: 18px;
+  border: 0;
+  border-radius: 3px;
+  background:
+    linear-gradient(105deg, rgba(255,255,255,.11), transparent 18%),
+    #d4cca5;
+  transform: rotate(-1.1deg);
+  box-shadow: 0 12px 22px rgba(0,0,0,.2);
+}
+
+/* =========================================================
+   POTION ROOM · V3 DETAIL LAYER
+   ========================================================= */
+/* The V2 apothecary is retained; this adds foreground depth. */
+.greenhouse-zone-potions .greenhouse-scene::after {
+  content:"";
+  position:absolute;
+  z-index:3;
+  left:0; right:0; bottom:0;
+  height:140px;
+  background:
+    radial-gradient(ellipse at 20% 75%,rgba(48,30,18,.74),transparent 22%),
+    radial-gradient(ellipse at 83% 75%,rgba(48,30,18,.7),transparent 20%),
+    linear-gradient(rgba(38,24,14,.12),rgba(18,12,8,.68));
+  pointer-events:none;
+}
+.potion-shelf { backdrop-filter: blur(1px); }
+.potion-cauldron-wrap { filter: drop-shadow(0 12px 15px rgba(0,0,0,.35)); }
+.potion-book { transform:translateX(-50%) rotate(-.3deg); }
+.potion-history { transform:rotate(.7deg); }
+
+/* =========================================================
+   WAND WORKSHOP · IMMERSIVE WANDMAKER'S SHOP
+   ========================================================= */
+.greenhouse-zone-wands .greenhouse-scene {
+  background:
+    radial-gradient(circle at 50% 8%, rgba(221,159,70,.09), transparent 22%),
+    radial-gradient(circle at 72% 48%, rgba(83,67,105,.08), transparent 25%),
+    linear-gradient(#151310,#0d0d0c 72%,#080808);
+}
+
+.wand-dark-wall {
+  background:
+    repeating-linear-gradient(90deg, transparent 0 86px, rgba(105,78,50,.09) 87px 91px),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.015) 0 52px, transparent 53px 104px),
+    linear-gradient(#16120f,#0c0c0b);
+}
+
+.wand-workshop-decor {
+  position:absolute;
+  z-index:2;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+}
+
+.wand-ceiling-beams i {
+  position:absolute;
+  top:-25px;
+  width:13px;
+  height:255px;
+  background:linear-gradient(#5c422c,#2f241b);
+  box-shadow:0 7px 12px rgba(0,0,0,.35);
+  transform-origin:top center;
+}
+.wand-ceiling-beams i:nth-child(1){left:13%;transform:rotate(-24deg)}
+.wand-ceiling-beams i:nth-child(2){left:37%;transform:rotate(-10deg)}
+.wand-ceiling-beams i:nth-child(3){right:37%;transform:rotate(10deg)}
+.wand-ceiling-beams i:nth-child(4){right:13%;transform:rotate(24deg)}
+
+.wand-hanging-lamps {
+  position:absolute;
+  top:0;
+  left:25%;
+  right:22%;
+  display:flex;
+  justify-content:space-between;
+}
+.wand-hanging-lamps span {
+  position:relative;
+  width:44px;
+  height:70px;
+  margin-top:65px;
+  border:4px solid #5b432f;
+  border-radius:10px 10px 18px 18px;
+  background:rgba(191,123,52,.08);
+  box-shadow:0 0 38px rgba(232,156,67,.12);
+}
+.wand-hanging-lamps span::before {
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:66px;
+  width:2px;
+  height:72px;
+  background:#4a392c;
+}
+.wand-hanging-lamps i {
+  position:absolute;
+  left:50%;
+  top:18px;
+  width:13px;
+  height:28px;
+  transform:translateX(-50%);
+  border-radius:50% 50% 40% 40%;
+  background:#ffc769;
+  box-shadow:0 0 17px #eca34b;
+  animation:wand-lamp-flicker 1.7s ease-in-out infinite alternate;
+}
+.wand-hanging-lamps span:nth-child(2){margin-top:40px}.wand-hanging-lamps span:nth-child(3){margin-top:80px}
+@keyframes wand-lamp-flicker { to { filter:brightness(1.23); transform:translateX(-50%) scale(.9,1.07); } }
+
+.wand-box-wall {
+  position:absolute;
+  top:145px;
+  width:270px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:7px;
+  opacity:.55;
+}
+.wand-box-wall-left{left:12px}.wand-box-wall-right{right:12px}
+.wand-box-wall i {
+  height:27px;
+  border:1px solid #5d4631;
+  border-radius:2px;
+  background:linear-gradient(90deg,#5d422b,#362b20);
+  box-shadow:0 4px 6px rgba(0,0,0,.25);
+  transform:rotate(var(--r,0deg));
+}
+.wand-box-wall i:nth-child(3n){--r:3deg;background:linear-gradient(90deg,#49392c,#291f1a)}
+.wand-box-wall i:nth-child(4n){--r:-4deg}.wand-box-wall i:nth-child(5n){height:34px}
+
+.wand-wood-shelf {
+  position:absolute;
+  height:14px;
+  border-radius:2px;
+  background:#4d3827;
+  box-shadow:0 9px 13px rgba(0,0,0,.4);
+}
+.wand-wood-shelf-a{left:28%;right:29%;top:245px}.wand-wood-shelf-b{left:31%;right:33%;top:805px}
+.wand-wood-shelf i {
+  display:inline-block;
+  width:35px;
+  height:45px;
+  margin:-42px 11px 0;
+  border:2px solid rgba(149,119,75,.36);
+  border-radius:4px;
+  background:linear-gradient(#2a231c,#171512);
+}
+
+.wand-dust-motes i {
+  position:absolute;
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background:#d5b96f;
+  box-shadow:0 0 9px rgba(213,185,111,.6);
+  opacity:.35;
+  animation:wand-dust 6s ease-in-out infinite alternate;
+}
+.wand-dust-motes i:nth-child(1){left:9%;top:31%}.wand-dust-motes i:nth-child(2){left:15%;top:68%;animation-delay:1s}
+.wand-dust-motes i:nth-child(3){left:25%;top:42%;animation-delay:2s}.wand-dust-motes i:nth-child(4){left:34%;top:76%;animation-delay:3s}
+.wand-dust-motes i:nth-child(5){left:45%;top:34%;animation-delay:4s}.wand-dust-motes i:nth-child(6){left:53%;top:58%;animation-delay:5s}
+.wand-dust-motes i:nth-child(7){left:61%;top:24%;animation-delay:.7s}.wand-dust-motes i:nth-child(8){left:69%;top:69%;animation-delay:1.7s}
+.wand-dust-motes i:nth-child(9){left:76%;top:41%;animation-delay:2.7s}.wand-dust-motes i:nth-child(10){left:84%;top:63%;animation-delay:3.7s}
+.wand-dust-motes i:nth-child(11){left:91%;top:30%;animation-delay:4.7s}.wand-dust-motes i:nth-child(12){left:48%;top:84%;animation-delay:1.2s}
+.wand-dust-motes i:nth-child(13){left:72%;top:84%;animation-delay:2.3s}.wand-dust-motes i:nth-child(14){left:39%;top:18%;animation-delay:3.4s}
+@keyframes wand-dust { to { transform:translate(18px,-28px);opacity:.08 } }
+
+.wand-floor-runner {
+  position:absolute;
+  left:36%;
+  right:34%;
+  bottom:-25px;
+  height:220px;
+  background:
+    linear-gradient(90deg,transparent 0 7%,rgba(115,58,55,.8) 7% 93%,transparent 93%),
+    repeating-linear-gradient(45deg,#4b262d 0 22px,#32202a 22px 44px);
+  clip-path:polygon(12% 0,88% 0,100% 100%,0 100%);
+  opacity:.38;
+}
+
+.wand-rack {
+  left:34px;
+  top:90px;
+  width:650px;
+  min-height:720px;
+  border:11px solid #503925;
+  background:
+    linear-gradient(rgba(255,255,255,.018),rgba(0,0,0,.08)),
+    repeating-linear-gradient(0deg,#281f18 0 88px,#34271e 89px 94px);
+  box-shadow:0 28px 58px rgba(0,0,0,.52),inset 0 0 35px rgba(0,0,0,.34);
+}
+.wand-rack::before {
+  content:"WANDMAKER · EST. UNKNOWN";
+  position:absolute;
+  top:-28px;
+  left:50%;
+  padding:7px 14px;
+  transform:translateX(-50%);
+  border:2px solid #5f462e;
+  background:#1c1713;
+  color:#b99a60;
+  font-size:7px;
+  letter-spacing:.16em;
+}
+.wand-grid button {
+  background:
+    linear-gradient(90deg,rgba(98,69,45,.18),transparent 17% 83%,rgba(98,69,45,.17)),
+    #181512;
+  box-shadow:inset 0 0 18px rgba(0,0,0,.18);
+}
+.wand-grid button:hover { background:#211a16; transform:translateY(-1px); }
+
+.spell-library {
+  right:34px;
+  top:92px;
+  width:620px;
+  border:10px solid #483423;
+  background:
+    repeating-linear-gradient(180deg, transparent 0 111px, rgba(88,61,37,.36) 112px 119px),
+    #211a16;
+  box-shadow:0 27px 52px rgba(0,0,0,.5),inset 0 0 25px rgba(0,0,0,.22);
+}
+.spell-library::before {
+  content:"ARCHIVE OF PRACTICAL CHARMS";
+  position:absolute;
+  top:-28px;
+  right:22px;
+  padding:7px 10px;
+  border:2px solid #58412b;
+  background:#171310;
+  color:#b89a61;
+  font-size:7px;
+  letter-spacing:.12em;
+}
+.spell-cards button {
+  position:relative;
+  min-height:110px;
+  padding:14px 16px 14px 20px;
+  border:0;
+  border-radius:2px;
+  background:
+    linear-gradient(105deg,rgba(255,255,255,.04),transparent 20%),
+    #c4b48d;
+  color:#322a22;
+  transform:rotate(-.3deg);
+  box-shadow:0 6px 9px rgba(0,0,0,.22);
+}
+.spell-cards button:nth-child(even){transform:rotate(.45deg);background:#bba77f}
+.spell-cards button.is-active { outline:2px solid #9d79bd; background:#d0bea0; }
+.spell-cards button::before {
+  content:"";
+  position:absolute;
+  left:7px;
+  top:9px;
+  bottom:9px;
+  width:2px;
+  background:rgba(83,60,38,.18);
+}
+.spell-cards strong{font-size:16px}.spell-cards span{color:#755324}.spell-cards small{color:#675c4e}
+
+.spell-casting-desk {
+  right:76px;
+  top:560px;
+  width:530px;
+  border:11px solid #493321;
+  border-radius:5px;
+  background:
+    radial-gradient(circle at 50% 0,rgba(183,129,54,.08),transparent 28%),
+    repeating-linear-gradient(90deg,#2f231b 0 52px,#35271d 53px 104px);
+  box-shadow:0 25px 40px rgba(0,0,0,.46),inset 0 -20px 25px rgba(0,0,0,.18);
+}
+.spell-casting-desk::after {
+  content:"✦     ·     ✦     ·     ✦";
+  display:block;
+  margin-top:10px;
+  color:rgba(210,176,92,.36);
+  letter-spacing:.35em;
+}
+.gesture-buttons button {
+  border:2px solid #5e4934;
+  background:radial-gradient(circle,#261e18,#171412 70%);
+  box-shadow:inset 0 0 13px rgba(207,164,75,.05),0 5px 8px rgba(0,0,0,.25);
+}
+.gesture-buttons button:hover { border-color:#b29453;color:#fff1a8;box-shadow:0 0 15px rgba(218,183,85,.14); }
+
+.spell-progress {
+  right:210px;
+  bottom:48px;
+  border:5px solid #3f2f23;
+  background:#151210;
+}
+
+@media (max-width: 1250px) {
+  .gh-back-shelves { opacity:.34; }
+  .wand-box-wall { opacity:.25; }
+}
+
+@media (max-width: 900px) {
+  .gh-immersive-decor,
+  .wand-workshop-decor { opacity:.45; }
+  .gh-back-shelves,
+  .wand-box-wall,
+  .wand-floor-runner { display:none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gh-immersive-decor *,
+  .wand-workshop-decor * { animation:none !important; }
+}

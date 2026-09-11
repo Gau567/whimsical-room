@@ -434,6 +434,16 @@ export default function GreenhouseRoom() {
           <>
             <div className="gh-glass-roof" aria-hidden="true"><i/><i/><i/><i/><i/><i/></div>
             <div className="gh-vines" aria-hidden="true"><span>❧</span><span>❧</span><span>❧</span></div>
+            <div className="gh-immersive-decor" aria-hidden="true">
+              <div className="gh-sunbeams"><i/><i/><i/></div>
+              <div className="gh-hanging-pots"><span>♧</span><span>❧</span><span>✿</span><span>♧</span></div>
+              <div className="gh-back-shelves gh-back-shelves-left"><i/><i/><i/><i/><i/><i/></div>
+              <div className="gh-back-shelves gh-back-shelves-right"><i/><i/><i/><i/><i/></div>
+              <div className="gh-workbench-clutter"><span>🪴</span><span>🫙</span><span>✂</span><span>🧤</span><span>🪣</span></div>
+              <div className="gh-watering-can">◒</div>
+              <div className="gh-floor-puddles"><i/><i/><i/></div>
+              <div className="gh-leaf-drift">{Array.from({ length: 9 }).map((_, index) => <i key={index}>⌁</i>)}</div>
+            </div>
 
             <button className="gh-zone-arrow gh-zone-arrow-left" type="button" onClick={() => changeZone("potions")}>
               <b>‹</b><span>brewing room</span>
@@ -589,6 +599,16 @@ export default function GreenhouseRoom() {
         {zone === "wands" && (
           <>
             <div className="wand-dark-wall" aria-hidden="true" />
+            <div className="wand-workshop-decor" aria-hidden="true">
+              <div className="wand-ceiling-beams"><i/><i/><i/><i/></div>
+              <div className="wand-hanging-lamps"><span><i/></span><span><i/></span><span><i/></span></div>
+              <div className="wand-box-wall wand-box-wall-left">{Array.from({ length: 22 }).map((_, index) => <i key={index} />)}</div>
+              <div className="wand-box-wall wand-box-wall-right">{Array.from({ length: 18 }).map((_, index) => <i key={index} />)}</div>
+              <div className="wand-wood-shelf wand-wood-shelf-a"><i/><i/><i/><i/><i/></div>
+              <div className="wand-wood-shelf wand-wood-shelf-b"><i/><i/><i/><i/></div>
+              <div className="wand-dust-motes">{Array.from({ length: 14 }).map((_, index) => <i key={index} />)}</div>
+              <div className="wand-floor-runner" />
+            </div>
             <button className="gh-zone-arrow gh-zone-arrow-left" type="button" onClick={() => changeZone("potions")}><b>‹</b><span>brewing room</span></button>
 
             <div className={`wand-sparks wand-sparks-${wandBurst ?? "none"}`} key={`${wandBurst}-${wandMessage}`} aria-hidden="true">
