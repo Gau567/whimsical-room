@@ -94,3 +94,111 @@
   .arcade-center-mini-games,.arcade-midway-games,.arcade-jackpot-tables { grid-template-columns:1fr; width:min(260px,85%); }
   .arcade-vault-grid { grid-template-columns:repeat(3,80px); }
 }
+
+/* =========================================================
+   V4.4 · COMPACT MAIN-FLOOR TOKEN KIOSK
+   The old cabinet-sized token machine blocked the newer centre games.
+   It now behaves like a small wall-mounted service kiosk.
+   ========================================================= */
+.arcade-zone-0 .arcade-token-machine {
+  left: 50%;
+  top: 565px;
+  width: 190px;
+  height: 82px;
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: 28px 1fr 42px;
+  grid-template-rows: 1fr 1fr;
+  align-items: center;
+  column-gap: 8px;
+  padding: 10px 12px;
+  border: 2px solid rgba(181, 122, 238, .66);
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(123, 71, 166, .96), rgba(48, 34, 68, .98));
+  box-shadow:
+    0 14px 28px rgba(0, 0, 0, .35),
+    0 0 18px rgba(145, 82, 206, .12);
+  color: white;
+}
+
+.arcade-zone-0 .arcade-token-machine i {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  width: 11px;
+  height: 11px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: #72ff9e;
+  box-shadow: 0 0 9px rgba(114, 255, 158, .8);
+}
+
+.arcade-zone-0 .arcade-token-machine strong {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: end;
+  display: block;
+  font-size: 12px;
+  line-height: 1;
+  text-align: left;
+}
+
+.arcade-zone-0 .arcade-token-machine span {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: start;
+  display: block;
+  margin-top: 5px;
+  color: rgba(245, 230, 255, .72);
+  font-size: 7px;
+  letter-spacing: .08em;
+  text-align: left;
+}
+
+.arcade-zone-0 .arcade-token-machine em {
+  grid-column: 3;
+  grid-row: 1 / 3;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+  border: 6px solid #d2aaff;
+  border-radius: 50%;
+  background: #1c1424;
+  color: #f4cd66;
+  font-size: 11px;
+  font-style: normal;
+}
+
+.arcade-zone-0 .arcade-token-machine:hover {
+  border-color: #d5a4ff;
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow:
+    0 16px 31px rgba(0, 0, 0, .4),
+    0 0 22px rgba(180, 112, 239, .22);
+}
+
+/* Token / prize / snack fixtures remain exclusive to the Main Floor. */
+.arcade-zone-1 .arcade-token-machine,
+.arcade-zone-1 .arcade-prize-counter,
+.arcade-zone-1 .arcade-snack-bar,
+.arcade-zone-2 .arcade-token-machine,
+.arcade-zone-2 .arcade-prize-counter,
+.arcade-zone-2 .arcade-snack-bar {
+  display: none !important;
+}
+
+@media (max-width: 980px) {
+  .arcade-zone-0 .arcade-token-machine {
+    top: 1010px;
+    width: 210px;
+  }
+}
+
+@media (max-width: 680px) {
+  .arcade-zone-0 .arcade-token-machine {
+    top: 2240px;
+    width: min(240px, 76vw);
+  }
+}
