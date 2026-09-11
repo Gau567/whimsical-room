@@ -8,6 +8,7 @@ import "./styles/world-hud.css";
 import "./styles/observatory-room.css";
 import "./styles/arcade-room.css";
 import "./styles/nostalgia-arcade-token.css";
+import "./styles/greenhouse-room.css";
 
 export const metadata: Metadata = {
   title: {

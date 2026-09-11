@@ -15,11 +15,13 @@ import PersistentMusicPlayer from "@/components/PersistentMusicPlayer";
 import RoomNowPlaying from "@/components/RoomNowPlaying";
 import NostalgiaArcadeToken from "@/components/world/NostalgiaArcadeToken";
 
+
 import WorldHub from "@/components/world/WorldHub";
 import WorldHUD from "@/components/world/WorldHUD";
 import MidnightStudy from "@/components/rooms/study/MidnightStudy";
 import ObservatoryRoom from "@/components/rooms/observatory/ObservatoryRoom";
 import ArcadeRoom from "@/components/rooms/arcade/ArcadeRoom";
+import GreenhouseRoom from "@/components/rooms/greenhouse/GreenhouseRoom";
 
 import {
   MusicPlayerProvider,
@@ -97,6 +99,10 @@ function WorldApp() {
         <ArcadeRoom />
       )}
 
+      {currentRoom === "greenhouse" && (
+        <GreenhouseRoom />
+      )}
+
 
 
       {/* FUTURE ROOMS */}
@@ -105,7 +111,9 @@ function WorldApp() {
         currentRoom !== "nostalgia" &&
         currentRoom !== "study" && 
         currentRoom !== "observatory" && 
-        currentRoom !== "arcade" &&(
+        currentRoom !== "arcade" &&
+        currentRoom !== "greenhouse" &&
+        (
           <FutureRoomPlaceholder
             roomName={currentRoom}
             onBack={returnToHub}

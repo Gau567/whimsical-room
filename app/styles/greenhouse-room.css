@@ -1,0 +1,274 @@
+/* =========================================================
+   ROOM 07 · GREENHOUSE / POTIONS / WAND WORKSHOP
+   ========================================================= */
+
+.greenhouse-room {
+  --gh-cream: #efe8cf;
+  --gh-ink: #1d2118;
+  --gh-green: #5f8150;
+  --gh-deep: #243423;
+  --gh-moss: #758b58;
+  --gh-amber: #d8a555;
+  --gh-gold: #f0ca70;
+  --gh-stone: #1b2220;
+  --gh-violet: #6e587d;
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: #152019;
+  color: var(--gh-cream);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.greenhouse-room button { font: inherit; }
+
+.greenhouse-grain {
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  pointer-events: none;
+  opacity: .07;
+  background-image: repeating-linear-gradient(0deg, rgba(255,255,255,.07) 0 1px, transparent 1px 3px);
+  mix-blend-mode: overlay;
+}
+
+.greenhouse-header {
+  position: relative;
+  z-index: 60;
+  display: grid;
+  grid-template-columns: 190px 1fr 190px;
+  gap: 18px;
+  align-items: center;
+  width: min(1480px, calc(100% - 42px));
+  margin: 16px auto 0;
+  padding: 14px 18px;
+  border: 1px solid rgba(234, 226, 192, .14);
+  border-radius: 16px;
+  background: rgba(14, 21, 17, .78);
+  backdrop-filter: blur(10px);
+}
+
+.greenhouse-header > div { text-align: center; }
+.greenhouse-header p,
+.greenhouse-header span { margin: 0; }
+.greenhouse-header p { color: var(--gh-gold); font-size: 9px; letter-spacing: .18em; }
+.greenhouse-header h1 { margin: 5px 0 4px; font-size: clamp(24px, 2vw, 34px); }
+.greenhouse-header span { color: #b5bea8; font-size: 11px; }
+
+.greenhouse-hallway,
+.greenhouse-reset {
+  padding: 10px 12px;
+  border: 1px solid rgba(240, 229, 190, .18);
+  border-radius: 9px;
+  background: rgba(26, 34, 26, .86);
+  color: #e9e0c9;
+  cursor: pointer;
+}
+.greenhouse-hallway { justify-self: start; }
+.greenhouse-reset { justify-self: end; color: #ccb89a; }
+.greenhouse-reset:hover { border-color: #d4a865; color: #fff1d6; }
+
+.greenhouse-scene {
+  position: relative;
+  z-index: 2;
+  width: min(1540px, calc(100% - 28px));
+  height: 930px;
+  margin: 14px auto 80px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 24px;
+  box-shadow: 0 35px 90px rgba(0,0,0,.42);
+}
+
+/* ---------- NAV ---------- */
+.gh-zone-arrow {
+  position: absolute;
+  z-index: 80;
+  top: 46%;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 999px;
+  background: rgba(12, 18, 15, .88);
+  color: #e8dfc8;
+  cursor: pointer;
+}
+.gh-zone-arrow-left { left: 12px; }
+.gh-zone-arrow-right { right: 12px; }
+.gh-zone-arrow b { color: #b8d483; font-size: 28px; line-height: .75; }
+.gh-zone-arrow span { font-size: 9px; text-transform: uppercase; letter-spacing: .08em; }
+
+.greenhouse-toast {
+  position: absolute;
+  z-index: 90;
+  left: 50%;
+  bottom: 15px;
+  max-width: 690px;
+  margin: 0;
+  padding: 9px 15px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 999px;
+  background: rgba(10, 15, 12, .9);
+  color: #e2dac5;
+  font-size: 10px;
+  text-align: center;
+}
+
+/* =========================================================
+   GREENHOUSE
+   ========================================================= */
+.greenhouse-zone-greenhouse .greenhouse-scene {
+  background:
+    linear-gradient(rgba(236, 230, 179, .08), rgba(48, 68, 46, .14)),
+    linear-gradient(#9ba98b 0 14%, #64765f 14% 65%, #384132 65%);
+}
+
+.gh-glass-roof {
+  position: absolute;
+  z-index: 1;
+  inset: 0 0 auto;
+  height: 260px;
+  background:
+    linear-gradient(90deg, transparent 0 11%, rgba(69,73,55,.82) 11.3% 12%, transparent 12.3% 24%, rgba(69,73,55,.82) 24.3% 25%, transparent 25.3% 38%, rgba(69,73,55,.82) 38.3% 39%, transparent 39.3% 52%, rgba(69,73,55,.82) 52.3% 53%, transparent 53.3% 66%, rgba(69,73,55,.82) 66.3% 67%, transparent 67.3% 80%, rgba(69,73,55,.82) 80.3% 81%, transparent 81.3%),
+    linear-gradient(180deg, rgba(226,229,190,.72), rgba(167,186,158,.46));
+  clip-path: polygon(6% 0, 94% 0, 100% 100%, 0 100%);
+}
+.gh-glass-roof::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(102deg, transparent 0 130px, rgba(255,255,255,.17) 132px 134px);
+}
+.gh-glass-roof i {
+  position: absolute;
+  width: 2px;
+  height: 90px;
+  background: rgba(221, 236, 208, .45);
+  animation: greenhouse-rain 2.8s linear infinite;
+}
+.gh-glass-roof i:nth-child(1){left:14%;top:20px}.gh-glass-roof i:nth-child(2){left:30%;top:80px;animation-delay:.4s}
+.gh-glass-roof i:nth-child(3){left:48%;top:40px;animation-delay:1s}.gh-glass-roof i:nth-child(4){left:65%;top:100px;animation-delay:.7s}
+.gh-glass-roof i:nth-child(5){left:81%;top:30px;animation-delay:1.5s}.gh-glass-roof i:nth-child(6){left:90%;top:120px;animation-delay:.2s}
+@keyframes greenhouse-rain { from{transform:translateY(-80px);opacity:0} 20%{opacity:.7} to{transform:translateY(180px);opacity:0} }
+
+.gh-vines { position:absolute;z-index:4;inset:0;pointer-events:none;overflow:hidden; }
+.gh-vines span { position:absolute;color:#27472c;font-size:160px;opacity:.78;filter:drop-shadow(0 8px 8px rgba(0,0,0,.18)); }
+.gh-vines span:nth-child(1){left:-20px;top:110px;transform:rotate(18deg)}
+.gh-vines span:nth-child(2){right:-10px;top:180px;transform:scaleX(-1) rotate(12deg)}
+.gh-vines span:nth-child(3){left:42%;top:30px;opacity:.35;font-size:105px}
+
+.gh-title-plaque {
+  position:absolute;z-index:10;top:85px;left:50%;width:510px;padding:16px;transform:translateX(-50%);
+  border:1px solid rgba(93,70,39,.35);border-radius:12px;background:rgba(239,229,190,.74);color:#3e4b33;text-align:center;
+  box-shadow:0 14px 28px rgba(47,50,36,.14);
+}
+.gh-title-plaque small,.gh-title-plaque strong{display:block}.gh-title-plaque small{font-size:8px;letter-spacing:.18em}.gh-title-plaque strong{margin-top:7px;font-family:Georgia,serif;font-size:19px;font-style:italic}
+
+.gh-seed-bench {
+  position:absolute;z-index:12;left:42px;top:305px;width:360px;min-height:390px;padding:16px;border:7px solid #564936;border-radius:9px;background:#79694d;color:#eee3c4;box-shadow:0 18px 35px rgba(0,0,0,.3);
+}
+.gh-seed-bench header { margin-bottom:11px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.12); }
+.gh-seed-bench header span,.gh-seed-bench header small{display:block}.gh-seed-bench header span{font-weight:900;letter-spacing:.08em}.gh-seed-bench header small{margin-top:4px;color:#cfc4a5;font-size:8px}
+.gh-seed-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gh-seed-grid button{min-height:92px;padding:10px;border:1px solid rgba(56,47,31,.45);border-radius:7px;background:#8b7a59;color:#f3e9ce;text-align:left;cursor:grab}
+.gh-seed-grid button.is-selected{outline:2px solid #dfc56c;background:#6e7047}.gh-seed-grid span{float:left;margin-right:9px;font-size:22px}.gh-seed-grid strong,.gh-seed-grid small{display:block}.gh-seed-grid strong{font-size:9px}.gh-seed-grid small{margin-top:5px;color:#d2c7a8;font-size:7px;line-height:1.3}
+
+.gh-potting-table {
+  position:absolute;z-index:12;left:50%;top:320px;display:grid;grid-template-columns:repeat(3,190px);gap:17px;transform:translateX(-50%);
+}
+.gh-pot{min-height:300px;padding:17px 13px;border:5px solid #725b3f;border-radius:100px 100px 18px 18px;background:linear-gradient(#7d6748,#4d3a2d);text-align:center;color:#f0e6cc;box-shadow:0 18px 28px rgba(0,0,0,.28)}
+.gh-pot.is-grown{border-color:#859c58;box-shadow:0 0 35px rgba(149,188,101,.2),0 18px 28px rgba(0,0,0,.28)}
+.gh-plant-visual{display:grid;place-items:center;height:150px;font-size:66px;color:#9dba65;text-shadow:0 4px 12px rgba(24,55,27,.3)}
+.gh-pot strong,.gh-pot small{display:block}.gh-pot strong{font-size:10px}.gh-pot small{margin:7px 0 13px;color:#d2c5a8;font-size:8px}
+.gh-pot-buttons{display:flex;justify-content:center;gap:6px}.gh-pot-buttons button{padding:7px 8px;border:1px solid rgba(255,255,255,.16);border-radius:7px;background:#354630;color:#e6ddc1;font-size:8px;cursor:pointer}
+
+.gh-ingredient-cabinet {
+  position:absolute;z-index:14;right:48px;top:300px;width:290px;height:210px;padding:20px;border:8px solid #544634;border-radius:9px;background:linear-gradient(#66553d,#483b2f);color:#e8ddbf;cursor:pointer;box-shadow:0 18px 35px rgba(0,0,0,.3);
+}
+.gh-ingredient-cabinet.is-open{background:linear-gradient(135deg,#4f6044,#3a4635);box-shadow:0 0 32px rgba(178,197,110,.16)}
+.gh-ingredient-cabinet span{display:block;margin-bottom:16px;color:#dec06e;font-size:37px}.gh-ingredient-cabinet strong,.gh-ingredient-cabinet small{display:block}.gh-ingredient-cabinet strong{font-size:11px}.gh-ingredient-cabinet small{margin-top:9px;color:#bfb49a;font-size:8px}
+
+.gh-growing-log {
+  position:absolute;z-index:13;right:55px;top:540px;width:275px;padding:15px;border:1px solid rgba(65,68,46,.35);border-radius:8px;background:rgba(239,228,192,.58);color:#394634;
+}
+.gh-growing-log small,.gh-growing-log strong{display:block}.gh-growing-log small{font-size:8px;letter-spacing:.13em}.gh-growing-log strong{margin:6px 0;font-size:12px}.gh-growing-log p{margin:0;font-family:Georgia,serif;font-size:12px;font-style:italic;line-height:1.5}
+
+/* =========================================================
+   POTION ROOM
+   ========================================================= */
+.greenhouse-zone-potions .greenhouse-scene {
+  background:
+    radial-gradient(circle at 50% 53%, rgba(124,169,118,.10), transparent 32%),
+    linear-gradient(#121c1c,#101413 68%,#0c0f0f);
+}
+.potions-stone-wall { position:absolute;z-index:0;inset:0;background:repeating-linear-gradient(0deg,transparent 0 52px,rgba(88,107,95,.12) 53px 55px),repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 100px,transparent 102px 200px); }
+.potions-stone-wall::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,rgba(112,220,148,.12),transparent 35%)}
+
+.potion-shelf {
+  position:absolute;z-index:12;top:110px;width:310px;padding:14px;border:7px solid #4a372a;border-radius:7px;background:#2b241e;box-shadow:0 20px 45px rgba(0,0,0,.45);
+}
+.potion-shelf-left{left:55px}.potion-shelf-right{right:55px}.potion-shelf h3{margin:0 0 11px;color:#c4a769;font-size:9px;letter-spacing:.14em}
+.potion-shelf button{display:grid;grid-template-columns:42px 1fr;align-items:center;width:100%;min-height:62px;margin:7px 0;padding:8px;border:1px solid #463b31;border-radius:5px;background:#181918;color:#d8cfba;text-align:left;cursor:grab}
+.potion-shelf button:hover{border-color:#78936f;background:#1b2420}.potion-shelf span{font-size:25px;text-align:center}.potion-shelf b{font-size:8px;font-weight:700}
+
+.potion-book {
+  position:absolute;z-index:14;left:50%;top:85px;width:520px;min-height:265px;padding:19px 28px;transform:translateX(-50%);border:8px solid #493328;border-radius:8px 8px 20px 20px;background:linear-gradient(90deg,#c4b28a 49.4%,#8f7d5e 49.5% 50.5%,#c4b28a 50.6%);color:#342e27;box-shadow:0 22px 40px rgba(0,0,0,.42);
+}
+.potion-book header{text-align:center}.potion-book header small,.potion-book header strong{display:block}.potion-book header small{font-size:7px;letter-spacing:.14em}.potion-book header strong{margin-top:5px;font-family:Georgia,serif;font-size:16px}.potion-book article{text-align:center}.potion-book article h3{margin:16px 0 7px;font-family:Georgia,serif;font-size:22px}.potion-recipe-icons{font-size:27px;letter-spacing:8px}.potion-book article p:not(.potion-recipe-icons){font-size:8px}.potion-book blockquote{margin:12px 25px;font-family:Georgia,serif;font-size:12px;font-style:italic;line-height:1.4}.potion-book footer{display:flex;justify-content:space-between}.potion-book footer button{border:0;background:transparent;color:#4b3d2b;font-size:8px;cursor:pointer}
+
+.potion-cauldron-wrap{position:absolute;z-index:15;left:50%;top:410px;width:480px;transform:translateX(-50%);text-align:center}
+.potion-cauldron{position:relative;width:360px;height:250px;margin:0 auto;border:13px solid #242827;border-radius:45% 45% 52% 52%;background:linear-gradient(#17392c 0 26%,#19211f 27%);box-shadow:0 25px 20px rgba(0,0,0,.45),inset 0 12px 20px rgba(107,239,148,.13)}
+.potion-cauldron::before{content:"";position:absolute;left:-48px;right:-48px;top:-18px;height:35px;border:10px solid #272c2b;border-radius:50%;background:#111817}.potion-liquid{position:absolute;z-index:2;left:20px;right:20px;top:9px;height:68px;border-radius:50%;background:radial-gradient(circle,#a6f398 0 12%,#70cb7e 38%,#32694a 70%);box-shadow:0 0 35px rgba(116,255,159,.36)}
+.potion-cauldron.is-brewing .potion-liquid{animation:cauldron-bubble .4s ease-in-out infinite alternate}@keyframes cauldron-bubble{to{transform:scaleY(1.08);filter:hue-rotate(35deg)}}
+.potion-cauldron strong{position:absolute;z-index:4;left:0;right:0;top:112px;color:#b8d4b7;font-size:11px;letter-spacing:.08em}
+.potion-controls{display:flex;justify-content:center;gap:9px;margin-top:13px}.potion-controls button{padding:9px 12px;border:1px solid #5f765e;border-radius:7px;background:#1c2922;color:#dce4ce;font-size:8px;cursor:pointer}.potion-cauldron-wrap > p{min-height:38px;color:#bacbb6;font-family:Georgia,serif;font-size:12px;font-style:italic;line-height:1.5}
+
+.potion-history{position:absolute;z-index:12;right:52px;bottom:70px;width:310px;max-height:210px;overflow:auto;padding:13px;border:1px solid #4f4437;border-radius:8px;background:#171716;color:#beb6a5}.potion-history small{color:#c7a968;font-size:8px;letter-spacing:.13em}.potion-history p{margin:8px 0;padding-bottom:7px;border-bottom:1px dashed rgba(255,255,255,.08);font-size:8px;line-height:1.4}
+
+/* =========================================================
+   WAND WORKSHOP
+   ========================================================= */
+.greenhouse-zone-wands .greenhouse-scene { background:radial-gradient(circle at 50% 38%,rgba(111,82,133,.14),transparent 37%),linear-gradient(#121419,#0c0d10 70%,#08090a); }
+.wand-dark-wall{position:absolute;z-index:0;inset:0;background:repeating-linear-gradient(90deg,transparent 0 88px,rgba(172,134,75,.055) 89px 91px),linear-gradient(rgba(0,0,0,.12),transparent)}
+
+.wand-rack{position:absolute;z-index:13;left:45px;top:85px;width:640px;min-height:710px;padding:22px;border:8px solid #493728;border-radius:10px;background:linear-gradient(#2b211b,#171513);box-shadow:0 25px 50px rgba(0,0,0,.5)}
+.wand-rack header{text-align:center}.wand-rack header small{color:#c8a764;font-size:8px;letter-spacing:.15em}.wand-rack h2{margin:8px 0 5px;font-family:Georgia,serif;font-size:27px}.wand-rack header p{margin:0 auto 18px;max-width:490px;color:#a99b86;font-size:9px;line-height:1.4}
+.wand-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.wand-grid button{position:relative;min-height:124px;padding:13px 12px 12px 84px;border:1px solid #4d4035;border-radius:6px;background:#171616;color:#d5c9b2;text-align:left;cursor:pointer;overflow:hidden}.wand-grid button:hover{border-color:#8d7250}.wand-grid button.is-chosen{border-color:#d5b65e;box-shadow:inset 0 0 23px rgba(223,194,93,.1)}.wand-grid strong,.wand-grid small{display:block}.wand-grid strong{font-family:Georgia,serif;font-size:15px}.wand-grid small{margin-top:7px;color:#918776;font-size:8px}
+.wand-stick{position:absolute;left:17px;top:59px;width:54px;height:7px;border-radius:5px;background:linear-gradient(90deg,#5b3827,#b48452);transform:rotate(-24deg);box-shadow:0 2px 4px rgba(0,0,0,.5)}.wand-stick::after{content:"";position:absolute;right:-13px;top:1px;width:17px;height:4px;border-radius:50%;background:#c8a65a;box-shadow:0 0 8px rgba(221,186,94,.25)}
+.wand-stick-1{background:linear-gradient(90deg,#53633b,#a6b477)}.wand-stick-2{background:linear-gradient(90deg,#5c4a3b,#c08c55)}.wand-stick-3{background:linear-gradient(90deg,#4b4034,#819eb2)}.wand-stick-4{background:linear-gradient(90deg,#271d1d,#7b342d)}.wand-stick-5{background:linear-gradient(90deg,#b3a88e,#e1d6ba)}.wand-stick-6{background:linear-gradient(90deg,#473542,#8e6a9f)}.wand-stick-7{background:linear-gradient(90deg,#5a402d,#789055)}
+.wand-message{margin:15px 20px 0;padding:12px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#11100f;color:#bfb29e;text-align:center;font-family:Georgia,serif;font-size:12px;font-style:italic}
+
+.spell-library{position:absolute;z-index:13;right:42px;top:83px;width:620px;padding:17px;border:7px solid #433329;border-radius:9px;background:#221a18;color:#e3d6bc;box-shadow:0 24px 48px rgba(0,0,0,.48)}
+.spell-library header{display:flex;justify-content:space-between;margin-bottom:11px;color:#c7a567;font-size:8px}.spell-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px}.spell-cards button{min-height:102px;padding:12px;border:1px solid #4b3a31;border-radius:6px;background:#171514;color:#d8ccb6;text-align:left;cursor:pointer}.spell-cards button.is-active{border-color:#8b6db1;background:#211a26}.spell-cards strong,.spell-cards span,.spell-cards small{display:block}.spell-cards strong{font-family:Georgia,serif;font-size:15px}.spell-cards span{margin:7px 0;color:#d6b866;font-size:15px;letter-spacing:5px}.spell-cards small{color:#968b7c;font-size:8px;line-height:1.3}
+
+.spell-casting-desk{position:absolute;z-index:14;right:85px;top:545px;width:520px;padding:18px;border:7px solid #3e3028;border-radius:8px;background:linear-gradient(#2d211c,#191614);color:#dfd3bc;text-align:center}.spell-casting-desk > small,.spell-casting-desk > strong,.spell-casting-desk > span{display:block}.spell-casting-desk > small{color:#bf9f63;font-size:8px;letter-spacing:.14em}.spell-casting-desk > strong{margin:6px 0 13px;font-family:Georgia,serif;font-size:19px}.gesture-buttons{display:flex;justify-content:center;gap:7px}.gesture-buttons button{display:grid;place-items:center;width:54px;height:54px;border:1px solid #5b4954;border-radius:50%;background:#1b1820;color:#e4c978;font-size:20px;cursor:pointer}.spell-casting-desk p{min-height:35px;margin:13px 0;color:#b7aa99;font-family:Georgia,serif;font-size:11px;font-style:italic}.spell-casting-desk > span{font-size:8px;color:#857d72}
+.spell-progress{position:absolute;z-index:14;right:224px;bottom:62px;width:240px;padding:10px;border:1px solid rgba(255,255,255,.1);border-radius:9px;background:#111114;text-align:center}.spell-progress small,.spell-progress strong{display:block}.spell-progress small{color:#a98962;font-size:7px}.spell-progress strong{margin:5px 0;font-size:10px}.spell-progress div{display:flex;justify-content:center;gap:5px}.spell-progress i{width:24px;height:5px;border-radius:99px;background:#2c2831}.spell-progress i.is-on{background:#d4b661;box-shadow:0 0 8px rgba(219,186,92,.4)}
+
+.wand-sparks{position:absolute;z-index:40;inset:0;pointer-events:none}.wand-sparks i{position:absolute;left:50%;top:48%;width:6px;height:6px;border-radius:50%;opacity:0}.wand-sparks-red i{background:#ff443b;box-shadow:0 0 11px #ff352f;animation:red-spark .72s ease-out both}.wand-sparks-gold i{background:#ffdd6d;box-shadow:0 0 12px #ffd65a;animation:gold-spark .8s ease-out both}.wand-sparks i:nth-child(1){--x:-230px;--y:-140px}.wand-sparks i:nth-child(2){--x:-160px;--y:90px}.wand-sparks i:nth-child(3){--x:-80px;--y:-180px}.wand-sparks i:nth-child(4){--x:60px;--y:-160px}.wand-sparks i:nth-child(5){--x:180px;--y:-90px}.wand-sparks i:nth-child(6){--x:240px;--y:50px}.wand-sparks i:nth-child(7){--x:120px;--y:170px}.wand-sparks i:nth-child(8){--x:-120px;--y:170px}.wand-sparks i:nth-child(9){--x:-280px;--y:20px}.wand-sparks i:nth-child(10){--x:280px;--y:-20px}.wand-sparks i:nth-child(11){--x:25px;--y:220px}.wand-sparks i:nth-child(12){--x:-20px;--y:-230px}.wand-sparks i:nth-child(13){--x:200px;--y:140px}.wand-sparks i:nth-child(14){--x:-210px;--y:130px}
+@keyframes red-spark{0%{opacity:1;transform:translate(0,0) scale(1.6)}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(.2)}}
+@keyframes gold-spark{0%{opacity:1;transform:translate(0,0) scale(1.4)}70%{opacity:.9}100%{opacity:0;transform:translate(var(--x),var(--y)) rotate(160deg) scale(.4)}}
+
+@media (max-width: 1250px) {
+  .greenhouse-scene { height: 1180px; overflow-y: auto; }
+  .gh-potting-table { top: 720px; }
+  .gh-ingredient-cabinet { right: 40px; }
+  .gh-growing-log { top: 540px; }
+  .potion-book { width: 440px; }
+  .potion-shelf { width: 250px; }
+  .wand-rack { width: 520px; }
+  .spell-library { width: 480px; }
+  .spell-casting-desk { width: 430px; }
+}
+
+@media (max-width: 900px) {
+  .greenhouse-header { grid-template-columns: 1fr; justify-items: center; }
+  .greenhouse-hallway,.greenhouse-reset{justify-self:center}
+  .greenhouse-scene { height: 1900px; overflow-y: auto; }
+  .gh-seed-bench,.gh-ingredient-cabinet,.gh-growing-log,.potion-shelf,.potion-book,.potion-cauldron-wrap,.potion-history,.wand-rack,.spell-library,.spell-casting-desk,.spell-progress { left:50%;right:auto;transform:translateX(-50%); }
+  .gh-seed-bench{top:270px}.gh-ingredient-cabinet{top:690px}.gh-growing-log{top:930px}.gh-potting-table{top:1110px;grid-template-columns:1fr;}
+  .potion-shelf-left{top:380px}.potion-shelf-right{top:830px}.potion-book{top:80px}.potion-cauldron-wrap{top:1280px}.potion-history{top:1650px;bottom:auto}
+  .wand-rack{top:80px;width:86%}.spell-library{top:860px;width:86%}.spell-casting-desk{top:1450px;width:80%}.spell-progress{top:1740px;bottom:auto}
+}

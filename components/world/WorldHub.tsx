@@ -36,6 +36,14 @@ export default function WorldHub() {
     }
   }, [hasArcadeToken, arcadeOpen, unlockRoom]);
 
+  // The leaf-tagged brass key from Midnight Study is the physical
+  // unlock for Room 07. Repair older saves the same way Arcade does.
+  useEffect(() => {
+    if (hasKey && !greenhouseOpen) {
+      unlockRoom("greenhouse");
+    }
+  }, [hasKey, greenhouseOpen, unlockRoom]);
+
   return (
     <main className="world-hall-v2">
       <div className="world-hall-v2-grain" aria-hidden="true" />
