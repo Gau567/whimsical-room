@@ -29,7 +29,29 @@ type WandId =
   | "elder"
   | "hawthorn";
 
-type SpellId = "luma" | "verdant" | "motes" | "mendglass" | "raincall";
+type SpellId =
+  | "luma"
+  | "verdant"
+  | "motes"
+  | "mendglass"
+  | "raincall"
+  | "frostveil"
+  | "embercoil"
+  | "aeris"
+  | "echobell"
+  | "shadowlace"
+  | "starlance"
+  | "petalstorm"
+  | "chronotick"
+  | "mirrorstep"
+  | "inkwhisper"
+  | "thornward"
+  | "moonwell"
+  | "sunthread"
+  | "featherfall"
+  | "crystalbloom"
+  | "doorwake"
+  | "tidemark";
 
 type RoomSave = {
   planted: Record<PlantSlotId, IngredientId | null>;
@@ -136,6 +158,23 @@ const SPELLS: { id: SpellId; name: string; description: string; sequence: string
   { id: "motes", name: "Mote Dance", description: "Call harmless firefly-like lights.", sequence: ["✦", "✦", "↑"], effect: "Dozens of bright motes drift around the room." },
   { id: "mendglass", name: "Mendglass", description: "Repair a small crack in glass.", sequence: ["↓", "←", "✦", "→"], effect: "A silver line seals the nearest cracked pane." },
   { id: "raincall", name: "Raincall", description: "Ask the greenhouse roof for rain.", sequence: ["↑", "↓", "↑", "✦"], effect: "Rain begins tapping the glass three rooms away." },
+  { id: "frostveil", name: "Frostveil", description: "Pull a lace of winter over warm glass.", sequence: ["↓", "✦", "←"], effect: "Frost feathers across the air in delicate white branches." },
+  { id: "embercoil", name: "Embercoil", description: "Wake a ring of harmless ember-fire.", sequence: ["→", "✦", "→", "↑"], effect: "Orange sparks coil into a warm revolving halo." },
+  { id: "aeris", name: "Aeris", description: "Call a small indoor wind.", sequence: ["←", "→", "↑"], effect: "A sudden breeze circles the workshop and lifts loose leaves." },
+  { id: "echobell", name: "Echo Bell", description: "Send one clear note through hidden rooms.", sequence: ["✦", "↓", "✦"], effect: "A silver chime rings once, then returns from impossibly far away." },
+  { id: "shadowlace", name: "Shadowlace", description: "Teach nearby shadows to move on their own.", sequence: ["↓", "←", "↓", "→"], effect: "Dark ribbons peel away from the furniture and weave together." },
+  { id: "starlance", name: "Starlance", description: "Draw a falling star across the ceiling.", sequence: ["↑", "→", "✦", "↓"], effect: "A bright star streaks overhead and breaks into glittering fragments." },
+  { id: "petalstorm", name: "Petalstorm", description: "Scatter a harmless burst of enchanted petals.", sequence: ["✦", "←", "↑", "→"], effect: "A spiral of petals erupts and circles you like a tiny storm." },
+  { id: "chronotick", name: "Chronotick", description: "Make the room remember one second twice.", sequence: ["→", "↓", "←", "↑", "✦"], effect: "Clock hands spin, stop, and briefly tick backward." },
+  { id: "mirrorstep", name: "Mirrorstep", description: "Wake the silver surface of a mirror.", sequence: ["←", "✦", "→", "✦"], effect: "A tall mirrored doorway shimmers into view, reflecting somewhere else." },
+  { id: "inkwhisper", name: "Inkwhisper", description: "Call hidden handwriting out of blank paper.", sequence: ["↓", "→", "✦", "←"], effect: "Black ink lifts into the air and rearranges itself into glowing words." },
+  { id: "thornward", name: "Thornward", description: "Raise a temporary ring of protective briars.", sequence: ["←", "↓", "→", "↑"], effect: "A circle of thorny branches rises and locks together around you." },
+  { id: "moonwell", name: "Moonwell", description: "Gather a small pool of false moonlight.", sequence: ["✦", "↑", "✦", "↓"], effect: "A pale moon appears overhead and spills light into rippling circles." },
+  { id: "sunthread", name: "Sunthread", description: "Stitch warm sunlight through a dark room.", sequence: ["↑", "↑", "→", "✦"], effect: "Golden threads of light sweep across the workshop like sunrise." },
+  { id: "featherfall", name: "Featherfall", description: "Slow whatever is falling nearby.", sequence: ["↑", "←", "↓", "✦"], effect: "White feathers drift down in impossible slow motion." },
+  { id: "crystalbloom", name: "Crystal Bloom", description: "Grow harmless crystal flowers from stone.", sequence: ["↓", "✦", "↑", "→"], effect: "Faceted crystals bloom upward with soft violet light." },
+  { id: "doorwake", name: "Doorwake", description: "Reveal the outline of a door that should not exist.", sequence: ["←", "→", "✦", "↑", "↓"], effect: "A luminous doorway traces itself across the dark wall and slowly opens a crack." },
+  { id: "tidemark", name: "Tidemark", description: "Call a shallow wave without bringing the sea.", sequence: ["→", "↓", "→", "✦"], effect: "A band of blue water rolls through the room without wetting a thing." },
 ];
 
 function sameIngredients(a: IngredientId[], b: readonly IngredientId[]) {
@@ -672,6 +711,23 @@ export default function GreenhouseRoom() {
                     {popupSpell.id === "motes" && Array.from({ length: 18 }).map((_, index) => <i className={`spell-mote mote-${index % 6}`} key={index} />)}
                     {popupSpell.id === "mendglass" && <div className="spell-glass-pane"><i/><i/><i/><i/></div>}
                     {popupSpell.id === "raincall" && <div className="spell-rain-sheet">{Array.from({ length: 14 }).map((_, index) => <i key={index}/>)}</div>}
+                    {popupSpell.id === "frostveil" && <div className="spell-frost-pane"><i/><i/><i/><i/><i/><i/></div>}
+                    {popupSpell.id === "embercoil" && <div className="spell-ember-rings"><i/><i/><i/><span>✦</span></div>}
+                    {popupSpell.id === "aeris" && <div className="spell-wind-field">{Array.from({ length: 15 }).map((_, index) => <i key={index}>❧</i>)}</div>}
+                    {popupSpell.id === "echobell" && <div className="spell-echo-bell"><span>♢</span><i/><i/><i/><i/></div>}
+                    {popupSpell.id === "shadowlace" && <div className="spell-shadow-ribbons"><i/><i/><i/><i/><i/></div>}
+                    {popupSpell.id === "starlance" && <div className="spell-star-sky"><b>★</b>{Array.from({ length: 18 }).map((_, index) => <i key={index}/>)}</div>}
+                    {popupSpell.id === "petalstorm" && <div className="spell-petal-field">{Array.from({ length: 22 }).map((_, index) => <i key={index}>{index % 3 === 0 ? "❀" : "·"}</i>)}</div>}
+                    {popupSpell.id === "chronotick" && <div className="spell-clock"><i/><b/><span>11:47</span></div>}
+                    {popupSpell.id === "mirrorstep" && <div className="spell-mirror-door"><i/><span>YOU?</span></div>}
+                    {popupSpell.id === "inkwhisper" && <div className="spell-ink-words"><span>ROOM</span><span>REMEMBERS</span><span>WHAT</span><span>YOU</span><span>LEAVE</span></div>}
+                    {popupSpell.id === "thornward" && <div className="spell-thorn-ring">{Array.from({ length: 12 }).map((_, index) => <i key={index}>❧</i>)}</div>}
+                    {popupSpell.id === "moonwell" && <div className="spell-moonwell"><span>☾</span><i/><i/><i/><i/></div>}
+                    {popupSpell.id === "sunthread" && <div className="spell-sunthread"><span>☀</span>{Array.from({ length: 10 }).map((_, index) => <i key={index}/>)}</div>}
+                    {popupSpell.id === "featherfall" && <div className="spell-feathers">{Array.from({ length: 18 }).map((_, index) => <i key={index}>⌁</i>)}</div>}
+                    {popupSpell.id === "crystalbloom" && <div className="spell-crystals">{Array.from({ length: 9 }).map((_, index) => <i key={index}/>)}</div>}
+                    {popupSpell.id === "doorwake" && <div className="spell-impossible-door"><i/><span>?</span></div>}
+                    {popupSpell.id === "tidemark" && <div className="spell-tide"><i/><i/><i/><i/></div>}
                   </div>
                   <div className="spell-popup-card">
                     <small>SPELL CAST SUCCESSFULLY</small>
